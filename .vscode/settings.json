@@ -1,0 +1,19 @@
+{
+    "cSpell.words": [
+        "nbsp",
+        "quadtree",
+        "studio",
+        "tensor",
+        "subgraphs"
+    ],
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "src/**/*.css": true
+    },
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+}

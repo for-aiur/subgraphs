@@ -1,0 +1,53 @@
+[
+    {
+        "title": "Labeled Image",
+        "type": "labeled_image",
+        "inputs": [],
+        "outputs": [{"name": "images"}, {"name": "labels"}],
+        "attributes": [
+            {"name": "data", "type": "string", "value": "mnist"}
+        ]
+    },
+    {
+        "title": "Conv",
+        "type": "conv",
+        "inputs": [{"name": "inputs"}],
+        "outputs": [{"name": "outputs"}],
+        "attributes": [
+            {"name": "filters", "type": "int", "value": 32}
+        ]
+    },
+    {
+        "title": "Dense",
+        "type": "dense",
+        "inputs": [{"name": "inputs"}],
+        "outputs": [{"name": "outputs"}],
+        "attributes": [
+            {"name": "filters", "type": "int", "value": 32}
+        ]
+    },
+    {
+        "title": "ReLU",
+        "type": "relu",
+        "inputs": [{"name": "inputs"}],
+        "outputs": [{"name": "outputs"}],
+        "attributes": []
+    },
+    {
+        "title": "Cross Entropy",
+        "type": "cross_entropy",
+        "inputs": [{"name": "logits"}, {"name": "labels"}],
+        "outputs": [{"name": "loss"}],
+        "attributes": []
+    },
+    {
+        "title": "Optimizer",
+        "type": "optimizer",
+        "inputs": [{"name": "loss"}],
+        "outputs": [],
+        "attributes": [
+            {"name": "method", "type": "string", "value": "adam"},
+            {"name": "lr", "type": "float", "value": 0.001}
+        ]
+    }
+]
