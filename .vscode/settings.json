@@ -12,8 +12,18 @@
         "**/.hg": true,
         "**/CVS": true,
         "**/.DS_Store": true,
-        "src/**/*.css": true
+        "src/**/*.css": true,
+        "backend/lib": true,
+        "backend/index.html": true,
+        "backend/static": true,
+        "backend/asset-manifest.json": true,
+        "backend/favicon.ico": true,
+        "backend/manifest.json": true,
+        "backend/service-worker.js": true
     },
     "editor.tabSize": 2,
     "editor.insertSpaces": true,
+    "python.linting.pylintArgs": [
+        "--disable=C0111"
+    ]
 }

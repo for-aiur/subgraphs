@@ -9,6 +9,15 @@
 # production
 /build
 
+# Built files
+/backend/lib
+/backend/index.html
+/backend/static
+/backend/asset-manifest.json
+/backend/favicon.ico
+/backend/manifest.json
+/backend/service-worker.js
+
 # misc
 .DS_Store
 .env.local
@@ -23,3 +32,5 @@ yarn-error.log*
 .vscode/chrome
 
 src/**/*.css
+
+*.pyc

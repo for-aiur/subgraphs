@@ -1,0 +1,39 @@
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+- url: /static/css/(.*\.(css|map))$
+  static_files: static/css/\1
+  upload: static/css/.*\.(css|map)$
+
+- url: /static/js/(.*\.(js|map))$
+  static_files: static/js/\1
+  upload: static/js/.*\.(js|map)$
+
+- url: /service-worker.js
+  static_files: service-worker.js
+  upload: service-worker.js
+
+- url: /favicon.ico
+  static_files: favicon.ico
+  upload: favicon.ico
+
+- url: /robots.txt
+  static_files: robots.txt
+  upload: robots.txt
+
+- url: /api(.*)
+  script: main.APP
+
+- url: /(.*)
+  static_files: index.html
+  upload: index.html
+
+libraries:
+- name: jinja2
+  version: latest
+- name: markupsafe
+  version: latest
+- name: webob
+  version: latest
