@@ -3,7 +3,7 @@ import Edge from './Edge';
 import Port from './Port';
 
 class Node {
-  constructor(title=null, name=null, type=null) {
+  constructor(title=null, type=null, name=null) {
     this.title = title;
     this.name = name;
     this.type = type;

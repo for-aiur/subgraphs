@@ -38,9 +38,32 @@ function clone(data) {
     return node;
 };
 
+function compare(a, b) {
+    if (a === b) return true;
+    if (typeof a !== typeof b) return false;
+    if (Array.isArray(a)) {
+        if (a.length !== b.length) return false;
+        for (let i = 0; i < a.length; i++) {
+            if (!compare(a[i], b[i])) return false;
+        }
+        return true;
+    } else if (typeof a === "object") {
+        let keys = Object.keys(a);
+        if (keys.length !== Object.keys(b).length) return false;
+        for (let i = 0; i < keys.length; i++) {
+            let key = keys[i];
+            if (!(key in b)) return false;
+            if (!compare(a[key], b[key])) return false;
+        }
+        return true;
+    }
+    return false;
+}
+
 export {
     generateUID,
     sigmoid,
     zip,
-    clone
+    clone,
+    compare
 };

@@ -24,8 +24,9 @@ class App extends Component {
       <HashRouter>
         <div>
           <Navigation />
-          <Route exact path="/" component={Editor}></Route>
+          <Route exact path="/" component={About}></Route>
           <Route path="/About" component={About}></Route>
+          <Route path="/Editor" component={Editor}></Route>
         </div>
       </HashRouter>
     );

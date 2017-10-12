@@ -15,7 +15,7 @@ class About extends Component {
               <span className="subtitle">A Deep Learning IDE</span>
             </div>
             <div className="start">
-              <Link to="/" className="btn btn-lg btn-primary">Start</Link>
+              <Link to="/editor" className="btn btn-lg btn-primary">Start</Link>
             </div>
           </div>
         </header>

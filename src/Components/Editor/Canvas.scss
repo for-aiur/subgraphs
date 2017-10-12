@@ -5,24 +5,39 @@
     font-size: 12px;
 }
 
-#catalog {
+#catalogView {
     width: 200px;
     height: 100%;
     background-color: #fff;
     float: left;
 }
 
-#scopeNav {
-    background-color: #ddd;
-    height: 20px;
-    padding: 2px;
+#tabsContainer {
+    background-color: #dadada;
+    height: 30px;
 }
 
-#scopeNav span {
-    margin:0 4px;
+#tabsContainer li {
+    background-color: #e0e0e0;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
 }
-#scopeNav a {
-    margin:0 2px;
+
+#tabsContainer li:hover {
+    background-color: #f5f5f5;
+}
+
+#tabsContainer li.active {
+    background-color: #eee;
+}
+
+#tabsContainer span {
+    margin: 5px;
+}
+
+#tabsContainer a {
+    margin: 2px;
 }
 
 #propertiesView {

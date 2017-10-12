@@ -1,7 +1,7 @@
 import React, { Component}  from 'react';
 import d3 from '../../Common/D3Ext';
 import * as Utils from '../../Common/Utils';
-import * as catalogJSON from '../../Data/catalog.json';
+import Catalog from '../../Graph/Catalog';
 import Node from '../../Graph/Node';
 import Port from '../../Graph/Port';
 import './Canvas.css';
@@ -9,13 +9,32 @@ import './Canvas.css';
 class Canvas extends Component {
   constructor(props) {
     super(props);
-    this.scope = new Node('Template', 'template', 'template');
+    this.scope = new Node('Title', 'type');
     this.openNodes = [this.scope];
-    this.catalogData = catalogJSON;
+    this.catalog = new Catalog();
   }
 
   get nodeData() { return this.scope.nodeData; }
   get edgeData() { return this.scope.edgeData; }
+
+  newSubgraph() {
+    // Show a dialg to user and ask for the node name and type.
+    this.scope = new Node('Title', 'type');
+    this.openNodes.push(this.scope);
+
+    this.drawNodes();
+    this.drawEdges();
+    this.drawPropertiesView();
+    this.drawTabs();
+  }
+  
+  openSubgraph() {
+    // Show a dialog with all the items in the catalog
+  }
+
+  saveSubgraph() {
+    // Show a dialog to confirm saving of the catalog
+  }
 
   groupSelection(selection) {
     let _self = this;
@@ -24,7 +43,7 @@ class Canvas extends Component {
     let title = 'Template';
     let type = 'template';
     let name = this.scope.uniqueName(type);
-    let newNode = new Node(title, name, type);
+    let newNode = new Node(title, type, name);
 
     // Create a set of node ids
     let nodeIds = new Set();
@@ -158,7 +177,7 @@ class Canvas extends Component {
             }
             _self.drawNodes();
             _self.drawEdges();
-            _self.drawScopeNav();
+            _self.drawTabs();
             _self.drawPropertiesView();
           },
         });
@@ -445,7 +464,7 @@ class Canvas extends Component {
 
   drawCatalog() {
     let _self = this;
-    let catalog = d3.select(this.catalog);
+    let catalogView = d3.select(this.catalogView);
 
     let drag = d3.drag()
     .on('start', function(d) {
@@ -453,7 +472,7 @@ class Canvas extends Component {
       draggingNode
       .append('a')
       .attr('class', 'list-group-item')
-      .attr('href', '#')
+      .attr('role', 'button')
       .text(d.title);
 
       let mouse = d3.mouse(_self.container);
@@ -478,12 +497,12 @@ class Canvas extends Component {
       }
     });
 
-    catalog.selectAll('a')
-    .data(this.catalogData)
+    catalogView.selectAll('a')
+    .data(this.catalog.commonItems)
     .enter()
     .append('a')
     .attr('class', 'list-group-item')
-    .attr('href', '#')
+    .attr('role', 'button')
     .text(d => d.title)
     .call(drag);
   }
@@ -566,43 +585,49 @@ class Canvas extends Component {
     }
   }
 
-  drawScopeNav() {
+  drawTabs() {
     let _self = this;
-    let elements = d3.select(this.scopeNav);
+    let elements = d3.select(this.tabsContainer);
 
-    elements.selectAll('span').remove();
+    elements.selectAll('li').remove();
 
     for (let i in this.openNodes) {
       let p = this.openNodes[i];
-      let div = elements.append('span');
-
-      div
-      .append('a')
-      .attr('href', '#')
-      .text(p.type)
+      let item = elements.append('li')
+      .attr('role', 'button')
       .on('click', function() {
         _self.scope = p;
         _self.drawNodes();
         _self.drawEdges();
-        _self.drawScopeNav();
+        _self.drawTabs();
         _self.drawPropertiesView();
       });
 
-      if (i > 0) {
-        div
-        .append('a')
-        .attr('href', '#')
-        .text('[x]')
-        .on('click', function() {
-          let p = _self.openNodes.splice(i, 1)[0];
-          if (_self.scope === p) {
-            _self.scope = _self.openNodes[i - 1];
-            _self.drawNodes();
-            _self.drawEdges();
-          }
-          _self.drawScopeNav();
-        });
+      if (_self.scope === p) {
+        item.attr('class', 'active');
       }
+
+      item
+      .append('span')
+      .text(p.type);
+
+      item
+      .append('a')
+      .attr('role', 'button')
+      .text('x')
+      .on('click', function() {
+        let p = _self.openNodes.splice(i, 1)[0];
+        if (_self.scope === p) {
+          let k = Math.max(0, i - 1);
+          if (_self.openNodes.length === 0) {
+            _self.newSubgraph();
+          }
+          _self.scope = _self.openNodes[k];
+          _self.drawNodes();
+          _self.drawEdges();
+        }
+        _self.drawTabs();
+      });
     }
   }
 
@@ -784,7 +809,7 @@ class Canvas extends Component {
 
     this.drawCatalog();
     this.drawPropertiesView();
-    this.drawScopeNav();
+    this.drawTabs();
     this.drawNodes();
     this.drawEdges();
   }
@@ -804,13 +829,12 @@ class Canvas extends Component {
   render() {
     return (
     <div id="container" ref={p => this.container = p} >
-      <div id="catalog">
-        <div ref={p => this.catalog = p} className="list-group">
+      <div id="catalogView">
+        <div ref={p => this.catalogView = p} className="list-group">
         </div>
       </div>
-      <div id="scopeNav">
-        &nbsp;
-        <span ref={p => this.scopeNav = p}></span>
+      <div id="tabsContainer">
+        <ul ref={p => this.tabsContainer = p} className="list-inline"></ul>
       </div>
       <div id="canvas">
       <svg ref={p => this.canvas = p}>

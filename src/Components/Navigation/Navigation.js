@@ -16,7 +16,7 @@ class Navigation extends Component {
         </Navbar.Header>
         <Navbar.Collapse>
           <Nav>
-            <NavItem eventKey={1} onClick={e => this.props.history.push("/")}>
+            <NavItem eventKey={1} onClick={e => this.props.history.push("/editor")}>
               Editor
             </NavItem>
             <NavItem eventKey={2} onClick={e => this.props.history.push("/about")}>
