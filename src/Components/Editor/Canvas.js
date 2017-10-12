@@ -4,38 +4,83 @@ import * as Utils from '../../Common/Utils';
 import Catalog from '../../Graph/Catalog';
 import Node from '../../Graph/Node';
 import Port from '../../Graph/Port';
+import { NewDialog } from './Dialogs.js';
 import './Canvas.css';
 
 class Canvas extends Component {
   constructor(props) {
     super(props);
+
     this.scope = new Node('Title', 'type');
     this.openNodes = [this.scope];
     this.catalog = new Catalog();
+
+    window.scope = this.scope;
   }
 
   get nodeData() { return this.scope.nodeData; }
   get edgeData() { return this.scope.edgeData; }
 
   newSubgraph() {
-    // Show a dialg to user and ask for the node name and type.
-    this.scope = new Node('Title', 'type');
-    this.openNodes.push(this.scope);  
+    let node = new Node('Title', 'type');
+    this.setScope(node);
+    this.openNodes.push(node);
 
-    this.drawNodes();
-    this.drawEdges();
-    this.drawPropertiesView();
-    this.drawTabs();
+    this.newDialog.open(
+      node.title,
+      node.type,
+      this.catalog.getTypes('user'),
+      function(title, type) {
+        node.title = title;
+        node.type = type;
+        this.drawAll();
+      }.bind(this));
+
+    this.drawAll();
   }
   
   openSubgraph() {
     // Show a dialog with all the items in the catalog
-    return true;
+  }
+
+  closeSubgraph(p) {
+    let i = this.openNodes.indexOf(p);
+    if (this.scope.name === null &&
+        this.scope.nodeData.length > 0) {
+      this.saveSubgraph();
+    }
+    this.openNodes.splice(i, 1);
+    if (this.scope === p) {
+      if (this.openNodes.length === 0) {
+        this.newSubgraph();
+      } else {
+        this.setScope(this.openNodes[Math.max(0, i - 1)]);
+      }
+      return;
+    }
+    this.drawTabs();
   }
 
   saveSubgraph() {
-    // Show a dialog to confirm saving of the catalog
-    return true;
+    this.catalog.add('user', this.scope.toTemplate());
+
+    this.drawCatalog();
+  }
+
+  deleteSubgraph() {
+    let p = this.scope;
+    this.closeSubgraph(p)
+    this.catalog.remove('user', p);
+
+    this.drawCatalog();
+  }
+
+  setScope(newScope) {
+    newScope.pruneEdges();
+
+    this.scope = newScope;
+
+    this.drawAll();
   }
 
   groupSelection(selection) {
@@ -131,7 +176,7 @@ class Canvas extends Component {
 
       let contextItem = contextMenu.selectAll('.contextItem')
       .data(get_data(selectedDatum));
-
+      
       contextItem.exit().remove();
 
       let enter = contextItem
@@ -141,9 +186,9 @@ class Canvas extends Component {
 
       enter
       .append('rect')
-      .attr('y', (d, i) => 20 * i)
-      .attr('width', 150)
-      .attr('height', 20)
+      .attr('y', (d, i) => 40 * i)
+      .attr('width', 200)
+      .attr('height', 40)
       .on('click', function(d) {
         d.callback(selectedDatum);
         selectedDatum = null;
@@ -152,7 +197,7 @@ class Canvas extends Component {
       enter
       .append('text')
       .attr('x', 8)
-      .attr('y', (d, i) => 16 + 20 * i)
+      .attr('y', (d, i) => 26 + 40 * i)
       .text(d => d.name);
     };
 
@@ -183,31 +228,7 @@ class Canvas extends Component {
             _self.drawPropertiesView();
           },
         });
-
-        items.push({
-          name: 'Make reference',
-          callback: function() {
-            let mouse = d3.mouse(_self.nodesContainer);
-            let pos = {x: mouse[0] - 75, y: mouse[1] - 20};
-            let node = _self.scope.cloneChild(d, true);
-            node.position = pos;
-            _self.scope.addNode(node);
-            _self.drawNodes();
-          },
-        });
       }
-
-      items.push({
-        name: 'Make copy',
-        callback: function() {
-          let mouse = d3.mouse(_self.nodesContainer);
-          let pos = {x: mouse[0] - 75, y: mouse[1] - 20};
-          let node = _self.scope.cloneChild(d, false);
-          node.position = pos;
-          _self.scope.addNode(node);
-          _self.drawNodes();
-        }
-      });
 
       items.push({
         name: 'Remove',
@@ -466,7 +487,6 @@ class Canvas extends Component {
 
   drawCatalog() {
     let _self = this;
-    let catalogView = d3.select(this.catalogView);
 
     let drag = d3.drag()
     .on('start', function(d) {
@@ -499,14 +519,24 @@ class Canvas extends Component {
       }
     });
 
-    catalogView.selectAll('a')
-    .data(this.catalog.commonItems)
-    .enter()
-    .append('a')
-    .attr('class', 'list-group-item')
-    .attr('role', 'button')
-    .text(d => d.title)
-    .call(drag);
+    let cats = {
+      'common': this.commonCatalogView,
+      'user': this.userCatalogView
+    }
+
+    for (let cat in cats) {
+      let ref = d3.select(cats[cat]).selectAll('a')
+      .data(this.catalog.getItems(cat), d => d.type);
+
+      ref.exit().remove();
+
+      ref.enter()
+      .append('a')
+      .attr('class', 'list-group-item')
+      .attr('role', 'button')
+      .text(d => d.title)
+      .call(drag);
+    }
   }
 
   drawPropertiesView() {
@@ -523,7 +553,7 @@ class Canvas extends Component {
       group.append('label').text('Title');
       group.append('input').attr('class', 'form-control').attr('value', d.title)
       .on('input', function() {
-        d.name = this.value;
+        d.title = this.value;
         d3.select(`#${d.id} > g > text`).text(this.value);
       });
 
@@ -532,7 +562,7 @@ class Canvas extends Component {
       group.append('label').text('Type');
       group.append('input').attr('class', 'form-control').attr('value', d.type)
       .on('input', function() {
-        d.name = this.value;
+        d.type = this.value;
         d3.select(`#${d.id} > g > text`).text(this.value);
       });
 
@@ -566,6 +596,12 @@ class Canvas extends Component {
         d3.select(`#${d.id} > g > text`).text(this.value);
       });
 
+      group = propertiesView.append('div')
+      .attr('class', 'form-group');
+      group.append('label').text('Type');
+      group.append('input').attr('class', 'form-control').attr('value', d.type)
+      .attr('readonly', true);
+
       propertiesView.append('hr').attr('class', 'divider');
 
       for (let i in d.attributes) {
@@ -588,7 +624,6 @@ class Canvas extends Component {
   }
 
   drawTabs() {
-    window.c = this;
     let elements = d3.select(this.tabsContainer);
 
     elements.selectAll('li').remove();
@@ -599,11 +634,7 @@ class Canvas extends Component {
       .attr('role', 'button')
       .on('click', function() {
         d3.event.stopPropagation();
-        this.scope = p;
-        this.drawNodes();
-        this.drawEdges();
-        this.drawTabs();
-        this.drawPropertiesView();
+        this.setScope(p);
       }.bind(this));
 
       if (this.scope === p) {
@@ -617,20 +648,7 @@ class Canvas extends Component {
       .attr('role', 'button')
       .on('click', function() {
         d3.event.stopPropagation();
-        if (!this.saveSubgraph()) {
-          return;
-        }
-        this.openNodes.splice(i, 1);
-        if (this.scope === p) {
-          if (this.openNodes.length === 0) {
-            this.newSubgraph();
-            return;
-          }
-          this.scope = this.openNodes[Math.max(0, i - 1)];
-          this.drawNodes();
-          this.drawEdges();
-        }
-        this.drawTabs();
+        this.closeSubgraph(p);
       }.bind(this))
       .append('i')
       .attr('class', 'fa fa-close');
@@ -805,14 +823,7 @@ class Canvas extends Component {
     });
   }
 
-  restart() {
-    this.createNodeContextMenu();
-    this.createEdgeContextMenu();
-
-    this.createPanAndSelectHandler();
-    this.createNodeDragHandler();
-    this.createConnectHandler();
-
+  drawAll() {
     this.drawCatalog();
     this.drawPropertiesView();
     this.drawTabs();
@@ -821,11 +832,18 @@ class Canvas extends Component {
   }
 
   componentDidMount() {
-    this.restart();
+    this.createNodeContextMenu();
+    this.createEdgeContextMenu();
+
+    this.createPanAndSelectHandler();
+    this.createNodeDragHandler();
+    this.createConnectHandler();
+
+    this.drawAll();
   }
 
   componentDidUpdate() {
-    this.restart();
+    this.drawAll();
   }
 
   componentWillUnmount() {
@@ -835,8 +853,13 @@ class Canvas extends Component {
   render() {
     return (
     <div id="container" ref={p => this.container = p} >
+      <NewDialog ref={p => this.newDialog = p} />
       <div id="catalogView">
-        <div ref={p => this.catalogView = p} className="list-group">
+        <span>Common</span>
+        <div ref={p => this.commonCatalogView = p} className="list-group">
+        </div>
+        <span>User</span>
+        <div ref={p => this.userCatalogView = p} className="list-group">
         </div>
       </div>
       <div id="tabsContainer">

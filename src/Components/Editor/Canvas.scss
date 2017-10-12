@@ -12,6 +12,11 @@
   float: left;
 }
 
+#catalogView > span {
+  margin: 10px;
+  line-height: 30px;
+}
+
 #tabsContainer {
   background-color: #dadada;
   height: 30px;
@@ -153,17 +158,15 @@
 }
 
 .contextMenu rect {
-  fill: #ccc;
-  stroke: #aaa;
-  stroke-width: 1;
+  fill: #fefefe;
+  stroke: #e0e0e0;
 }
 
 .contextMenu rect:hover {
-  fill: #ddd;
+  fill: #eee;
 }
 
 .contextMenu text {
   pointer-events: none;
-  color: black;
   fill: black;
 }

@@ -20,6 +20,11 @@ class Menu extends Component {
             <i className="fa fa-save"></i>
           </a>
         </div>
+        <div className="btn-group">
+          <a className="btn btn-primary" onClick={e => this.props.callbacks.delete()}>
+            <i className="fa fa-trash"></i>
+          </a>
+        </div>
       </div>
     );
   }

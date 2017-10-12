@@ -28,26 +28,30 @@ class Node {
     return name + i;
   }
 
-  cloneChild(node, reference=false) {
+  clone() {
     let d = new Node();
-    d.title = node.title;
-    if (reference) {
-      d.name = node.name;
-    } else {
-      d.name = this.uniqueName(node.type);
+    d.title = this.title;
+    d.name = this.name;
+    d.type = this.type;
+    d.id = this.id;
+    d.position = Utils.clone(this.position);
+    d.inputs = Utils.clone(this.inputs);
+    d.outputs = Utils.clone(this.outputs);
+    d.attributes = Utils.clone(this.attributes);
+    d.nodeData = [];
+    for (let node of this.nodeData) {
+      d.nodeData.push(node.clone());
     }
-    d.type = node.type;
-    d.position = Utils.clone(node.position);
-    d.inputs = Utils.clone(node.inputs);
-    d.outputs = Utils.clone(node.outputs);
-    d.attributes = Utils.clone(node.attributes);
-    d.nodeData = Utils.clone(node.nodeData);
-    d.edgeData = Utils.clone(node.edgeData);
+    d.edgeData = [];
+    for (let edge of this.edgeData) {
+      d.edgeData.push(edge.clone());
+    }
     return d;
   }
 
   fromTemplate(template, pos) {
-    let d = this.cloneChild(Object.assign(new Node(), template));
+    let d = Object.assign(new Node(), template).clone();
+    d.name = this.uniqueName(template.type);
     d.position = pos;
     for (let side of ['inputs', 'outputs']) {
       for (let i in d[side]) {
@@ -63,7 +67,9 @@ class Node {
   }
 
   toTemplate() {
-    let d = this.cloneChild();
+    let d = this.clone();
+    delete d.id;
+    delete d.name;
     delete d.position;
     for (let side of ['inputs', 'outputs']) {
       for (let i in d[side]) {
@@ -128,6 +134,20 @@ class Node {
     let p = Port.fromId(portId);
     let node = this.getNodeById(p.nodeId);
     return node[p.side][p.idx];
+  }
+
+  pruneEdges() {
+    let ports = new Set();
+    for (let node of this.nodeData) {
+      for (let side of ['inputs', 'outputs']) {
+        for (let port of node[side]) {
+          ports.add(port.id);
+        }
+      }
+    }
+    this.edgeData = this.edgeData.filter(function(edge) {
+      return ports.has(edge.source) && ports.has(edge.target);
+    });
   }
 }
 

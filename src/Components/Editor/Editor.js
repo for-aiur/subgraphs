@@ -15,12 +15,17 @@ class Editor extends Component {
   onSave() {
     this.canvas.saveSubgraph();
   }
+  
+  onDelete() {
+    this.canvas.deleteSubgraph();
+  }
 
   render() {
     let callbacks = {
       new: this.onNew.bind(this),
       open: this.onOpen.bind(this),
-      save: this.onSave.bind(this)
+      save: this.onSave.bind(this),
+      delete: this.onDelete.bind(this)
     };
 
     return (

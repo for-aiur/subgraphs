@@ -2,20 +2,34 @@ import * as catalogJSON from './catalog.json';
 
 class Catalog {
   constructor() {
-    this.commonItems = catalogJSON;
-    this.userItems = [];
+    this.items = {
+      common: catalogJSON,
+      user: []
+    };
   }
 
-  create() {
+  getTypes(category) {
+    return this.items['user'].map(p => p.type);
   }
 
-  add(node) {
-    this.commonItems.push(node);
+  getItems(category) {
+    return this.items[category];
   }
 
-  remove(node) {
-    let index = this.items.indexOf(node);
-    this.userItems.splice(index, 1);
+  add(category, item) {
+    this.remove(category, item);
+    let items = this.items[category];
+    items.push(item);
+  }
+
+  remove(category, item) {
+    let items = this.items[category];
+    for (let i in items) {
+      if (items[i].type === item.type) {
+        items.splice(i, 1);
+        break;
+      }
+    }
   }
 }
 

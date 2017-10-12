@@ -4,6 +4,13 @@ class Edge {
     this.target = tarId;
   }
 
+  clone() {
+    let d = new Edge();
+    d.source = this.source;
+    d.target = this.target;
+    return d;
+  }
+
   get id() {
     return ['e', this.source, this.target].join('-');
   }
