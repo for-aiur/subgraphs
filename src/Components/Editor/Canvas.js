@@ -145,7 +145,6 @@ class Canvas extends Component {
       .attr('width', 150)
       .attr('height', 20)
       .on('click', function(d) {
-        d3.event.stopPropagation();
         d.callback(selectedDatum);
         selectedDatum = null;
       });
