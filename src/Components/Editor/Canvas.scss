@@ -1,170 +1,169 @@
 #container {
-    width: 100%;
-    height: 100%;
-    font-family: 'Courier';
-    font-size: 12px;
+  width: 100%;
+  height: 100%;
+  font-family: 'Courier';
+  font-size: 12px;
 }
 
 #catalogView {
-    width: 200px;
-    height: 100%;
-    background-color: #fff;
-    float: left;
+  width: 200px;
+  height: 100%;
+  background-color: #fff;
+  float: left;
 }
 
 #tabsContainer {
-    background-color: #dadada;
-    height: 30px;
+  background-color: #dadada;
+  height: 30px;
+  line-height: 30px;
 }
 
 #tabsContainer li {
-    background-color: #e0e0e0;
-    height: 30px;
-    line-height: 30px;
-    text-align: center;
+  background-color: #e0e0e0;
+  text-align: center;
 }
 
 #tabsContainer li:hover {
-    background-color: #f5f5f5;
+  background-color: #f5f5f5;
 }
 
 #tabsContainer li.active {
-    background-color: #eee;
+  background-color: #eee;
 }
 
 #tabsContainer span {
-    margin: 5px;
+  margin: 5px;
 }
 
 #tabsContainer a {
-    margin: 2px;
+  margin: 2px;
 }
 
 #propertiesView {
-    width: 200px;
-    height: calc(100% - 20px);
-    background-color: #fafafa;
-    float: left;
-    padding: 10px;
+  width: 200px;
+  height: calc(100% - 30px);
+  background-color: #fafafa;
+  float: left;
+  padding: 10px;
 }
 
 #canvas {
-    width: calc(100% - 400px);
-    height: calc(100% - 20px);
-    background: #eee;
-    float: left;
+  width: calc(100% - 400px);
+  height: calc(100% - 30px);
+  background: #eee;
+  float: left;
 }
 
 #canvas > svg {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 #overlay {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top: 115px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none;
-    opacity: 1.0;
-    z-index: 2;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 115px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  opacity: 1.0;
+  z-index: 2;
 }
 
 #overlay > div {
-    position: absolute;
-    transform: translate(-50%, -50%);
+  position: absolute;
+  transform: translate(-50%, -50%);
 }
 
 .nodeHeader rect {
-    fill: #aaa;
+  fill: #aaa;
 }
 
 .nodeHeader text {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .nodeBody rect {
-    fill: #ddd;
-    fill-opacity: 0.8;
+  fill: #ddd;
+  fill-opacity: 0.8;
 }
 
 .selected rect {
-    fill-opacity: 0.5;
+  fill-opacity: 0.5;
 }
 
 .nodeBody circle {
-    stroke: white;
-    stroke-width: 1;
-    fill: black;
-    pointer-events: visible;
+  stroke: white;
+  stroke-width: 1;
+  fill: black;
+  pointer-events: visible;
 }
 
 .nodeBody circle:hover {
-    fill: #888;
+  fill: #888;
 }
 
 .nodeHeader text {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .nodeOutput text {
-    text-anchor: end;
+  text-anchor: end;
 }
 
 .nodeAttr rect {
-    fill: #ccc;
+  fill: #ccc;
 }
 
 .nodeAttr text {
-    pointer-events: none;
+  pointer-events: none;
 }
 
 .nodeLink {
-    stroke: #555;
-    stroke-width: 3;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-dasharray: 3;
+  stroke: #555;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 3;
 }
 
 .edgePath {
-    fill: none;
-    stroke: black;
-    stroke-width: 3;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-opacity: 0.5;
+  fill: none;
+  stroke: black;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-opacity: 0.5;
 }
 
 .edgeCircle {
-    fill: #555;
-    stroke: black;
-    stroke-width: 1;
+  fill: #555;
+  stroke: black;
+  stroke-width: 1;
 }
 
 .selectionRect {
-    fill: green;
-    fill-opacity: 0.2;
-    stroke: black;
-    stroke-width: 1;
-    stroke-opacity: 0.2;
+  fill: green;
+  fill-opacity: 0.2;
+  stroke: black;
+  stroke-width: 1;
+  stroke-opacity: 0.2;
 }
 
 .contextMenu rect {
-    fill: #ccc;
-    stroke: #aaa;
-    stroke-width: 1;
+  fill: #ccc;
+  stroke: #aaa;
+  stroke-width: 1;
 }
 
 .contextMenu rect:hover {
-    fill: #ddd;
+  fill: #ddd;
 }
 
 .contextMenu text {
-    pointer-events: none;
-    color: black;
-    fill: black;
+  pointer-events: none;
+  color: black;
+  fill: black;
 }

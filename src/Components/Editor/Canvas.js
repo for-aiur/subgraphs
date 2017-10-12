@@ -20,7 +20,7 @@ class Canvas extends Component {
   newSubgraph() {
     // Show a dialg to user and ask for the node name and type.
     this.scope = new Node('Title', 'type');
-    this.openNodes.push(this.scope);
+    this.openNodes.push(this.scope);  
 
     this.drawNodes();
     this.drawEdges();
@@ -30,10 +30,12 @@ class Canvas extends Component {
   
   openSubgraph() {
     // Show a dialog with all the items in the catalog
+    return true;
   }
 
   saveSubgraph() {
     // Show a dialog to confirm saving of the catalog
+    return true;
   }
 
   groupSelection(selection) {
@@ -143,6 +145,7 @@ class Canvas extends Component {
       .attr('width', 150)
       .attr('height', 20)
       .on('click', function(d) {
+        d3.event.stopPropagation();
         d.callback(selectedDatum);
         selectedDatum = null;
       });
@@ -586,7 +589,7 @@ class Canvas extends Component {
   }
 
   drawTabs() {
-    let _self = this;
+    window.c = this;
     let elements = d3.select(this.tabsContainer);
 
     elements.selectAll('li').remove();
@@ -596,38 +599,42 @@ class Canvas extends Component {
       let item = elements.append('li')
       .attr('role', 'button')
       .on('click', function() {
-        _self.scope = p;
-        _self.drawNodes();
-        _self.drawEdges();
-        _self.drawTabs();
-        _self.drawPropertiesView();
-      });
+        d3.event.stopPropagation();
+        this.scope = p;
+        this.drawNodes();
+        this.drawEdges();
+        this.drawTabs();
+        this.drawPropertiesView();
+      }.bind(this));
 
-      if (_self.scope === p) {
+      if (this.scope === p) {
         item.attr('class', 'active');
       }
 
-      item
-      .append('span')
-      .text(p.type);
+      item.append('span').text(p.type);
 
       item
       .append('a')
       .attr('role', 'button')
-      .text('x')
       .on('click', function() {
-        let p = _self.openNodes.splice(i, 1)[0];
-        if (_self.scope === p) {
-          let k = Math.max(0, i - 1);
-          if (_self.openNodes.length === 0) {
-            _self.newSubgraph();
-          }
-          _self.scope = _self.openNodes[k];
-          _self.drawNodes();
-          _self.drawEdges();
+        d3.event.stopPropagation();
+        if (!this.saveSubgraph()) {
+          return;
         }
-        _self.drawTabs();
-      });
+        this.openNodes.splice(i, 1);
+        if (this.scope === p) {
+          if (this.openNodes.length === 0) {
+            this.newSubgraph();
+            return;
+          }
+          this.scope = this.openNodes[Math.max(0, i - 1)];
+          this.drawNodes();
+          this.drawEdges();
+        }
+        this.drawTabs();
+      }.bind(this))
+      .append('i')
+      .attr('class', 'fa fa-close');
     }
   }
 
