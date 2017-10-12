@@ -1,12 +1,12 @@
 import React, { Component}  from 'react';
-import d3 from '../Common/D3Ext';
-import * as Utils from '../Common/Utils';
-import * as catalogJSON from '../Data/catalog.json';
-import Node from '../Graph/Node';
-import Port from '../Graph/Port';
-import './Graph.css';
+import d3 from '../../Common/D3Ext';
+import * as Utils from '../../Common/Utils';
+import * as catalogJSON from '../../Data/catalog.json';
+import Node from '../../Graph/Node';
+import Port from '../../Graph/Port';
+import './Canvas.css';
 
-class Graph extends Component {
+class Canvas extends Component {
   constructor(props) {
     super(props);
     this.scope = new Node('Template', 'template', 'template');
@@ -145,7 +145,7 @@ class Graph extends Component {
 
   createNodeContextMenu() {
     let _self = this;
-    this.createNodeContextMenu = this.createContextMenu(function(d) {
+    this.nodeContextMenu = this.createContextMenu(function(d) {
       let items = [];
 
       if (d.nodeData.length > 0) {
@@ -436,6 +436,13 @@ class Graph extends Component {
     });
   }
 
+  clearHandlers() {
+    delete this.nodeContextMenu;
+    delete this.edgeContextMenu;
+    delete this.edgeDrag;
+    delete this.nodeDrag;
+  }
+
   drawCatalog() {
     let _self = this;
     let catalog = d3.select(this.catalog);
@@ -445,6 +452,7 @@ class Graph extends Component {
       let draggingNode = d3.select(_self.draggingNode);
       draggingNode
       .append('a')
+      .attr('class', 'list-group-item')
       .attr('href', '#')
       .text(d.title);
 
@@ -612,7 +620,7 @@ class Graph extends Component {
     .attr('id', d => d.id)
     .attr('transform', d => `translate(${d.position.x}, ${d.position.y})`)
     .call(this.nodeDrag)
-    .on('contextmenu', this.createNodeContextMenu);
+    .on('contextmenu', this.nodeContextMenu);
 
     let nodeHeader = enter.append('g')
     .attr('class', 'nodeHeader');
@@ -789,6 +797,10 @@ class Graph extends Component {
     this.restart();
   }
 
+  componentWillUnmount() {
+    this.clearHandlers();
+  }
+
   render() {
     return (
     <div id="container" ref={p => this.container = p} >
@@ -853,4 +865,4 @@ class Graph extends Component {
   }
 }
 
-export default Graph;
+export default Canvas;

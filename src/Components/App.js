@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import './App.css';
-import Menu from './Menu.js'
-import Graph from './Graph.js'
-import Dialog from './Dialog.js'
+import { HashRouter, Route } from 'react-router-dom';
+import About from './About/About.js'
+import Editor from './Editor/Editor.js'
+import Navigation from './Navigation/Navigation.js'
 
 class App extends Component {
   constructor(props) {
@@ -21,23 +21,13 @@ class App extends Component {
 
   render() {
     return (
-      <div className="app">
-        <header className="header">
-          <h1 className="title">Subgraphs</h1>
-        </header>
-        <div className="menu">
-          <Menu />
+      <HashRouter>
+        <div>
+          <Navigation />
+          <Route exact path="/" component={Editor}></Route>
+          <Route path="/About" component={About}></Route>
         </div>
-        <div className="body">
-
-          <Dialog show={this.state.isOpen}
-                 onClose={this.toggleDialog}>
-            Sample content.
-          </Dialog>
-
-          <Graph />
-        </div>
-      </div>
+      </HashRouter>
     );
   }
 }
