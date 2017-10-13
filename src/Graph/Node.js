@@ -146,23 +146,33 @@ class Node {
       }
     }
     this.edgeData = this.edgeData.filter(function(edge) {
-      return ports.has(edge.source) && ports.has(edge.target);
-    });
+      let valid = ports.has(edge.source) && ports.has(edge.target);
+      if (valid) {
+        this.getPortById(edge.source).edges.add(edge.id);
+        this.getPortById(edge.target).edges.add(edge.id);
+      }
+      return valid;
+    }.bind(this));
   }
 
   updatePorts() {
     let newNode = {inputs: [],  outputs: []};
     this.nodeData.forEach(function(node) {
       for (let side of ['inputs', 'outputs']) {
-        for (let port of node[side]) {
+        let j = 0;
+        for (let i in node[side]) {
+          let port = node[side][i];
           if (port.alias) {
             newNode[side].push({
               name: port.alias,
+              id: new Port(this.id, side, j++).id,
+              edges: new Set(),
+              alias: null
             });
           }
         }
       }
-    });
+    }.bind(this));
     this.inputs = newNode.inputs;
     this.outputs = newNode.outputs;
   }
@@ -175,7 +185,8 @@ class Node {
           attributes.push({
             name: attr.alias,
             type: attr.type,
-            value: attr.value
+            value: attr.value,
+            alias: null
           });
         }
       }
