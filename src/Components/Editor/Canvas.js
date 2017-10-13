@@ -132,7 +132,7 @@ class Canvas extends Component {
             name: port.name,
             id: portId,
             edges: new Set(),
-            alias: null
+            alias: ''
           });
           for (let edgeDatum of rewireEdges) {
             edgeDatum[ts] = portId;

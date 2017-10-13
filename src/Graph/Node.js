@@ -56,11 +56,11 @@ class Node {
     for (let side of ['inputs', 'outputs']) {
       for (let i in d[side]) {
         d[side][i].id = new Port(d.id, side, i).id;
-        d[side][i].alias = null;
+        d[side][i].alias = '';
       }
     }
     for (let attr of d.attributes) {
-      attr.alias = null;
+      attr.alias = '';
     }
     return d;
   }
