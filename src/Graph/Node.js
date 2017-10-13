@@ -56,7 +56,6 @@ class Node {
     for (let side of ['inputs', 'outputs']) {
       for (let i in d[side]) {
         d[side][i].id = new Port(d.id, side, i).id;
-        d[side][i].edges = new Set();
         d[side][i].alias = null;
       }
     }
@@ -74,7 +73,6 @@ class Node {
     for (let side of ['inputs', 'outputs']) {
       for (let i in d[side]) {
         delete d[side][i].id;
-        delete d[side][i].edges;
         delete d[side][i].alias;
       }
     }
@@ -109,16 +107,12 @@ class Node {
     if (this.getEdgeById(edgeId) !== undefined) {
       return;
     }
-    this.getPortById(srcId).edges.add(edgeId);
-    this.getPortById(tarId).edges.add(edgeId);
     this.edgeData.push(d);
   }
 
   removeEdge(edgeDatum) {
     let edgeIdx = this.edgeData.indexOf(edgeDatum);
     let edgeId = edgeDatum.id;
-    this.getPortById(edgeDatum.source).edges.delete(edgeId);
-    this.getPortById(edgeDatum.target).edges.delete(edgeId);
     this.edgeData.splice(edgeIdx, 1);
   }
 
@@ -136,6 +130,12 @@ class Node {
     return node[p.side][p.idx];
   }
 
+  getPortEdges(portId) {
+    let p = Port.fromId(portId);
+    let ts = {inputs: 'target', outputs: 'source'}[p.side];
+    return this.edgeData.filter(edge => edge[ts] == portId);
+  }
+
   pruneEdges() {
     let ports = new Set();
     for (let node of this.nodeData) {
@@ -146,12 +146,7 @@ class Node {
       }
     }
     this.edgeData = this.edgeData.filter(function(edge) {
-      let valid = ports.has(edge.source) && ports.has(edge.target);
-      if (valid) {
-        this.getPortById(edge.source).edges.add(edge.id);
-        this.getPortById(edge.target).edges.add(edge.id);
-      }
-      return valid;
+      return ports.has(edge.source) && ports.has(edge.target);
     }.bind(this));
   }
 

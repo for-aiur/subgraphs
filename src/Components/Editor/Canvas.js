@@ -113,16 +113,16 @@ class Canvas extends Component {
         let st = {inputs: 'source', outputs: 'target'}[side];
         let ts = {inputs: 'target', outputs: 'source'}[side];
         for (let port of nodeDatum[side]) {
-          let newPort = port.edges.size === 0;
+          let edges = _self.scope.getPortEdges(port.id);
+          let newPort = edges.size === 0;
           let rewireEdges = new Set();
-          for (let edgeId of port.edges) {
-            let edgeDatum = _self.scope.getEdgeById(edgeId);
-            let srcNodeId = Port.fromId(edgeDatum[st]).nodeId;
+          for (let edge of edges) {
+            let srcNodeId = Port.fromId(edge[st]).nodeId;
             if (!nodeIds.has(srcNodeId)) {
               newPort = true;
-              rewireEdges.add(edgeDatum);
+              rewireEdges.add(edge);
             } else {
-              moveEdges.add(edgeDatum);
+              moveEdges.add(edge);
             }
           }
           if (!newPort) continue;
