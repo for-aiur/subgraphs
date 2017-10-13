@@ -112,7 +112,6 @@ class Node {
 
   removeEdge(edgeDatum) {
     let edgeIdx = this.edgeData.indexOf(edgeDatum);
-    let edgeId = edgeDatum.id;
     this.edgeData.splice(edgeIdx, 1);
   }
 
@@ -133,7 +132,7 @@ class Node {
   getPortEdges(portId) {
     let p = Port.fromId(portId);
     let ts = {inputs: 'target', outputs: 'source'}[p.side];
-    return this.edgeData.filter(edge => edge[ts] == portId);
+    return this.edgeData.filter(edge => edge[ts] === portId);
   }
 
   pruneEdges() {
@@ -147,7 +146,7 @@ class Node {
     }
     this.edgeData = this.edgeData.filter(function(edge) {
       return ports.has(edge.source) && ports.has(edge.target);
-    }.bind(this));
+    });
   }
 
   updatePorts() {
