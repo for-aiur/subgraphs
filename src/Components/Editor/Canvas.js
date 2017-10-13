@@ -23,24 +23,25 @@ class Canvas extends Component {
 
   newSubgraph() {
     let node = new Node('Title', 'type');
-    this.setScope(node);
     this.openNodes.push(node);
+    this.setScope(node);
 
     this.newDialog.open(
       node.title,
       node.type,
-      this.catalog.getTypes('user'),
+      new Set(this.catalog.getTypes('user')),
       function(title, type) {
         node.title = title;
         node.type = type;
         this.drawAll();
       }.bind(this));
-
-    this.drawAll();
   }
   
-  openSubgraph() {
-    // Show a dialog with all the items in the catalog
+  openSubgraph(p) {
+    if (!this.openNodes.includes(p)) {
+      this.openNodes.push(p);
+    }
+    this.setScope(p);
   }
 
   closeSubgraph(p) {
@@ -130,11 +131,13 @@ class Canvas extends Component {
           newNode[side].push({
             name: port.name,
             id: portId,
-            edges: new Set()
+            edges: new Set(),
+            alias: null
           });
           for (let edgeDatum of rewireEdges) {
             edgeDatum[ts] = portId;
           }
+          port.alias = port.name;
         }
       }
     });
@@ -218,14 +221,7 @@ class Canvas extends Component {
         items.push({
           name: 'Open',
           callback: function() {
-            _self.scope = _self.scope.getNodeById(d.id);
-            if (!_self.openNodes.includes(_self.scope)) {
-              _self.openNodes.push(_self.scope);
-            }
-            _self.drawNodes();
-            _self.drawEdges();
-            _self.drawTabs();
-            _self.drawPropertiesView();
+            _self.openSubgraph(_self.scope.getNodeById(d.id));
           },
         });
       }
@@ -485,6 +481,38 @@ class Canvas extends Component {
     delete this.nodeDrag;
   }
 
+  drawTabs() {
+    let elements = d3.select(this.tabsContainer);
+
+    elements.selectAll('li').remove();
+
+    for (let i in this.openNodes) {
+      let p = this.openNodes[i];
+      let item = elements.append('li')
+      .attr('role', 'button')
+      .on('click', function() {
+        d3.event.stopPropagation();
+        this.setScope(p);
+      }.bind(this));
+
+      if (this.scope === p) {
+        item.attr('class', 'active');
+      }
+
+      item.append('span').text(p.type);
+
+      item
+      .append('a')
+      .attr('role', 'button')
+      .on('click', function() {
+        d3.event.stopPropagation();
+        this.closeSubgraph(p);
+      }.bind(this))
+      .append('i')
+      .attr('class', 'fa fa-close');
+    }
+  }
+
   drawCatalog() {
     let _self = this;
 
@@ -540,6 +568,7 @@ class Canvas extends Component {
   }
 
   drawPropertiesView() {
+    let _self = this;
     let selection = d3.selectAll('.selected');
 
     let propertiesView = d3.select(this.propertiesView);
@@ -551,7 +580,8 @@ class Canvas extends Component {
       let group = propertiesView.append('div')
       .attr('class', 'form-group');
       group.append('label').text('Title');
-      group.append('input').attr('class', 'form-control').attr('value', d.title)
+      group.append('input').attr('class', 'form-control input-sm')
+      .attr('value', d.title)
       .on('input', function() {
         d.title = this.value;
         d3.select(`#${d.id} > g > text`).text(this.value);
@@ -560,7 +590,8 @@ class Canvas extends Component {
       group = propertiesView.append('div')
       .attr('class', 'form-group');
       group.append('label').text('Type');
-      group.append('input').attr('class', 'form-control').attr('value', d.type)
+      group.append('input').attr('class', 'form-control input-sm')
+      .attr('value', d.type)
       .on('input', function() {
         d.type = this.value;
         d3.select(`#${d.id} > g > text`).text(this.value);
@@ -575,7 +606,7 @@ class Canvas extends Component {
 
         group.append('label').text(attribute.name);
         group.append('input')
-        .attr('class', 'form-control')
+        .attr('class', 'form-control input-sm')
         .attr('value', attribute.value)
         .on('input', function() {
           attribute.value = this.value;
@@ -590,7 +621,8 @@ class Canvas extends Component {
       let group = propertiesView.append('div')
       .attr('class', 'form-group');
       group.append('label').text('Name');
-      group.append('input').attr('class', 'form-control').attr('value', d.name)
+      group.append('input').attr('class', 'form-control input-sm')
+      .attr('value', d.name)
       .on('input', function() {
         d.name = this.value;
         d3.select(`#${d.id} > g > text`).text(this.value);
@@ -599,7 +631,8 @@ class Canvas extends Component {
       group = propertiesView.append('div')
       .attr('class', 'form-group');
       group.append('label').text('Type');
-      group.append('input').attr('class', 'form-control').attr('value', d.type)
+      group.append('input').attr('class', 'form-control input-sm')
+      .attr('value', d.type)
       .attr('readonly', true);
 
       propertiesView.append('hr').attr('class', 'divider');
@@ -609,49 +642,85 @@ class Canvas extends Component {
         let group = propertiesView.append('div')
         .attr('class', 'form-group');
 
+        let p = d3.select(d3.selectAll(`#${d.id} .nodeAttr > text`).nodes()[i]);
+
         group.append('label').text(attribute.name);
         group.append('input')
-        .attr('class', 'form-control')
+        .attr('class', 'form-control input-sm')
         .attr('value', attribute.value)
         .on('input', function() {
           attribute.value = this.value;
-          let p = d3.select(d3.selectAll(
-            `#${d.id} .nodeAttr > text`).nodes()[i]);
           p.text(`${attribute.name}: ${this.value}`);
         });
+
+        group = propertiesView.append('div')
+        .attr('class', 'form-group');
+        if (attribute.alias) {
+          group.append('label').text('Alias');
+          group.append('input')
+          .attr('class', 'form-control input-sm')
+          .attr('value', attribute.alias)
+          .on('input', function() {
+            _self.scope.setAttributeAlias(attribute, this.value);
+            if (!this.value) {
+              _self.drawPropertiesView();
+              p.attr('class', '');
+            }
+          });
+        } else {
+          group.append('input')
+          .attr('type', 'button')
+          .attr('class', 'btn btn-default btn-sm')
+          .attr('value', 'External')
+          .on('click', function() {
+            _self.scope.setAttributeAlias(attribute, attribute.name);
+            _self.drawPropertiesView();
+            p.attr('class', 'alias');
+          });
+        }
       }
-    }
-  }
 
-  drawTabs() {
-    let elements = d3.select(this.tabsContainer);
+      propertiesView.append('hr').attr('class', 'divider');
 
-    elements.selectAll('li').remove();
+      for (let item of [
+        {side: 'inputs', class: 'nodeInput'},
+        {side: 'outputs', class: 'nodeOutput'}
+      ]) {
+        for (let i in d[item.side]) {
+          let port = d[item.side][i];
+          let group = propertiesView.append('div')
+          .attr('class', 'form-group');  
+          group.append('label').text(port.name);
 
-    for (let i in this.openNodes) {
-      let p = this.openNodes[i];
-      let item = elements.append('li')
-      .attr('role', 'button')
-      .on('click', function() {
-        d3.event.stopPropagation();
-        this.setScope(p);
-      }.bind(this));
+          let p = d3.select(d3.selectAll(`#${d.id} .${item.class} > text`).nodes()[i]);
 
-      if (this.scope === p) {
-        item.attr('class', 'active');
+          group = propertiesView.append('div')
+          .attr('class', 'form-group');
+          if (port.alias) {
+            group.append('label').text('Alias');
+            group.append('input')
+            .attr('class', 'form-control input-sm')
+            .attr('value', port.alias)
+            .on('input', function() {
+              _self.scope.setPortAlias(port, this.value);
+              if (!this.value) {
+                _self.drawPropertiesView();
+                p.attr('class', '');
+              }
+            });
+          } else {
+            group.append('input')
+            .attr('type', 'button')
+            .attr('class', 'btn btn-default btn-sm')
+            .attr('value', 'External')
+            .on('click', function() {
+              _self.scope.setPortAlias(port, port.name);
+              _self.drawPropertiesView();
+              p.attr('class', 'alias');
+            });
+          }
+        }
       }
-
-      item.append('span').text(p.type);
-
-      item
-      .append('a')
-      .attr('role', 'button')
-      .on('click', function() {
-        d3.event.stopPropagation();
-        this.closeSubgraph(p);
-      }.bind(this))
-      .append('i')
-      .attr('class', 'fa fa-close');
     }
   }
 
@@ -698,50 +767,34 @@ class Canvas extends Component {
       return (numPorts + numAttrs) * 20
     });
 
-    let nodeInputs = nodeBody
-    .selectAll('.nodeInput')
-    .data(d => d.inputs)
-    .enter()
-    .append('g')
-    .attr('class', 'nodeInput');
-
-    nodeInputs
-    .append('circle')
-    .attr('id', d => d.id)
-    .attr('cx', 8)
-    .attr('cy', (d, i) => 12 + 20 * i)
-    .attr('r', 5)
-    .text(d => d)
-    .on('mouseenter', this.portEnter)
-    .call(this.edgeDrag);
-
-    nodeInputs
-    .append('text')
-    .attr('x', 16)
-    .attr('y', (d, i) => 16 + 20 * i)
-    .text(d => d.name);
-
-    let nodeOutputs = nodeBody
-    .selectAll('.nodeOutput')
-    .data(d => d.outputs)
-    .enter()
-    .append('g')
-    .attr('class', 'nodeOutput');
-
-    nodeOutputs
-    .append('circle')
-    .attr('id', d => d.id)
-    .attr('cx', 142)
-    .attr('cy', (d, i) => 12 + 20 * i)
-    .attr('r', 5)
-    .on('mouseenter', this.portEnter)
-    .call(this.edgeDrag);
-
-    nodeOutputs
-    .append('text')
-    .attr('x', 134)
-    .attr('y', (d, i) => 16 + 20 * i)
-    .text(d => d.name);
+    for (let item of [
+      {side: 'inputs', class: 'nodeInput', cX: 8, tX: 16},
+      {side: 'outputs', class: 'nodeOutput', cX: 142, tX: 134}
+    ]) {
+      let nodeInputs = nodeBody
+      .selectAll(`.${item.class}`)
+      .data(d => d[item.side])
+      .enter()
+      .append('g')
+      .attr('class', item.class);
+  
+      nodeInputs
+      .append('circle')
+      .attr('id', d => d.id)
+      .attr('cx', item.cX)
+      .attr('cy', (d, i) => 12 + 20 * i)
+      .attr('r', 5)
+      .text(d => d)
+      .on('mouseenter', this.portEnter)
+      .call(this.edgeDrag);
+  
+      nodeInputs
+      .append('text')
+      .attr('x', item.tX)
+      .attr('y', (d, i) => 16 + 20 * i)
+      .attr('class', d => d.alias ? 'alias' : '')
+      .text(d => d.name);
+    }
 
     let nodeAttrs = nodeBody
     .selectAll('.nodeAttr')
@@ -772,6 +825,7 @@ class Canvas extends Component {
     .append('text')
     .attr('x', 4)
     .attr('y', d => 16 + d.offset)
+    .attr('class', d => d.attr.alias ? 'alias' : '')
     .text(d => `${d.attr.name}: ${d.attr.value}`);
   }
 
@@ -824,9 +878,9 @@ class Canvas extends Component {
   }
 
   drawAll() {
+    this.drawTabs();
     this.drawCatalog();
     this.drawPropertiesView();
-    this.drawTabs();
     this.drawNodes();
     this.drawEdges();
   }

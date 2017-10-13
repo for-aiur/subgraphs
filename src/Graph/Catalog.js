@@ -9,7 +9,7 @@ class Catalog {
   }
 
   getTypes(category) {
-    return this.items['user'].map(p => p.type);
+    return this.items[category].map(p => p.type);
   }
 
   getItems(category) {

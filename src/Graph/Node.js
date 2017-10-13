@@ -149,6 +149,49 @@ class Node {
       return ports.has(edge.source) && ports.has(edge.target);
     });
   }
+
+  updatePorts() {
+    let newNode = {inputs: [],  outputs: []};
+    this.nodeData.forEach(function(node) {
+      for (let side of ['inputs', 'outputs']) {
+        for (let port of node[side]) {
+          if (port.alias) {
+            newNode[side].push({
+              name: port.alias,
+            });
+          }
+        }
+      }
+    });
+    this.inputs = newNode.inputs;
+    this.outputs = newNode.outputs;
+  }
+
+  updateAttributes() {
+    let attributes = [];
+    this.nodeData.forEach(function(node) {
+      for (let attr of node.attributes) {
+        if (attr.alias) {
+          attributes.push({
+            name: attr.alias,
+            type: attr.type,
+            value: attr.value
+          });
+        }
+      }
+    });
+    this.attributes = attributes;
+  }
+
+  setPortAlias(port, alias) {
+    port.alias = alias;
+    this.updatePorts();
+  }
+
+  setAttributeAlias(attr, alias) {
+    attr.alias = alias;
+    this.updateAttributes();
+  }
 }
 
 export default Node;

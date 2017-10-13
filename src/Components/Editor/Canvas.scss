@@ -126,6 +126,10 @@
   pointer-events: none;
 }
 
+.nodeBody .alias {
+  font-weight: bold;
+}
+
 .nodeLink {
   stroke: #555;
   stroke-width: 3;

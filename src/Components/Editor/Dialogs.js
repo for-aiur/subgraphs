@@ -28,6 +28,7 @@ class NewDialog extends Component {
       showModal: true,
       title: title,
       type: type,
+      reserved: reserved,
       callback: callback
     });
   }
