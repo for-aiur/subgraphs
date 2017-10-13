@@ -86,15 +86,15 @@ class NewDialog extends Component {
               </FormGroup>
 
               <FormGroup controlId="type" validationState={this.validateType()}>
-                <ControlLabel>Type</ControlLabel>
+                <ControlLabel>Identifier</ControlLabel>
                 <FormControl type="text" 
                              value={this.state.type}
                              placeholder="type" 
                              onChange={this.changeType} />
                 <FormControl.Feedback />
                 <HelpBlock>
-                  The type must be consisted of alphanumerics with no special
-                  characters.
+                  The unique identifier must be consisted of alphanumerics with no 
+                  special characters.
                 </HelpBlock>
               </FormGroup>
             </form>

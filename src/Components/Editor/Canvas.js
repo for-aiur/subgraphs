@@ -11,7 +11,7 @@ class Canvas extends Component {
   constructor(props) {
     super(props);
 
-    this.scope = new Node('Title', 'type');
+    this.scope = new Node('New Project', 'project');
     this.openNodes = [this.scope];
     this.catalog = new Catalog();
 
@@ -22,7 +22,7 @@ class Canvas extends Component {
   get edgeData() { return this.scope.edgeData; }
 
   newSubgraph() {
-    let node = new Node('Title', 'type');
+    let node = new Node('New Project', 'project');
     this.openNodes.push(node);
     this.setScope(node);
 
@@ -88,8 +88,8 @@ class Canvas extends Component {
     let _self = this;
 
     // Create a new node
-    let title = 'Template';
-    let type = 'template';
+    let title = 'Group';
+    let type = 'group';
     let name = this.scope.uniqueName(type);
     let newNode = new Node(title, type, name);
 
@@ -97,7 +97,7 @@ class Canvas extends Component {
     let nodeIds = new Set();
     selection.each(function(nodeDatum) {
       nodeIds.add(nodeDatum.id);
-    });
+    }); 
 
     // Move nodes and edges
     let moveEdges = new Set();
@@ -114,9 +114,9 @@ class Canvas extends Component {
         let ts = {inputs: 'target', outputs: 'source'}[side];
         for (let port of nodeDatum[side]) {
           let edges = _self.scope.getPortEdges(port.id);
-          let newPort = edges.size === 0;
+          let newPort = edges.length === 0;
           let rewireEdges = new Set();
-          for (let edge of edges) {
+          for (let edge of edges) {           
             let srcNodeId = Port.fromId(edge[st]).nodeId;
             if (!nodeIds.has(srcNodeId)) {
               newPort = true;
@@ -589,7 +589,7 @@ class Canvas extends Component {
 
       group = propertiesView.append('div')
       .attr('class', 'form-group');
-      group.append('label').text('Type');
+      group.append('label').text('Identifier');
       group.append('input').attr('class', 'form-control input-sm')
       .attr('value', d.type)
       .on('input', function() {
@@ -630,7 +630,7 @@ class Canvas extends Component {
 
       group = propertiesView.append('div')
       .attr('class', 'form-group');
-      group.append('label').text('Type');
+      group.append('label').text('Identifier');
       group.append('input').attr('class', 'form-control input-sm')
       .attr('value', d.type)
       .attr('readonly', true);
