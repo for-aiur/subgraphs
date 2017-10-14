@@ -1,0 +1,125 @@
+import logging
+import flask
+import authomatic
+from authomatic.providers import oauth2
+from authomatic.extras.flask import FlaskAuthomatic
+
+from google.appengine.ext import ndb  # pylint: disable=E0401,E0611
+
+import validate_utils
+from storage import User
+
+
+APP = flask.Blueprint('user', __name__)
+SESSION = flask.session
+
+CONFIG = {
+    'google': {
+        'class_': oauth2.Google,
+        'consumer_key': '581454874206-9gsk9c69atudo53es75kojgvc131i762.apps.googleusercontent.com',
+        'consumer_secret': 'QTF1x6Epqhvhve85GjAnrpe8',
+        'scope': ['profile', 'email'],
+        'id': authomatic.provider_id()
+    }
+}
+
+SECRET_KEY = 'Arkham City'
+
+FA = FlaskAuthomatic(
+    config=CONFIG, secret=SECRET_KEY, debug=True, session_max_age=2592000)
+
+
+@APP.route('/auth/google', methods=['GET', 'POST'])
+@FA.login('google')
+def index():
+    logging.info("Yay!")
+    data = flask.request.get_json()
+    redirect_url = data.get('redirectUrl', '/') if data else '/'
+    if FA.result:
+        if FA.result.error:
+            return flask.redirect('/login')
+
+        if FA.result.user:
+            FA.result.user.update()
+
+            if not FA.result.user.id:
+                flask.abort(404)
+
+            user = User.query(User.googleId == FA.result.user.id).get()
+            if not user:
+                if FA.result.user.email:
+                    user = User.query(User.email == FA.result.user.email).get()
+                if not user:
+                    user = User()
+                    user.name = FA.result.user.name
+                    user.email = FA.result.user.email
+                    user.imageUrl = FA.result.user.picture
+
+                user.googleId = FA.result.user.id
+                user.put()
+
+            SESSION['uid'] = user.key.id()
+            SESSION['credentials'] = FA.result.user.credentials.serialize()
+
+            return flask.redirect(redirect_url)
+
+    return FA.response
+
+
+@APP.route('/logout')
+def logout():
+    SESSION.pop('uid', None)
+    SESSION.pop('credentials', None)
+    return flask.redirect('/')
+
+
+def get_uid():
+    uid = SESSION.get('uid', None)
+    serialized_credentials = SESSION.get('credentials', None)
+
+    if uid and serialized_credentials:
+        credentials = FA.credentials(serialized_credentials)
+        if credentials.valid:
+            return uid
+
+    return None
+
+
+def get_user():
+    uid = get_uid()
+    if uid:
+        return ndb.Key(User, uid).get()
+    return None
+
+
+@APP.route('/whoami', methods=['POST'])
+def whoami():
+    user = get_user()
+    if user:
+        response = {
+            'uid': user.key.id(),
+            'name': user.name,
+            'email': user.email,
+            'subscribed': user.subscribed
+        }
+    else:
+        response = {}
+    return flask.jsonify(response)
+
+
+@APP.route('/update', methods=['POST'])
+def update():
+    user = get_user()
+    if not user:
+        flask.abort(404)
+    data = flask.request.get_json()
+    name = data[u'name']
+    subscribed = bool(data[u'subscribed'])
+    if not validate_utils.valid_name(name):
+        flask.abort(400)
+
+    user.name = name
+    user.subscribed = subscribed
+    user.put()
+
+    return 'Success.', 200

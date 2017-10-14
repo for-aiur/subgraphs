@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { HashRouter, Route } from 'react-router-dom';
 import About from './About/About.js'
 import Editor from './Editor/Editor.js'
+import Login from './User/Login.js'
 import Navigation from './Navigation/Navigation.js'
 
 class App extends Component {
@@ -25,8 +26,9 @@ class App extends Component {
         <div>
           <Navigation />
           <Route exact path="/" component={About}></Route>
-          <Route path="/About" component={About}></Route>
-          <Route path="/Editor" component={Editor}></Route>
+          <Route exact path="/About" component={About}></Route>
+          <Route exact path="/Editor" component={Editor}></Route>
+          <Route exact path="/Login" component={Login}></Route>
         </div>
       </HashRouter>
     );
