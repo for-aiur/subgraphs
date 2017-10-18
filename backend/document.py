@@ -4,7 +4,7 @@ import flask
 from google.appengine.ext import ndb  # pylint: disable=E0401,E0611
 from google.appengine.datastore.datastore_query import Cursor  # pylint: disable=E0401,E0611
 
-import validate_utils
+import validation
 from storage import DocumentHeader, DocumentContent, DocumentVote, User
 
 
@@ -45,7 +45,7 @@ def list_favorites():
                 docs.append({
                     'docid': doc.key.id(),
                     'title': doc.title,
-                    'date': validate_utils.date_to_string(doc.date),
+                    'date': validation.date_to_string(doc.date),
                     'owner': doc.owner.id(),
                     'public': doc.public
                 })
@@ -94,7 +94,7 @@ def get_documents_list(query):
         docs.append({
             'docid': doc.key.id(),
             'title': doc.title,
-            'date': validate_utils.date_to_string(doc.date),
+            'date': validation.date_to_string(doc.date),
             'owner': doc.owner.id(),
             'public': doc.public
         })
@@ -136,7 +136,7 @@ def get_document(docid):
         'header': {
             'docid': doc.key.id(),
             'title': doc.title,
-            'date': validate_utils.date_to_string(doc.date),
+            'date': validation.date_to_string(doc.date),
             'owner': doc.owner.id(),
             'public': doc.public
         },

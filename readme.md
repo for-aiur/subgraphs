@@ -13,6 +13,6 @@ npm start
 
 Run backend:
 ```
-npm build
-dev_appserver.py ./backend
+npm run build
+npm run backend
 ```

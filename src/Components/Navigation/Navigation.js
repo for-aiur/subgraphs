@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
-import { Navbar, Nav, NavItem } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
 import './Navigation.css';
 
 class Navigation extends Component {
+
   render() {
     return (
       <Navbar fluid collapseOnSelect>
         <Navbar.Header>
           <Navbar.Brand>
-            <Link to="/">Subgraphs<sup>&alpha;</sup></Link>
+            <a href="/">Subgraphs<sup>&alpha;</sup></a>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>
@@ -24,9 +24,17 @@ class Navigation extends Component {
             </NavItem>
           </Nav>
           <Nav pullRight>
-            <NavItem eventKey={1} onClick={e => this.props.history.push("/login")}>
-              Login
-            </NavItem>
+            {
+              this.props.user.uid === undefined ? (
+                <NavItem eventKey={3} onClick={e => this.props.history.push("/login")}>Login</NavItem>
+              ) : (
+                <NavDropdown eventKey={3} title={this.props.user.name} id='nav-user'>
+                  <MenuItem eventKey={3.1} onClick={e => this.props.history.push("/profile")}>Profile</MenuItem>
+                  <MenuItem divider />
+                  <MenuItem eventKey={3.2} onClick={e => window.location = "/api/user/logout"}>Logout</MenuItem>
+                </NavDropdown>
+              )
+            }
           </Nav>
         </Navbar.Collapse>
       </Navbar>

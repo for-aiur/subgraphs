@@ -1,4 +1,3 @@
-import logging
 import flask
 import authomatic
 from authomatic.providers import oauth2
@@ -6,7 +5,7 @@ from authomatic.extras.flask import FlaskAuthomatic
 
 from google.appengine.ext import ndb  # pylint: disable=E0401,E0611
 
-import validate_utils
+import validation
 from storage import User
 
 
@@ -16,8 +15,8 @@ SESSION = flask.session
 CONFIG = {
     'google': {
         'class_': oauth2.Google,
-        'consumer_key': '581454874206-9gsk9c69atudo53es75kojgvc131i762.apps.googleusercontent.com',
-        'consumer_secret': 'QTF1x6Epqhvhve85GjAnrpe8',
+        'consumer_key': '235897629498-v1sfl9g078vsfju5pghrpkq4m615dv9t.apps.googleusercontent.com',
+        'consumer_secret': '8UZbPfa4z_Q2o-uR4sweSD5l',
         'scope': ['profile', 'email'],
         'id': authomatic.provider_id()
     }
@@ -32,7 +31,6 @@ FA = FlaskAuthomatic(
 @APP.route('/auth/google', methods=['GET', 'POST'])
 @FA.login('google')
 def index():
-    logging.info("Yay!")
     data = flask.request.get_json()
     redirect_url = data.get('redirectUrl', '/') if data else '/'
     if FA.result:
@@ -74,6 +72,7 @@ def logout():
 
 
 def get_uid():
+    print(SESSION)
     uid = SESSION.get('uid', None)
     serialized_credentials = SESSION.get('credentials', None)
 
@@ -92,7 +91,7 @@ def get_user():
     return None
 
 
-@APP.route('/whoami', methods=['POST'])
+@APP.route('/whoami', methods=['GET', 'POST'])
 def whoami():
     user = get_user()
     if user:
@@ -115,7 +114,7 @@ def update():
     data = flask.request.get_json()
     name = data[u'name']
     subscribed = bool(data[u'subscribed'])
-    if not validate_utils.valid_name(name):
+    if not validation.valid_name(name):
         flask.abort(400)
 
     user.name = name

@@ -2,6 +2,7 @@
   "name": "subgraphs",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8080",
   "dependencies": {
     "flux": "^3.1.3",
     "react": "^16.0.0",
@@ -19,7 +20,7 @@
     "build": "npm run build-css && react-scripts build && npm run sync",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "backend": "npm run build && dev_appserver.py ./backend"
+    "backend": "dev_appserver.py ./backend"
   },
   "devDependencies": {
     "eslint-plugin-react": "^7.4.0",
