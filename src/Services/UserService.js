@@ -32,7 +32,7 @@ class UserService extends Service {
   }
 
   updateUser(newUser) {
-    fetch('/api/user/whoami', {
+    fetch('/api/user/update', {
       method: 'POST',
       headers: new Headers({
         'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ class UserService extends Service {
         this.user = newUser;
         this.publish(this.user);
       }
-    })
+    });
   }
 
   get isLoggedIn() {

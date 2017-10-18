@@ -3,6 +3,7 @@ import { HashRouter, Route } from 'react-router-dom';
 import About from './About/About.js';
 import Editor from './Editor/Editor.js';
 import Login from './User/Login.js';
+import Profile from './User/Profile.js';
 import Navigation from './Navigation/Navigation.js';
 import theUserService from '../Services/UserService.js';
 
@@ -45,6 +46,10 @@ class App extends Component {
           <Route exact path="/About" component={About}></Route>
           <Route exact path="/Editor" component={Editor}></Route>
           <Route exact path="/Login" component={Login}></Route>
+          <Route exact path="/Profile" render={props => (
+            <Profile user={this.state.user}/>
+          )}>
+          </Route>
         </div>
       </HashRouter>
     );

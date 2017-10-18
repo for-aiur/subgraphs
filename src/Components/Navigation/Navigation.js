@@ -28,7 +28,12 @@ class Navigation extends Component {
               this.props.user.uid === undefined ? (
                 <NavItem eventKey={3} onClick={e => this.props.history.push("/login")}>Login</NavItem>
               ) : (
-                <NavDropdown eventKey={3} title={this.props.user.name} id='nav-user'>
+                <NavDropdown eventKey={3} 
+                             title={<span>
+                                    <i className='fa fa-user'></i>&nbsp;
+                                    {this.props.user.name}
+                                    </span>}
+                             id='nav-user'>
                   <MenuItem eventKey={3.1} onClick={e => this.props.history.push("/profile")}>Profile</MenuItem>
                   <MenuItem divider />
                   <MenuItem eventKey={3.2} onClick={e => window.location = "/api/user/logout"}>Logout</MenuItem>
