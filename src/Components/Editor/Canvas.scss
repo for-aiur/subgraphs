@@ -10,6 +10,7 @@
   height: 100%;
   background-color: #fff;
   float: left;
+  overflow-y: auto;
 }
 
 #catalogView > span {
@@ -50,6 +51,7 @@
   background-color: #fafafa;
   float: left;
   padding: 10px;
+  overflow-y: auto;
 }
 
 #canvas {
