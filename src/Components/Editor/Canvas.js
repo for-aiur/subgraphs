@@ -4,7 +4,6 @@ import * as Utils from '../../Common/Utils';
 import Catalog from '../../Graph/Catalog';
 import Node from '../../Graph/Node';
 import Port from '../../Graph/Port';
-import { NewDialog } from './Dialogs.js';
 import './Canvas.css';
 
 class Canvas extends Component {
@@ -25,16 +24,7 @@ class Canvas extends Component {
     let node = new Node('New Project', 'project');
     this.openNodes.push(node);
     this.setScope(node);
-
-    this.newDialog.open(
-      node.title,
-      node.type,
-      new Set(this.catalog.getTypes('user')),
-      function(title, type) {
-        node.title = title;
-        node.type = type;
-        this.drawAll();
-      }.bind(this));
+    this.drawAll();
   }
   
   openSubgraph(p) {
@@ -42,6 +32,9 @@ class Canvas extends Component {
       this.openNodes.push(p);
     }
     this.setScope(p);
+  }
+
+  openSubgraphDialog() {
   }
 
   closeSubgraph(p) {
@@ -595,6 +588,7 @@ class Canvas extends Component {
       .on('input', function() {
         d.type = this.value;
         d3.select(`#${d.id} > g > text`).text(this.value);
+        _self.drawTabs();
       });
 
       propertiesView.append('hr').attr('class', 'divider');
@@ -907,7 +901,6 @@ class Canvas extends Component {
   render() {
     return (
     <div id="container" ref={p => this.container = p} >
-      <NewDialog ref={p => this.newDialog = p} />
       <div id="catalogView">
         <span>Common</span>
         <div ref={p => this.commonCatalogView = p} className="list-group">

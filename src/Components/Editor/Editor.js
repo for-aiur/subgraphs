@@ -9,7 +9,7 @@ class Editor extends Component {
   }
 
   onOpen() {
-    this.canvas.openSubgraph();
+    this.canvas.openSubgraphDialog();
   }
 
   onSave() {

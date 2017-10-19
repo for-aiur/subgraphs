@@ -12,34 +12,44 @@ class NewDialog extends Component {
       reserved: new Set(),
       title: '',
       type: '',
-      callback: function() {}
+      callbackOK: function() {},
+      callbackCancel: function() {},
     };
 
     this.open = this.open.bind(this);
-    this.close = this.close.bind(this);
+    this.onOK = this.onOK.bind(this);
+    this.onCancel = this.onCancel.bind(this);
     this.validateTitle = this.validateTitle.bind(this);
     this.validateType = this.validateType.bind(this);
     this.changeTitle = this.changeTitle.bind(this);
     this.changeType = this.changeType.bind(this);
   }
   
-  open(title, type, reserved, callback) {
+  open(title, type, reserved, callbackOK, callbackCancel) {
     this.setState({ 
       showModal: true,
       title: title,
       type: type,
       reserved: reserved,
-      callback: callback
+      callbackOK: callbackOK,
+      callbackCancel: callbackCancel
     });
   }
 
-  close() {
+  onOK() {
     if (this.validateTitle() === 'error' || 
         this.validateType() === 'error') return;
     this.setState({ 
       showModal: false 
     });
-    this.state.callback(this.state.title, this.state.type);
+    this.state.callbackOK(this.state.title, this.state.type);
+  }
+
+  onCancel() {
+    this.setState({ 
+      showModal: false 
+    });
+    this.state.callbackCancel();
   }
 
   validateTitle() {
@@ -102,7 +112,8 @@ class NewDialog extends Component {
           </Modal.Body>
     
           <Modal.Footer>
-            <Button bsStyle="primary" onClick={this.close}>OK</Button>
+            <Button bsStyle="default" onClick={this.onCancel}>Cancel</Button>
+            <Button bsStyle="primary" onClick={this.onOK}>OK</Button>
           </Modal.Footer>
     
         </Modal.Dialog>
