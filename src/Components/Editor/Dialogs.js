@@ -3,7 +3,7 @@ import {
   Modal, Button, FormGroup, FormControl, ControlLabel, HelpBlock
 } from 'react-bootstrap';
 
-class NewDialog extends Component {
+class SaveDialog extends Component {
   constructor(props) {
     super(props);
 
@@ -59,7 +59,6 @@ class NewDialog extends Component {
 
   validateType() {
     if (this.state.title.length < 3) return 'error';
-    if (this.state.reserved.has(this.state.type)) return 'error';
     return 'success';
   }
 
@@ -113,7 +112,11 @@ class NewDialog extends Component {
     
           <Modal.Footer>
             <Button bsStyle="default" onClick={this.onCancel}>Cancel</Button>
-            <Button bsStyle="primary" onClick={this.onOK}>OK</Button>
+            <Button bsStyle="primary" onClick={this.onOK}>
+            {
+              this.state.reserved.has(this.state.type) ? 'Overwrite' : 'Save'
+            }
+            </Button>
           </Modal.Footer>
     
         </Modal.Dialog>
@@ -123,4 +126,4 @@ class NewDialog extends Component {
   }
 }
 
-export { NewDialog };
+export { SaveDialog };

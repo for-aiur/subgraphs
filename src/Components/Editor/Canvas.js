@@ -4,6 +4,7 @@ import * as Utils from '../../Common/Utils';
 import Catalog from '../../Graph/Catalog';
 import Node from '../../Graph/Node';
 import Port from '../../Graph/Port';
+import { SaveDialog } from './Dialogs';
 import './Canvas.css';
 
 class Canvas extends Component {
@@ -39,10 +40,6 @@ class Canvas extends Component {
 
   closeSubgraph(p) {
     let i = this.openNodes.indexOf(p);
-    if (this.scope.name === null &&
-        this.scope.nodeData.length > 0) {
-      this.saveSubgraph();
-    }
     this.openNodes.splice(i, 1);
     if (this.scope === p) {
       if (this.openNodes.length === 0) {
@@ -55,10 +52,21 @@ class Canvas extends Component {
     this.drawTabs();
   }
 
-  saveSubgraph() {
-    this.catalog.add('user', this.scope.toTemplate());
-
-    this.drawCatalog();
+  saveSubgraph(onOK=null, onCancel=null) {
+    this.saveDialog.open(
+      this.scope.title,
+      this.scope.type,
+      new Set(this.catalog.getTypes('user')),
+      (title, type) => {
+        this.scope.title = title;
+        this.scope.type = type;
+        this.catalog.add('user', this.scope.toTemplate());
+        this.drawCatalog();
+        if (onOK) onOK();
+      },
+      () => {
+        if (onCancel) onCancel();
+      });
   }
 
   deleteSubgraph() {
@@ -499,7 +507,12 @@ class Canvas extends Component {
       .attr('role', 'button')
       .on('click', function() {
         d3.event.stopPropagation();
-        this.closeSubgraph(p);
+        if (this.scope.name === null &&
+          this.scope.nodeData.length > 0) {
+          this.saveSubgraph(
+            () => this.closeSubgraph(p),
+            () => this.closeSubgraph(p));
+        }
       }.bind(this))
       .append('i')
       .attr('class', 'fa fa-close');
@@ -901,6 +914,7 @@ class Canvas extends Component {
   render() {
     return (
     <div id="container" ref={p => this.container = p} >
+      <SaveDialog ref={p => this.saveDialog = p} />
       <div id="catalogView">
         <span>Common</span>
         <div ref={p => this.commonCatalogView = p} className="list-group">
