@@ -37,9 +37,9 @@ class Canvas extends Component {
 
   openSubgraphDialog() {
     this.openDialog.open(
-      this.catalog.getTypes('user'),
+      this.catalog.getTypes('compositions'),
       (type) => {
-        let p = this.catalog.getItemByType('user', type);
+        let p = this.catalog.getItemByType('compositions', type);
         this.openSubgraph(p);
       },
       () => {});
@@ -63,11 +63,11 @@ class Canvas extends Component {
     this.saveDialog.open(
       this.scope.title,
       this.scope.type,
-      new Set(this.catalog.getTypes('user')),
+      new Set(this.catalog.getTypes('compositions')),
       (title, type) => {
         this.scope.title = title;
         this.scope.type = type;
-        this.catalog.add('user', this.scope.toTemplate());
+        this.catalog.add('compositions', this.scope.toTemplate());
         this.drawCatalog();
         if (onOK) onOK();
       },
@@ -79,7 +79,7 @@ class Canvas extends Component {
   deleteSubgraph() {
     let p = this.scope;
     this.closeSubgraph(p)
-    this.catalog.remove('user', p);
+    this.catalog.remove('compositions', p);
 
     this.drawCatalog();
   }
@@ -563,9 +563,9 @@ class Canvas extends Component {
     });
 
     let cats = {
-      'common': this.commonCatalogView,
-      'user': this.userCatalogView
-    }
+      kernels: this.kernelsCatalogView,
+      compositions: this.compositionsCatalogView
+    };
 
     for (let cat in cats) {
       let ref = d3.select(cats[cat]).selectAll('a')
@@ -926,11 +926,11 @@ class Canvas extends Component {
       <SaveDialog ref={p => this.saveDialog = p} />
       <OpenDialog ref={p => this.openDialog = p} />
       <div id="catalogView">
-        <span>Common</span>
-        <div ref={p => this.commonCatalogView = p} className="list-group">
+        <span>Kernels</span>
+        <div ref={p => this.kernelsCatalogView = p} className="list-group">
         </div>
-        <span>User</span>
-        <div ref={p => this.userCatalogView = p} className="list-group">
+        <span>Compositions</span>
+        <div ref={p => this.compositionsCatalogView = p} className="list-group">
         </div>
       </div>
       <div id="tabsContainer">

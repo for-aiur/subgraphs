@@ -1,5 +1,2 @@
 Flask>=0.11.1
 authomatic>=0.0.13
-google-auth>=1.1.1
-google-auth-oauthlib>=0.1.1
-google-auth-httplib2>=0.0.2

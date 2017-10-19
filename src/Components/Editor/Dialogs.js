@@ -133,7 +133,7 @@ class OpenDialog extends Component {
 
     this.state = { 
       showModal: false,
-      catalog: [],
+      items: [],
       callbackOK: function() {},
       callbackCancel: function() {},
     };
@@ -143,10 +143,10 @@ class OpenDialog extends Component {
     this.onCancel = this.onCancel.bind(this);
   }
   
-  open(catalog, callbackOK, callbackCancel) {
+  open(items, callbackOK, callbackCancel) {
     this.setState({ 
       showModal: true,
-      catalog: catalog,
+      items: items,
       callbackOK: callbackOK,
       callbackCancel: callbackCancel
     });
@@ -180,10 +180,10 @@ class OpenDialog extends Component {
 
             <ListGroup>
               {
-                this.state.catalog.map(
+                this.state.items.map(
                   item => 
                   <ListGroupItem onClick={this.onOK} key={item} data-type={item}>
-                    item
+                    {item}
                   </ListGroupItem>)
               }
             </ListGroup>

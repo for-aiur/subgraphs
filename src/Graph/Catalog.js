@@ -3,8 +3,8 @@ import * as catalogJSON from './catalog.json';
 class Catalog {
   constructor() {
     this.items = {
-      common: catalogJSON,
-      user: []
+      kernels: catalogJSON,
+      compositions: []
     };
   }
 
