@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { 
-  Modal, Button, FormGroup, FormControl, ControlLabel, HelpBlock
+  Modal, Button, FormGroup, FormControl, ControlLabel, HelpBlock,
+  ListGroup, ListGroupItem
 } from 'react-bootstrap';
 
 class SaveDialog extends Component {
@@ -76,7 +77,7 @@ class SaveDialog extends Component {
         {this.state.showModal ? (
         <Modal.Dialog>
           <Modal.Header>
-            <Modal.Title>Create subgraph</Modal.Title>
+            <Modal.Title>Save subgraph</Modal.Title>
           </Modal.Header>
     
           <Modal.Body>
@@ -126,4 +127,78 @@ class SaveDialog extends Component {
   }
 }
 
-export { SaveDialog };
+class OpenDialog extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = { 
+      showModal: false,
+      catalog: [],
+      callbackOK: function() {},
+      callbackCancel: function() {},
+    };
+
+    this.open = this.open.bind(this);
+    this.onOK = this.onOK.bind(this);
+    this.onCancel = this.onCancel.bind(this);
+  }
+  
+  open(catalog, callbackOK, callbackCancel) {
+    this.setState({ 
+      showModal: true,
+      catalog: catalog,
+      callbackOK: callbackOK,
+      callbackCancel: callbackCancel
+    });
+  }
+
+  onOK(e) {
+    let selection = e.target.dataset.type;
+    this.setState({ 
+      showModal: false 
+    });
+    this.state.callbackOK(selection);
+  }
+
+  onCancel() {
+    this.setState({ 
+      showModal: false 
+    });
+    this.state.callbackCancel();
+  }
+
+  render() {
+    return (
+      <div>
+        {this.state.showModal ? (
+        <Modal.Dialog>
+          <Modal.Header>
+            <Modal.Title>Save subgraph</Modal.Title>
+          </Modal.Header>
+    
+          <Modal.Body>
+
+            <ListGroup>
+              {
+                this.state.catalog.map(
+                  item => 
+                  <ListGroupItem onClick={this.onOK} key={item} data-type={item}>
+                    item
+                  </ListGroupItem>)
+              }
+            </ListGroup>
+
+          </Modal.Body>
+    
+          <Modal.Footer>
+            <Button bsStyle="default" onClick={this.onCancel}>Cancel</Button>
+          </Modal.Footer>
+    
+        </Modal.Dialog>
+        ): null}
+      </div>
+    );
+  }
+}
+
+export { SaveDialog, OpenDialog };

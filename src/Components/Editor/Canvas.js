@@ -4,7 +4,7 @@ import * as Utils from '../../Common/Utils';
 import Catalog from '../../Graph/Catalog';
 import Node from '../../Graph/Node';
 import Port from '../../Graph/Port';
-import { SaveDialog } from './Dialogs';
+import { SaveDialog, OpenDialog } from './Dialogs';
 import './Canvas.css';
 
 class Canvas extends Component {
@@ -36,6 +36,13 @@ class Canvas extends Component {
   }
 
   openSubgraphDialog() {
+    this.openDialog.open(
+      this.catalog.getTypes('user'),
+      (type) => {
+        let p = this.catalog.getItemByType('user', type);
+        this.openSubgraph(p);
+      },
+      () => {});
   }
 
   closeSubgraph(p) {
@@ -512,6 +519,8 @@ class Canvas extends Component {
           this.saveSubgraph(
             () => this.closeSubgraph(p),
             () => this.closeSubgraph(p));
+        } else {
+          this.closeSubgraph(p);
         }
       }.bind(this))
       .append('i')
@@ -915,6 +924,7 @@ class Canvas extends Component {
     return (
     <div id="container" ref={p => this.container = p} >
       <SaveDialog ref={p => this.saveDialog = p} />
+      <OpenDialog ref={p => this.openDialog = p} />
       <div id="catalogView">
         <span>Common</span>
         <div ref={p => this.commonCatalogView = p} className="list-group">

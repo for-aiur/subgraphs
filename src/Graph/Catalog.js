@@ -16,6 +16,10 @@ class Catalog {
     return this.items[category];
   }
 
+  getItemByType(category, type) {
+    return this.items[category].find(d => d.type === type);
+  }
+
   add(category, item) {
     this.remove(category, item);
     let items = this.items[category];
