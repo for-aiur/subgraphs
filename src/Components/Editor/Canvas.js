@@ -1,7 +1,7 @@
 import React, { Component}  from 'react';
 import d3 from '../../Common/D3Ext';
 import * as Utils from '../../Common/Utils';
-import Catalog from '../../Graph/Catalog';
+import theCatalogService from '../../Services/CatalogService';
 import Node from '../../Graph/Node';
 import Port from '../../Graph/Port';
 import { SaveDialog, OpenDialog } from './Dialogs';
@@ -13,7 +13,6 @@ class Canvas extends Component {
 
     this.scope = new Node('New Project', 'project');
     this.openNodes = [this.scope];
-    this.catalog = new Catalog();
 
     window.scope = this.scope;
   }
@@ -37,9 +36,9 @@ class Canvas extends Component {
 
   openSubgraphDialog() {
     this.openDialog.open(
-      this.catalog.getTypes('compositions'),
+      theCatalogService.getTypes('compositions'),
       (type) => {
-        let p = this.catalog.getItemByType('compositions', type);
+        let p = theCatalogService.getItemByType('compositions', type);
         this.openSubgraph(p);
       },
       () => {});
@@ -63,11 +62,11 @@ class Canvas extends Component {
     this.saveDialog.open(
       this.scope.title,
       this.scope.type,
-      new Set(this.catalog.getTypes('compositions')),
+      new Set(theCatalogService.getTypes('compositions')),
       (title, type) => {
         this.scope.title = title;
         this.scope.type = type;
-        this.catalog.add('compositions', this.scope.toTemplate());
+        theCatalogService.add('compositions', this.scope.toTemplate());
         this.drawCatalog();
         if (onOK) onOK();
       },
@@ -79,7 +78,7 @@ class Canvas extends Component {
   deleteSubgraph() {
     let p = this.scope;
     this.closeSubgraph(p)
-    this.catalog.remove('compositions', p);
+    theCatalogService.remove('compositions', p);
 
     this.drawCatalog();
   }
@@ -569,7 +568,7 @@ class Canvas extends Component {
 
     for (let cat in cats) {
       let ref = d3.select(cats[cat]).selectAll('a')
-      .data(this.catalog.getItems(cat), d => d.type);
+      .data(theCatalogService.getItems(cat), d => d.type);
 
       ref.exit().remove();
 
@@ -910,6 +909,8 @@ class Canvas extends Component {
     this.createConnectHandler();
 
     this.drawAll();
+
+    theCatalogService.subscribe(() => this.drawCatalog());
   }
 
   componentDidUpdate() {
@@ -918,6 +919,8 @@ class Canvas extends Component {
 
   componentWillUnmount() {
     this.clearHandlers();
+
+    theCatalogService.unsubscribe(() => this.drawCatalog());
   }
 
   render() {

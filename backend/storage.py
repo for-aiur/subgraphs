@@ -14,22 +14,11 @@ class User(ndb.Model):
     isAdmin = ndb.BooleanProperty(required=True, default=False)
 
 
-class DocumentContent(ndb.Model):
-    content = ndb.TextProperty(indexed=False, required=True)
-
-
-class DocumentHeader(ndb.Model):
+class Document(ndb.Model):
     """A model class for storing documents."""
     title = ndb.StringProperty(required=True)
-    category = ndb.StringProperty(required=True)
+    type = ndb.StringProperty(required=True)
     date = ndb.DateTimeProperty(auto_now_add=True)
     owner = ndb.KeyProperty(kind=User, required=True)
     public = ndb.BooleanProperty(required=True, default=False)
-    flagged = ndb.IntegerProperty(required=True, default=0)
-    likes = ndb.IntegerProperty(required=True, default=0)
-
-
-class DocumentVote(ndb.Model):
-    doc = ndb.KeyProperty(kind=DocumentHeader, required=True)
-    user = ndb.KeyProperty(kind=User, required=True)
-    type = ndb.IntegerProperty(required=True)
+    content = ndb.TextProperty(indexed=False, required=True)
