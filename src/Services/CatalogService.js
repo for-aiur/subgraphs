@@ -44,7 +44,7 @@ class CatalogService extends Service {
     return this.items[category].find(d => d.identifier === identifier);
   }
 
-  add(category, item) {
+  add(category, item, errorCallback=null) {
     this.remove(category, item);
     let items = this.items[category];
     items.push(item);
@@ -56,10 +56,15 @@ class CatalogService extends Service {
       }),
       body: JSON.stringify(item),
       credentials: 'same-origin'
+    })
+    .then(response => {
+      if (!response.ok && errorCallback) {
+        errorCallback();
+      }
     });
   }
 
-  remove(category, item) {
+  remove(category, item, errorCallback=null) {
     let items = this.items[category];
     for (let i in items) {
       if (items[i].identifier === item.identifier) {
@@ -75,6 +80,11 @@ class CatalogService extends Service {
       }),
       body: JSON.stringify(item),
       credentials: 'same-origin'
+    })    
+    .then(response => {
+      if (!response.ok && errorCallback) {
+        errorCallback();
+      }
     });
   }
 }

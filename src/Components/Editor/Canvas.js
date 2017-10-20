@@ -4,7 +4,7 @@ import * as Utils from '../../Common/Utils';
 import theCatalogService from '../../Services/CatalogService';
 import Node from '../../Graph/Node';
 import Port from '../../Graph/Port';
-import { SaveDialog, OpenDialog } from './Dialogs';
+import { SaveDialog, OpenDialog, MessageDialog } from './Dialogs';
 import './Canvas.css';
 
 class Canvas extends Component {
@@ -15,6 +15,8 @@ class Canvas extends Component {
     this.openNodes = [this.scope];
 
     window.scope = this.scope;
+
+    this.updateCatalog = this.updateCatalog.bind(this);
   }
 
   get nodeData() { return this.scope.nodeData; }
@@ -67,7 +69,11 @@ class Canvas extends Component {
       (title, identifier) => {
         this.scope.title = title;
         this.scope.identifier = identifier;
-        theCatalogService.add('compositions', this.scope.toTemplate());
+        theCatalogService.add('compositions', this.scope.toTemplate(), () => {
+          this.messageDialog.open(
+            'Error', 'Failed to communicate with the server. '+
+            'Perhaps you are not logged in?');
+        });
         this.drawCatalog();
         if (onOK) onOK();
       },
@@ -79,7 +85,11 @@ class Canvas extends Component {
   deleteSubgraph() {
     let p = this.scope;
     this.closeSubgraph(p)
-    theCatalogService.remove('compositions', p);
+    theCatalogService.remove('compositions', p, () => {
+      this.messageDialog.open(
+        'Error', 'Failed to communicate with the server. '+
+        'Perhaps you are not logged in?');
+    });
 
     this.drawCatalog();
   }
@@ -901,6 +911,10 @@ class Canvas extends Component {
     this.drawEdges();
   }
 
+  updateCatalog(data) {
+    this.drawCatalog();
+  }
+
   componentDidMount() {
     this.createNodeContextMenu();
     this.createEdgeContextMenu();
@@ -911,7 +925,7 @@ class Canvas extends Component {
 
     this.drawAll();
 
-    theCatalogService.subscribe(() => this.drawCatalog());
+    theCatalogService.subscribe(this.updateCatalog);
   }
 
   componentDidUpdate() {
@@ -921,12 +935,13 @@ class Canvas extends Component {
   componentWillUnmount() {
     this.clearHandlers();
 
-    theCatalogService.unsubscribe(() => this.drawCatalog());
+    theCatalogService.unsubscribe(this.updateCatalog);
   }
 
   render() {
     return (
     <div id="container" ref={p => this.container = p} >
+      <MessageDialog ref={p => this.messageDialog = p} />
       <SaveDialog ref={p => this.saveDialog = p} />
       <OpenDialog ref={p => this.openDialog = p} />
       <div id="catalogView">

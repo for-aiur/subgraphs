@@ -173,12 +173,15 @@ class OpenDialog extends Component {
         {this.state.showModal ? (
         <Modal.Dialog>
           <Modal.Header>
-            <Modal.Title>Save subgraph</Modal.Title>
+            <Modal.Title>Open subgraph</Modal.Title>
           </Modal.Header>
     
           <Modal.Body>
 
             <ListGroup>
+              {
+                this.state.items.length === 0 && 'You have no saved subgraphs :('
+              }
               {
                 this.state.items.map(
                   item => 
@@ -201,4 +204,54 @@ class OpenDialog extends Component {
   }
 }
 
-export { SaveDialog, OpenDialog };
+class MessageDialog extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = { 
+      showModal: false,
+      title: '',
+      message: ''
+    };
+
+    this.open = this.open.bind(this);
+    this.onDismiss = this.onDismiss.bind(this);
+  }
+  
+  open(title, message) {
+    this.setState({ 
+      showModal: true,
+      title: title,
+      message: message
+    });
+  }
+
+  onDismiss() {
+    this.setState({ 
+      showModal: false 
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        {this.state.showModal ? (
+        <Modal.Dialog>
+          <Modal.Header>
+            <Modal.Title>{this.state.title}</Modal.Title>
+          </Modal.Header>
+    
+          <Modal.Body>{this.state.message}</Modal.Body>
+    
+          <Modal.Footer>
+            <Button bsStyle="default" onClick={this.onDismiss}>Dismiss</Button>
+          </Modal.Footer>
+    
+        </Modal.Dialog>
+        ): null}
+      </div>
+    );
+  }
+}
+
+export { SaveDialog, OpenDialog, MessageDialog };
