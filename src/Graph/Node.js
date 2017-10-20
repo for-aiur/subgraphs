@@ -3,10 +3,11 @@ import Edge from './Edge';
 import Port from './Port';
 
 class Node {
-  constructor(title=null, type=null, name=null) {
+  constructor(title=null, identifier=null, name=null) {
     this.title = title;
     this.name = name;
-    this.type = type;
+    this.identifier = identifier;
+    this.category = 'composition';
     this.id = Utils.generateUID();
     this.position = {x: 0, y: 0};
     this.inputs = [];
@@ -32,7 +33,8 @@ class Node {
     let d = new Node();
     d.title = this.title;
     d.name = this.name;
-    d.type = this.type;
+    d.identifier = this.identifier;
+    d.category = this.category;
     d.id = this.id;
     d.position = Utils.clone(this.position);
     d.inputs = Utils.clone(this.inputs);
@@ -40,18 +42,20 @@ class Node {
     d.attributes = Utils.clone(this.attributes);
     d.nodeData = [];
     for (let node of this.nodeData) {
-      d.nodeData.push(node.clone());
+      node = Object.assign(new Node(), node).clone()
+      d.nodeData.push(node);
     }
     d.edgeData = [];
     for (let edge of this.edgeData) {
-      d.edgeData.push(edge.clone());
+      edge = Object.assign(new Edge(), edge).clone()
+      d.edgeData.push(edge);
     }
     return d;
   }
 
   fromTemplate(template, pos) {
     let d = Object.assign(new Node(), template).clone();
-    d.name = this.uniqueName(template.type);
+    d.name = this.uniqueName(d.identifier);
     d.position = pos;
     for (let side of ['inputs', 'outputs']) {
       for (let i in d[side]) {

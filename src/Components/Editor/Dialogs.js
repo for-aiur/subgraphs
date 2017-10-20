@@ -12,7 +12,7 @@ class SaveDialog extends Component {
       showModal: false,
       reserved: new Set(),
       title: '',
-      type: '',
+      identifier: '',
       callbackOK: function() {},
       callbackCancel: function() {},
     };
@@ -26,11 +26,11 @@ class SaveDialog extends Component {
     this.changeType = this.changeType.bind(this);
   }
   
-  open(title, type, reserved, callbackOK, callbackCancel) {
+  open(title, identifier, reserved, callbackOK, callbackCancel) {
     this.setState({ 
       showModal: true,
       title: title,
-      type: type,
+      identifier: identifier,
       reserved: reserved,
       callbackOK: callbackOK,
       callbackCancel: callbackCancel
@@ -43,7 +43,7 @@ class SaveDialog extends Component {
     this.setState({ 
       showModal: false 
     });
-    this.state.callbackOK(this.state.title, this.state.type);
+    this.state.callbackOK(this.state.title, this.state.identifier);
   }
 
   onCancel() {
@@ -68,7 +68,7 @@ class SaveDialog extends Component {
   }
   
   changeType(e) {
-    this.setState({ type: e.target.value });
+    this.setState({ identifier: e.target.value });
   }
 
   render() {
@@ -95,11 +95,11 @@ class SaveDialog extends Component {
                 </HelpBlock>
               </FormGroup>
 
-              <FormGroup controlId="type" validationState={this.validateType()}>
+              <FormGroup controlId="identifier" validationState={this.validateType()}>
                 <ControlLabel>Identifier</ControlLabel>
                 <FormControl type="text" 
-                             value={this.state.type}
-                             placeholder="type" 
+                             value={this.state.identifier}
+                             placeholder="identifier" 
                              onChange={this.changeType} />
                 <FormControl.Feedback />
                 <HelpBlock>
@@ -115,7 +115,7 @@ class SaveDialog extends Component {
             <Button bsStyle="default" onClick={this.onCancel}>Cancel</Button>
             <Button bsStyle="primary" onClick={this.onOK}>
             {
-              this.state.reserved.has(this.state.type) ? 'Overwrite' : 'Save'
+              this.state.reserved.has(this.state.identifier) ? 'Overwrite' : 'Save'
             }
             </Button>
           </Modal.Footer>
@@ -153,7 +153,7 @@ class OpenDialog extends Component {
   }
 
   onOK(e) {
-    let selection = e.target.dataset.type;
+    let selection = e.target.dataset.identifier;
     this.setState({ 
       showModal: false 
     });
@@ -182,7 +182,7 @@ class OpenDialog extends Component {
               {
                 this.state.items.map(
                   item => 
-                  <ListGroupItem onClick={this.onOK} key={item} data-type={item}>
+                  <ListGroupItem onClick={this.onOK} key={item} data-identifier={item}>
                     {item}
                   </ListGroupItem>)
               }

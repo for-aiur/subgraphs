@@ -28,6 +28,7 @@ class Canvas extends Component {
   }
   
   openSubgraph(p) {
+    p = Object.assign(new Node(), p).clone();
     if (!this.openNodes.includes(p)) {
       this.openNodes.push(p);
     }
@@ -36,9 +37,9 @@ class Canvas extends Component {
 
   openSubgraphDialog() {
     this.openDialog.open(
-      theCatalogService.getTypes('compositions'),
-      (type) => {
-        let p = theCatalogService.getItemByType('compositions', type);
+      theCatalogService.getIdentifiers('compositions'),
+      (identifier) => {
+        let p = theCatalogService.getItemByIdentifier('compositions', identifier);
         this.openSubgraph(p);
       },
       () => {});
@@ -61,11 +62,11 @@ class Canvas extends Component {
   saveSubgraph(onOK=null, onCancel=null) {
     this.saveDialog.open(
       this.scope.title,
-      this.scope.type,
-      new Set(theCatalogService.getTypes('compositions')),
-      (title, type) => {
+      this.scope.identifier,
+      new Set(theCatalogService.getIdentifiers('compositions')),
+      (title, identifier) => {
         this.scope.title = title;
-        this.scope.type = type;
+        this.scope.identifier = identifier;
         theCatalogService.add('compositions', this.scope.toTemplate());
         this.drawCatalog();
         if (onOK) onOK();
@@ -96,9 +97,9 @@ class Canvas extends Component {
 
     // Create a new node
     let title = 'Group';
-    let type = 'group';
-    let name = this.scope.uniqueName(type);
-    let newNode = new Node(title, type, name);
+    let identifier = 'group';
+    let name = this.scope.uniqueName(identifier);
+    let newNode = new Node(title, identifier, name);
 
     // Create a set of node ids
     let nodeIds = new Set();
@@ -506,7 +507,7 @@ class Canvas extends Component {
         item.attr('class', 'active');
       }
 
-      item.append('span').text(p.type);
+      item.append('span').text(p.identifier);
 
       item
       .append('a')
@@ -568,7 +569,7 @@ class Canvas extends Component {
 
     for (let cat in cats) {
       let ref = d3.select(cats[cat]).selectAll('a')
-      .data(theCatalogService.getItems(cat), d => d.type);
+      .data(theCatalogService.getItems(cat), d => d.identifier);
 
       ref.exit().remove();
 
@@ -605,9 +606,9 @@ class Canvas extends Component {
       .attr('class', 'form-group');
       group.append('label').text('Identifier');
       group.append('input').attr('class', 'form-control input-sm')
-      .attr('value', d.type)
+      .attr('value', d.identifier)
       .on('input', function() {
-        d.type = this.value;
+        d.identifier = this.value;
         d3.select(`#${d.id} > g > text`).text(this.value);
         _self.drawTabs();
       });
@@ -647,7 +648,7 @@ class Canvas extends Component {
       .attr('class', 'form-group');
       group.append('label').text('Identifier');
       group.append('input').attr('class', 'form-control input-sm')
-      .attr('value', d.type)
+      .attr('value', d.identifier)
       .attr('readonly', true);
 
       propertiesView.append('hr').attr('class', 'divider');

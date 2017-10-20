@@ -25,38 +25,57 @@ class CatalogService extends Service {
       return response;
     })
     .then(d => d.json())
-    .then(d => {
-      this.items.kernels = d;
-      this.publish(this.items);
+    .then(items => {
+      this.items.kernels = items.filter(d => d.category === 'kernel');
+      this.items.compositions = items.filter(d => d.category === 'composition');
+      this.publish(this.items.kernels);
     });
   }
 
-  getTypes(category) {
-    return this.items[category].map(p => p.type);
+  getIdentifiers(category) {
+    return this.items[category].map(p => p.identifier);
   }
 
   getItems(category) {
     return this.items[category];
   }
 
-  getItemByType(category, type) {
-    return this.items[category].find(d => d.type === type);
+  getItemByIdentifier(category, identifier) {
+    return this.items[category].find(d => d.identifier === identifier);
   }
 
   add(category, item) {
     this.remove(category, item);
     let items = this.items[category];
     items.push(item);
+
+    fetch('/api/doc/save', {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
+      body: JSON.stringify(item),
+      credentials: 'same-origin'
+    });
   }
 
   remove(category, item) {
     let items = this.items[category];
     for (let i in items) {
-      if (items[i].type === item.type) {
+      if (items[i].identifier === item.identifier) {
         items.splice(i, 1);
         break;
       }
     }
+
+    fetch('/api/doc/delete', {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
+      body: JSON.stringify(item),
+      credentials: 'same-origin'
+    });
   }
 }
 

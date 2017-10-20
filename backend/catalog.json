@@ -1,7 +1,8 @@
 [
     {
         "title": "Labeled Image",
-        "type": "labeled_image",
+        "identifier": "labeled_image",
+        "category": "kernel",
         "inputs": [],
         "outputs": [{"name": "images"}, {"name": "labels"}],
         "attributes": [
@@ -10,7 +11,8 @@
     },
     {
         "title": "Conv",
-        "type": "conv",
+        "identifier": "conv",
+        "category": "kernel",
         "inputs": [{"name": "inputs"}],
         "outputs": [{"name": "outputs"}],
         "attributes": [
@@ -19,7 +21,8 @@
     },
     {
         "title": "Dense",
-        "type": "dense",
+        "identifier": "dense",
+        "category": "kernel",
         "inputs": [{"name": "inputs"}],
         "outputs": [{"name": "outputs"}],
         "attributes": [
@@ -28,21 +31,24 @@
     },
     {
         "title": "ReLU",
-        "type": "relu",
+        "identifier": "relu",
+        "category": "kernel",
         "inputs": [{"name": "inputs"}],
         "outputs": [{"name": "outputs"}],
         "attributes": []
     },
     {
         "title": "Cross Entropy",
-        "type": "cross_entropy",
+        "identifier": "cross_entropy",
+        "category": "kernel",
         "inputs": [{"name": "logits"}, {"name": "labels"}],
         "outputs": [{"name": "loss"}],
         "attributes": []
     },
     {
         "title": "Optimizer",
-        "type": "optimizer",
+        "identifier": "optimizer",
+        "category": "kernel",
         "inputs": [{"name": "loss"}],
         "outputs": [],
         "attributes": [
