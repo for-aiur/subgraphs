@@ -24,7 +24,7 @@ CONFIG = {
 
 SECRET_KEY = 'Arkham City'
 
-FA = FlaskAuthomatic(config=CONFIG, secret=SECRET_KEY, session_max_age=3600000)
+FA = FlaskAuthomatic(config=CONFIG, secret=SECRET_KEY)
 
 
 @APP.route('/auth/google', methods=['GET', 'POST'])
