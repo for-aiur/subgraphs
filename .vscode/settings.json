@@ -25,5 +25,6 @@
     "editor.insertSpaces": true,
     "python.linting.pylintArgs": [
         "--disable=C0111"
-    ]
+    ],
+    "python.linting.lintOnSave": true
 }

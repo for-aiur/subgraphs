@@ -12,14 +12,3 @@ class User(ndb.Model):
     googleId = ndb.StringProperty(required=False)
     imageUrl = ndb.StringProperty(required=False)
     isAdmin = ndb.BooleanProperty(required=True, default=False)
-
-
-class Document(ndb.Model):
-    """A model class for storing documents."""
-    title = ndb.StringProperty(required=True)
-    identifier = ndb.StringProperty(required=True)
-    category = ndb.StringProperty(required=True)
-    date = ndb.DateTimeProperty(auto_now_add=True)
-    owner = ndb.KeyProperty(kind=User, required=True)
-    public = ndb.BooleanProperty(required=True, default=False)
-    content = ndb.TextProperty(indexed=False, required=True)

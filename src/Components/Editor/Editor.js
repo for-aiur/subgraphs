@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './Editor.css';
 import Canvas from './Canvas.js'
 import Menu from './Menu.js'
+import theCommandService from '../../Services/CommandService.js'
 
 class Editor extends Component {
   onNew() {
@@ -20,12 +21,36 @@ class Editor extends Component {
     this.canvas.deleteSubgraph();
   }
 
+  onRun() {
+    let identifier = this.canvas.scope.identifier;
+    theCommandService.sendCommand({
+      'name': 'run',
+      'identifier': `run:${identifier}`,
+      'content': {
+        'identifier': identifier
+      }
+    });
+  }
+
+  onStop() {
+    let identifier = this.canvas.scope.identifier;
+    theCommandService.sendCommand({
+      'name': 'stop',
+      'identifier': `stop:${identifier}`,
+      'content': {
+        'identifier': identifier
+      }
+    });
+  }
+
   render() {
     let callbacks = {
       new: this.onNew.bind(this),
       open: this.onOpen.bind(this),
       save: this.onSave.bind(this),
-      delete: this.onDelete.bind(this)
+      delete: this.onDelete.bind(this),
+      run: this.onRun.bind(this),
+      stop: this.onStop.bind(this),
     };
 
     return (

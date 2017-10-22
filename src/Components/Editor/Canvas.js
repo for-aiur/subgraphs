@@ -2,6 +2,7 @@ import React, { Component}  from 'react';
 import d3 from '../../Common/D3Ext';
 import * as Utils from '../../Common/Utils';
 import theCatalogService from '../../Services/CatalogService';
+import theCommandService from '../../Services/CommandService';
 import Node from '../../Graph/Node';
 import Port from '../../Graph/Port';
 import { SaveDialog, OpenDialog, MessageDialog } from './Dialogs';
@@ -17,6 +18,7 @@ class Canvas extends Component {
     window.scope = this.scope;
 
     this.updateCatalog = this.updateCatalog.bind(this);
+    this.updateCommand = this.updateCommand.bind(this);
   }
 
   get nodeData() { return this.scope.nodeData; }
@@ -915,6 +917,9 @@ class Canvas extends Component {
     this.drawCatalog();
   }
 
+  updateCommand(cmd) {
+  }
+
   componentDidMount() {
     this.createNodeContextMenu();
     this.createEdgeContextMenu();
@@ -926,6 +931,7 @@ class Canvas extends Component {
     this.drawAll();
 
     theCatalogService.subscribe(this.updateCatalog);
+    theCommandService.subscribe(this.updateCommand);
   }
 
   componentDidUpdate() {
@@ -936,6 +942,7 @@ class Canvas extends Component {
     this.clearHandlers();
 
     theCatalogService.unsubscribe(this.updateCatalog);
+    theCommandService.unsubscribe(this.updateCommand);
   }
 
   render() {

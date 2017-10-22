@@ -25,6 +25,16 @@ class Menu extends Component {
             <i className="fa fa-trash"></i>
           </a>
         </div>
+        <div className="btn-group">
+          <a className="btn btn-primary" onClick={e => this.props.callbacks.run()}>
+            <i className="fa fa-play"></i>
+          </a>
+        </div>
+        <div className="btn-group">
+          <a className="btn btn-primary" onClick={e => this.props.callbacks.stop()}>
+            <i className="fa fa-stop"></i>
+          </a>
+        </div>
       </div>
     );
   }
