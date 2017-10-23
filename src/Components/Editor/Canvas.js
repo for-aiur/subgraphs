@@ -38,7 +38,7 @@ class Canvas extends Component {
   
   openSubgraph(p) {
     p = Object.assign(new Node(), p).clone();
-    let i = this.openNodes.findIndex(q => q.identifier == p.identifier);
+    let i = this.openNodes.findIndex(q => q.identifier === p.identifier);
     if (i >= 0) {
       this.openNodes.splice(i, 1);
     }
