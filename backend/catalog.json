@@ -1,5 +1,13 @@
 [
     {
+        "title": "Run",
+        "identifier": "run",
+        "category": "kernel",
+        "inputs": [{"name": "inputs"}],
+        "outputs": [],
+        "attributes": []
+    },
+    {
         "title": "Labeled Image",
         "identifier": "labeled_image",
         "category": "kernel",
@@ -50,7 +58,7 @@
         "identifier": "optimizer",
         "category": "kernel",
         "inputs": [{"name": "loss"}],
-        "outputs": [],
+        "outputs": [{"name": "outputs"}],
         "attributes": [
             {"name": "method", "type": "string", "value": "adam"},
             {"name": "lr", "type": "float", "value": 0.001}

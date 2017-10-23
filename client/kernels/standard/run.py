@@ -5,12 +5,12 @@ from __future__ import print_function
 import kernels.core as core
 
 @core.register_kernel
-class LabeledImage(core.Kernel):
+class Run(core.Kernel):
 
     @staticmethod
     def get_config():
-        config = core.Config("Labled image", "labeled_image")
+        config = core.Config("Run", "run")
         return config
 
     def call(self):
-      print("Labeled image got called")
+        print("Run got called.")

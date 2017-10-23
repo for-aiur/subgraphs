@@ -97,13 +97,38 @@ class Node {
     this.nodeData.splice(nodeIdx, 1);
   }
 
+  pathExists(srcId, tarId) {
+    try {
+      let p = Port.fromId(srcId);
+      let node = this.getNodeById(p.nodeId);
+      if (node.outputs.find(d => d.id === tarId)) {
+        return true;
+      }
+      for (let q of node.outputs) {
+        let edges = this.edgeData.filter(edge => edge.source === q.id);
+        for (let edge of edges) {
+          if (this.pathExists(edge.target, tarId)) {
+            return true;
+          }
+        }
+      }
+    } catch(err) {
+      console.log(err);
+    }
+    return false;
+  }
+
   addEdge(srcId, tarId) {
+    if (this.pathExists(tarId, srcId)) {
+      return false;
+    }
     let d = new Edge(srcId, tarId);
     let edgeId = d.id;
     if (this.getEdgeById(edgeId) !== undefined) {
       return;
     }
     this.edgeData.push(d);
+    return true;
   }
 
   removeEdge(edgeDatum) {
