@@ -12,7 +12,7 @@ class Canvas extends Component {
   constructor(props) {
     super(props);
 
-    this.scope = new Node('New Project', 'project');
+    this.scope = new Node('New Project', 'project0');
     this.openNodes = [this.scope];
 
     window.scope = this.scope;
@@ -24,18 +24,25 @@ class Canvas extends Component {
   get nodeData() { return this.scope.nodeData; }
   get edgeData() { return this.scope.edgeData; }
 
+  uniqueIdentifier(identifier) {
+    let identifiers = this.openNodes.map(d => d.identifier).concat(
+      theCatalogService.getIdentifiers('compositions'));
+    return Utils.uniqueName(identifier, identifiers);
+  }
+
   newSubgraph() {
-    let node = new Node('New Project', 'project');
+    let node = new Node('New Project', this.uniqueIdentifier('project'));
     this.openNodes.push(node);
     this.setScope(node);
-    this.drawAll();
   }
   
   openSubgraph(p) {
     p = Object.assign(new Node(), p).clone();
-    if (!this.openNodes.includes(p)) {
-      this.openNodes.push(p);
+    let i = this.openNodes.findIndex(q => q.identifier == p.identifier);
+    if (i >= 0) {
+      this.openNodes.splice(i, 1);
     }
+    this.openNodes.push(p);
     this.setScope(p);
   }
 

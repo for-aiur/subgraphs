@@ -1,7 +1,19 @@
 
-var generateUID = function () {
+function generateUID() {
     return '_' + Math.random().toString(36).substr(2, 9);
 };
+
+function uniqueName(name, reserved) {
+    let suffixes = new Set();
+    for (let d of reserved) {
+      if (d.startsWith(name)) {
+        suffixes.add(d.substr(name.length));
+      }
+    }
+    let i = 0;
+    while (suffixes.has(i.toString())) { i++; }
+    return name + i;
+}
 
 function sigmoid(x) {
     return 1.0 / (1.0 + Math.pow(Math.E, -x));
@@ -63,6 +75,7 @@ function compare(a, b) {
 
 export {
     generateUID,
+    uniqueName,
     sigmoid,
     zip,
     clone,

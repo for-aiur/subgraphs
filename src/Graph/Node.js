@@ -18,15 +18,7 @@ class Node {
   }
 
   uniqueName(name) {
-    let suffixes = new Set();
-    for (let d of this.nodeData) {
-      if (d.name.startsWith(name)) {
-        suffixes.add(d.name.substr(name.length));
-      }
-    }
-    let i = 0;
-    while (suffixes.has(i.toString())) { i++; }
-    return name + i;
+    return Utils.uniqueName(name, this.nodeData.map(d => d.name));
   }
 
   clone() {
