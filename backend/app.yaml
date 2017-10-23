@@ -25,10 +25,12 @@ handlers:
 
 - url: /api.*
   script: main.APP
+  secure: always
 
 - url: /.*
   static_files: index.html
   upload: index.html
+  secure: always
 
 libraries:
 - name: jinja2

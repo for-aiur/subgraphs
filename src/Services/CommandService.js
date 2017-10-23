@@ -44,7 +44,6 @@ class CommandService extends Service {
   sendCommand(cmd, errorCallback=null) {
     cmd['category'] = 'query';
 
-    console.log(cmd);
     fetch('/api/cmd/save', {
       method: 'POST',
       headers: new Headers({

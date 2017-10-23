@@ -28,7 +28,7 @@ class UserService extends Service {
     }, (d) => {
       this.user = {};
       this.publish(this.user);
-    });
+    }).catch(() => {});
   }
 
   updateUser(newUser) {

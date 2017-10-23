@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './Editor.css';
 import Canvas from './Canvas.js'
 import Menu from './Menu.js'
+import theCatalogService from '../../Services/CatalogService.js'
 import theCommandService from '../../Services/CommandService.js'
 
 class Editor extends Component {
@@ -23,6 +24,11 @@ class Editor extends Component {
 
   onRun() {
     let identifier = this.canvas.scope.identifier;
+    if (!theCatalogService.getItemByIdentifier('compositions', identifier)) {
+      this.canvas.messageDialog.open(
+        'Error', 'Current project is not saved.');
+      return;
+    }
     theCommandService.sendCommand({
       'name': 'run',
       'identifier': `run:${identifier}`,

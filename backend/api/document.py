@@ -8,7 +8,7 @@ from storage.user import User
 APP = flask.Blueprint("doc", __name__)
 
 
-@APP.route("/init", methods=["POST", "GET"])
+@APP.route("/init", methods=["GET"])
 def init_docs():
     usr = user.get_user()
     if not usr or not usr.isAdmin:
@@ -31,7 +31,7 @@ def init_docs():
     return "Success.", 200
 
 
-@APP.route("/list", methods=["POST", "GET"])
+@APP.route("/list", methods=["POST"])
 def list_docs():
     expression = Document.public == True
     uid = user.get_uid()
@@ -43,6 +43,28 @@ def list_docs():
     docs = query.fetch()
     docs = [json.loads(doc.content) for doc in docs]
     return flask.jsonify(docs)
+
+
+@APP.route("/get", methods=["POST"])
+def get_doc():
+    data = flask.request.get_json()
+
+    uid = user.get_uid()
+    if not uid:
+        uid = int(data.get(u"uid", 0))
+        if not uid:
+            flask.abort(403)
+
+    identifier = data[u"identifier"]
+
+    expression = ndb.AND(
+        Document.identifier == identifier,
+        ndb.OR(
+            Document.owner == ndb.Key(User, uid),
+            Document.public == True))
+
+    doc = Document.query(expression).get()
+    return flask.jsonify(json.loads(doc.content))
 
 
 @APP.route("/save", methods=["POST"])
