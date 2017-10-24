@@ -34,10 +34,16 @@ def init_docs():
 @APP.route("/list", methods=["POST"])
 def list_docs():
     expression = Document.public == True
-    uid = user.get_uid()
+    data = flask.request.get_json()
+    uid = int(data.get(u"uid", user.get_uid()))
     if uid:
         expression = ndb.OR(
             Document.owner == ndb.Key(User, uid),
+            expression)
+    category = data.get(u"category")
+    if category:
+        expression = ndb.AND(
+            Document.category == category,
             expression)
     query = Document.query(expression)
     docs = query.fetch()
@@ -48,14 +54,13 @@ def list_docs():
 @APP.route("/get", methods=["POST"])
 def get_doc():
     data = flask.request.get_json()
-
-    uid = user.get_uid()
+    uid = int(data.get(u"uid", user.get_uid()))
     if not uid:
-        uid = int(data.get(u"uid", 0))
-        if not uid:
-            flask.abort(403)
+        flask.abort(403)
 
-    identifier = data[u"identifier"]
+    identifier = data.get(u"identifier")
+    if not identifier:
+        flask.abort(400)
 
     expression = ndb.AND(
         Document.identifier == identifier,
@@ -67,24 +72,25 @@ def get_doc():
     return flask.jsonify(json.loads(doc.content))
 
 
+
 @APP.route("/save", methods=["POST"])
 def save_doc():
-    usr = user.get_user()
-    if not usr:
-        flask.abort(403)
     data = flask.request.get_json()
+    uid = int(data.get(u"uid", user.get_uid()))
+    if not uid:
+        flask.abort(403)
 
-    identifier = data[u"identifier"]
+    identifier = data.get(u"identifier")
     if not identifier:
         flask.abort(400)
 
     doc = Document.query(
         ndb.AND(Document.identifier == identifier,
-                Document.owner == usr.key)).get()
-    
+                Document.owner == ndb.Key(User, uid))).get()
+
     if not doc:
         doc = Document()
-        doc.owner = ndb.Key(User, usr.key.id())
+        doc.owner = ndb.Key(User, uid)
 
     doc.title = data[u"title"]
     doc.identifier = data[u"identifier"]
@@ -97,23 +103,22 @@ def save_doc():
 
 @APP.route("/delete", methods=["POST"])
 def delete_doc():
-    usr = user.get_user()
-    if not usr:
+    data = flask.request.get_json()
+    uid = int(data.get(u"uid", user.get_uid()))
+    if not uid:
         flask.abort(403)
 
-    data = flask.request.get_json()
-
-    identifier = data[u"identifier"]
+    identifier = data.get(u"identifier")
     if not identifier:
         flask.abort(400)
 
     doc = Document.query(
         ndb.AND(Document.identifier == identifier,
-                Document.owner == usr.key)).get()
+                Document.owner == ndb.Key(User, uid))).get()
     if not doc:
         flask.abort(400)
 
-    if doc.owner.id() != usr.key.id():
+    if doc.owner.id() != uid:
         flask.abort(401)
 
     doc.key.delete()

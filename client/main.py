@@ -17,8 +17,12 @@ class App(object):
     def load_settings(self):
         fp = open("settings.json", "r")
         if not fp:
-            raise RuntimeError('settings.json not found.')
+            raise RuntimeError("settings.json not found.")
         settings = json.load(fp)
+        if not int(settings.get("uid", 0)):
+            raise RuntimeError(
+                "Please set your UID in settings.json. Login on subgraphs.com and "
+                "click on reveal button on profile page to see your UID.")
         return settings
 
     def fetch_commands(self):
@@ -34,8 +38,8 @@ class App(object):
             return
 
         for entry in data:
-            name = entry['name']
-            content = entry['content']
+            name = entry["name"]
+            content = entry["content"]
             self.worker.queue_cmd(name, content)
 
 
@@ -44,12 +48,15 @@ class App(object):
             try:
                 self.fetch_commands()
             except Exception as exception:
-                print(exception)
+                raise RuntimeError("Failed to retrieve information from the server.")
             time.sleep(1)
 
 
 def main():
-    App().listen()
+    try:
+        App().listen()
+    except Exception as e:
+        print(e)
 
 if __name__ == "__main__":
     main()

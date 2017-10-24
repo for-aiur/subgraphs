@@ -6,7 +6,7 @@ class Document(ndb.Model):
     title = ndb.StringProperty(required=True)
     identifier = ndb.StringProperty(required=True)
     category = ndb.StringProperty(required=True)
-    date = ndb.DateTimeProperty(auto_now_add=True)
+    date = ndb.DateTimeProperty(auto_now=True)
     owner = ndb.KeyProperty(kind=User, required=True)
     public = ndb.BooleanProperty(required=True, default=False)
     content = ndb.TextProperty(indexed=False, required=True)

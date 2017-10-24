@@ -38,7 +38,7 @@ class Worker(object):
     @register_command
     def stop(self, identifier=None):
         del identifier
-        print("Stopping graph")
+        print("Stopping execution")
         self.status = "stop"
         self.graph = None
 

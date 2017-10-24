@@ -8,6 +8,26 @@
         "attributes": []
     },
     {
+        "title": "Random Uniform",
+        "identifier": "random_uniform",
+        "category": "kernel",
+        "inputs": [],
+        "outputs": [{"name": "outputs"}],
+        "attributes": [
+            {"name": "shape", "type": "array", "value": "[]"},
+            {"name": "min", "type": "float", "value": "0"},
+            {"name": "max", "type": "float", "value": "1"}
+        ]
+    },
+    {
+        "title": "Sum",
+        "identifier": "sum",
+        "category": "kernel",
+        "inputs": [{"name": "inputs"}],
+        "outputs": [{"name": "outputs"}],
+        "attributes": []
+    },
+    {
         "title": "Labeled Image",
         "identifier": "labeled_image",
         "category": "kernel",

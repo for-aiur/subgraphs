@@ -14,8 +14,10 @@ class CatalogService extends Service {
     fetch('/api/doc/list', {
       method: 'POST',
       headers: new Headers({
+        'Content-Type': 'application/json',
         Accept: 'application/json'
       }),
+      body: "{}",
       credentials: 'same-origin'
     })
     .then(response => {
@@ -29,7 +31,7 @@ class CatalogService extends Service {
       this.items.kernels = items.filter(d => d.category === 'kernel');
       this.items.compositions = items.filter(d => d.category === 'composition');
       this.publish(this.items.kernels);
-    });
+    }).catch(() => {});
   }
 
   getIdentifiers(category) {

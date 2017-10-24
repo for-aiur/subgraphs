@@ -31,10 +31,10 @@ FA = FlaskAuthomatic(config=CONFIG, secret=SECRET_KEY, session_max_age=6e6)
 @FA.login("google")
 def authenticate():
     data = flask.request.get_json()
-    redirect_url = data.get("redirectUrl", "/") if data else "/"
+    redirect_url = data.get("redirectUrl", "/#/editor") if data else "/#/editor"
     if FA.result:
         if FA.result.error:
-            return flask.redirect("/login")
+            return flask.redirect("/#/login")
 
         if FA.result.user:
             FA.result.user.update()
@@ -71,7 +71,6 @@ def logout():
 
 
 def get_uid():
-    print(SESSION)
     uid = SESSION.get("uid", None)
     serialized_credentials = SESSION.get("credentials", None)
 

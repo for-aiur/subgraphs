@@ -13,5 +13,5 @@ class Kernel(object):
         return NotImplemented
 
     @abc.abstractmethod
-    def call(self, inputs):
+    def call(self, **kwargs):
         return NotImplemented
