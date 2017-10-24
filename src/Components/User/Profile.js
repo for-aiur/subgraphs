@@ -9,6 +9,7 @@ class Profile extends Component {
 
     this.onSubmit = this.onSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
+    this.showUID = this.showUID.bind(this);
   }
 
   onSubmit(e) {
@@ -26,6 +27,16 @@ class Profile extends Component {
     this.setState({
       [e.target.name]: val
     });
+  }
+
+  showUID() {
+    if (this.uid.type === 'text') {
+      this.uid.type = 'password';
+      this.revealButton.innerText = 'Reveal';
+    } else {
+      this.uid.type = 'text';
+      this.revealButton.innerText = 'Hide';
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -47,7 +58,7 @@ class Profile extends Component {
           <div className="form-group">
             <label className="col-sm-3 control-label">Name</label>
             <div className="col-sm-5">
-              <input type="text" size="100" className="form-control" 
+              <input type="text" size="20" className="form-control" 
                      placeholder="name" name="name" required 
                      value={this.state.name || '' }
                      onChange={this.onChange} />
@@ -56,8 +67,7 @@ class Profile extends Component {
           <div className="form-group">
             <label className="col-sm-3 control-label">Newsletter</label>
             <div className="col-sm-5">
-              <input type="checkbox" size="100" 
-                     name="subscribed" 
+              <input type="checkbox" name="subscribed" 
                      checked={this.state.subscribed || ''}
                      onChange={this.onChange} />
             </div>
@@ -66,6 +76,24 @@ class Profile extends Component {
           <div className="form-group">
             <div className="col-sm-offset-3 col-sm-5">
               <button type="submit" className="btn btn-default">Save</button>
+            </div>
+          </div>
+        </form>
+
+        <hr className="separator" />
+
+        <form className="form-horizontal">
+          <div className="form-group">
+            <label className="col-sm-3 control-label">UID</label>
+            <div className="col-sm-5">
+              <input type="password" size="100" className="form-control" readOnly
+                     value={this.state.uid || '' } 
+                     ref={p => this.uid = p} />
+            </div>
+            <div className="col-sm-4">
+              <button type="button" className="btn btn-default"
+                      onClick={this.showUID}
+                      ref={p => this.revealButton = p}>Reveal</button>
             </div>
           </div>
         </form>
