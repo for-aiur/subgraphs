@@ -84,7 +84,7 @@ def main():
             app.sync("standard")
         app.listen()
     except Exception as e:
-        print(e)
+        print("Unhandled exception", e)
 
 
 if __name__ == "__main__":

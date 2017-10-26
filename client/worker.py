@@ -34,7 +34,10 @@ class Worker(object):
     def run(self, identifier):
         print("Running graph", identifier)
         self.status = "run"
-        self.fetch_graph(identifier)
+        try:
+            self.fetch_graph(identifier)
+        except:
+            print("Failed to fetch graph {0}.".format(identifier))
 
     @register_command
     def stop(self, identifier=None):
@@ -59,11 +62,14 @@ class Worker(object):
 
     def fetch_graph(self, identifier):
         print("Fetching graph", identifier)
+        self.graph = None
         response = requests.post(
             self.settings["api"] + "/doc/get",
-            json=dict(
+            headers=dict(
                 uid=self.settings["uid"],
-                identifier=identifier)
+                authKey=self.settings["authKey"]
+            ),
+            json=dict(identifier=identifier)
         )
         data = response.json(
             object_hook=lambda d: collections.namedtuple(
