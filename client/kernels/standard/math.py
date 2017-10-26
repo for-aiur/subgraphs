@@ -5,7 +5,7 @@ from __future__ import print_function
 import kernels.core as core
 import tensorflow as tf
 
-@core.register_kernel
+@core.register_std_kernel
 class Sum(core.Kernel):
 
     @staticmethod

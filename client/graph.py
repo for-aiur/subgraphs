@@ -74,7 +74,6 @@ class Composition(object):
             inputs[in_port.name] = []
             for out_port, in_node in self.get_source_nodes(in_port.id).items():
                 self.create_node(in_node)
-                print(self._outputs[out_port])
                 inputs[in_port.name].append(self._outputs[out_port])
             if in_port.alias:
                 inputs[in_port.name].extend(self._inputs[in_port.alias])

@@ -40,7 +40,7 @@ class Config(_Config):
             title=self.title,
             identifier=self.identifier,
             category="kernel",
-            inputs=[i.jo_json() for i in self.inputs],
-            outputs=[i.jo_json() for i in self.outputs],
-            attributes=[i.jo_json() for i in self.attributes],
+            inputs=[i.to_json() for i in self.inputs],
+            outputs=[i.to_json() for i in self.outputs],
+            attributes=[i.to_json() for i in self.attributes],
         )

@@ -5,7 +5,9 @@ from __future__ import print_function
 import json
 import time
 import requests
+import sys
 import worker
+from kernels import core
 
 
 class App(object):
@@ -24,6 +26,22 @@ class App(object):
                 "Please set your UID in settings.json. Login on subgraphs.com and "
                 "click on reveal button on profile page to see your UID.")
         return settings
+
+    def sync(self, group):
+        print("Synchronizing {0} kernels.".format(group))
+        kernels = core.get_kernels_by_group(group)
+        for kernel in kernels:
+            data = kernel.get_config().to_json()
+            data[u"uid"] = self.settings["uid"]
+            data[u"public"] = group == "standard"
+            response = requests.post(
+                self.settings["api"] + "/doc/save",
+                json=data
+            )
+            if response.ok:
+                print("Registered {0}.".format(data["identifier"]))
+            else:
+                print("Failed to register {0}.".format(data["identifier"]))
 
     def fetch_commands(self):
         response = requests.post(
@@ -54,7 +72,13 @@ class App(object):
 
 def main():
     try:
-        App().listen()
+        app = App()
+        args = set(sys.argv[1:])
+        if "sync" in args:
+            app.sync("custom")
+        if "sync-std" in args:
+            app.sync("standard")
+        app.listen()
     except Exception as e:
         print(e)
 
