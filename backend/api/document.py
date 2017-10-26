@@ -12,7 +12,7 @@ APP = flask.Blueprint("doc", __name__)
 def list_docs():
     expression = Document.public == True
     data = flask.request.get_json()
-    uid = int(data.get(u"uid", user.get_uid()))
+    uid = user.get_uid()
     if uid:
         expression = ndb.OR(
             Document.owner == ndb.Key(User, uid),
@@ -31,7 +31,7 @@ def list_docs():
 @APP.route("/get", methods=["POST"])
 def get_doc():
     data = flask.request.get_json()
-    uid = int(data.get(u"uid", user.get_uid()))
+    uid = user.get_uid()
     if not uid:
         flask.abort(403)
 
@@ -52,7 +52,7 @@ def get_doc():
 @APP.route("/save", methods=["POST"])
 def save_doc():
     data = flask.request.get_json()
-    uid = int(data.get(u"uid", user.get_uid()))
+    uid = user.get_uid()
     if not uid:
         flask.abort(403)
 
@@ -84,7 +84,7 @@ def save_doc():
 @APP.route("/delete", methods=["POST"])
 def delete_doc():
     data = flask.request.get_json()
-    uid = int(data.get(u"uid", user.get_uid()))
+    uid = user.get_uid()
     if not uid:
         flask.abort(403)
 

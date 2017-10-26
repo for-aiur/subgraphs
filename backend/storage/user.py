@@ -12,3 +12,4 @@ class User(ndb.Model):
     googleId = ndb.StringProperty(required=False)
     imageUrl = ndb.StringProperty(required=False)
     isAdmin = ndb.BooleanProperty(required=True, default=False)
+    authKey =  ndb.StringProperty(required=True)

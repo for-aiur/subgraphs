@@ -48,6 +48,18 @@ class UserService extends Service {
     });
   }
 
+  generateKey() {
+    fetch('/api/user/generate_key', {
+      method: 'POST',
+      credentials: 'same-origin'
+    })
+    .then(response => {
+      if (response.ok) {
+        this.fetchUser();
+      }
+    });
+  }
+
   get isLoggedIn() {
     return this.user.uid !== undefined;
   }

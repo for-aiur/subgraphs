@@ -49,6 +49,7 @@ class CatalogService extends Service {
   add(category, item, errorCallback=null) {
     this.remove(category, item);
     let items = this.items[category];
+    item["public"] = false;
     items.push(item);
 
     fetch('/api/doc/save', {

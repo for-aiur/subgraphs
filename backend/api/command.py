@@ -14,10 +14,7 @@ def list_commands():
 
     uid = user.get_uid()
     if not uid:
-        print(uid)
-        uid = int(data.get(u"uid", 0))
-        if not uid:
-            flask.abort(403)
+        flask.abort(403)
 
     category = data[u"category"]
     if not category:
@@ -48,9 +45,7 @@ def save_command():
 
     uid = user.get_uid()
     if not uid:
-        uid = int(data.get(u"uid", 0))
-        if not uid:
-            flask.abort(403)
+        flask.abort(403)
 
     identifier = data[u"identifier"]
     if not identifier:

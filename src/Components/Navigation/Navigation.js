@@ -19,9 +19,6 @@ class Navigation extends Component {
             <NavItem eventKey={1} onClick={e => this.props.history.push("/editor")}>
               Editor
             </NavItem>
-            <NavItem eventKey={2} onClick={e => this.props.history.push("/about")}>
-              About
-            </NavItem>
           </Nav>
           <Nav pullRight>
             {

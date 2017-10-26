@@ -21,10 +21,10 @@ class App(object):
         if not fp:
             raise RuntimeError("settings.json not found.")
         settings = json.load(fp)
-        if not int(settings.get("uid", 0)):
+        if not settings.get("uid") or not settings.get("authKey"):
             raise RuntimeError(
-                "Please set your UID in settings.json. Login on subgraphs.com and "
-                "click on reveal button on profile page to see your UID.")
+                "Please set your uid/authKey in settings.json. Login on subgraphs.com "
+                "and click on reveal button on profile page to see your authKey.")
         return settings
 
     def sync(self, group):
@@ -32,10 +32,13 @@ class App(object):
         kernels = core.get_kernels_by_group(group)
         for kernel in kernels:
             data = kernel.get_config().to_json()
-            data[u"uid"] = self.settings["uid"]
             data[u"public"] = group == "standard"
             response = requests.post(
                 self.settings["api"] + "/doc/save",
+                headers={
+                    "uid": self.settings["uid"],
+                    "authKey": self.settings["authKey"]
+                },
                 json=data
             )
             if response.ok:
@@ -46,10 +49,11 @@ class App(object):
     def fetch_commands(self):
         response = requests.post(
             self.settings["api"] + "/cmd/list",
-            json={
-                "category": "query",
-                "uid": self.settings["uid"]
-            }
+            headers={
+                "uid": self.settings["uid"],
+                "authKey": self.settings["authKey"]
+            },
+            json={"category": "query"}
         )
         data = response.json()
         if not data:

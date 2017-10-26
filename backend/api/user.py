@@ -2,6 +2,7 @@ import flask
 import authomatic
 from authomatic.providers import oauth2
 from authomatic.extras.flask import FlaskAuthomatic
+import uuid
 
 from google.appengine.ext import ndb  # pylint: disable=E0401,E0611
 
@@ -51,6 +52,7 @@ def authenticate():
                     user.name = FA.result.user.name
                     user.email = FA.result.user.email
                     user.imageUrl = FA.result.user.picture
+                    user.authKey = str(uuid.uuid4())
 
                 user.googleId = FA.result.user.id
                 user.put()
@@ -79,6 +81,16 @@ def get_uid():
         if credentials.valid:
             return uid
 
+    headers = flask.request.headers
+    if headers:
+        uid = headers.get(u"uid", None)
+        auth_key = headers.get(u"authKey", None)
+        if uid and auth_key:
+            uid = int(uid)
+            user = ndb.Key(User, uid).get()
+            if user.authKey == auth_key:
+                return uid
+
     return None
 
 
@@ -97,11 +109,24 @@ def whoami():
             "uid": user.key.id(),
             "name": user.name,
             "email": user.email,
-            "subscribed": user.subscribed
+            "subscribed": user.subscribed,
+            "authKey": user.authKey
         }
     else:
         response = {}
     return flask.jsonify(response)
+
+
+@APP.route("/generate_key", methods=["POST"])
+def generate_key():
+    user = get_user()
+    if not user:
+        flask.abort(404)
+
+    user.authKey = str(uuid.uuid4())
+    user.put()
+
+    return "Success.", 200
 
 
 @APP.route("/update", methods=["POST"])
