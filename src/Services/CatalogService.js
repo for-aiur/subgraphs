@@ -38,8 +38,15 @@ class CatalogService extends Service {
     return this.items[category].map(p => p.identifier);
   }
 
-  getItems(category) {
-    return this.items[category];
+  getItems(category, filter=null) {
+    let items = this.items[category];
+    if (filter) {
+      let re = new RegExp(filter, 'i');
+      items = items.filter(function(d) {
+        return d.title.match(re) != null
+      });
+    }
+    return items;
   }
 
   getItemByIdentifier(category, identifier) {

@@ -397,6 +397,41 @@ class Canvas extends Component {
     });
   }
 
+  createCatalogDragHandler() {
+    let _self = this;
+    
+    this.catalogDrag = d3.drag()
+    .on('start', function(d) {
+      let draggingNode = d3.select(_self.draggingNode);
+      draggingNode
+      .append('a')
+      .attr('class', 'list-group-item')
+      .attr('role', 'button')
+      .text(d.title);
+
+      let mouse = d3.mouse(_self.container);
+      let node = draggingNode.node();
+      node.style.left = `${mouse[0]}px`;
+      node.style.top = `${mouse[1]}px`;
+    })
+    .on('drag', function() {
+      let mouse = d3.mouse(_self.container);
+      let node = d3.select(_self.draggingNode).node();
+      node.style.left = `${mouse[0]}px`;
+      node.style.top = `${mouse[1]}px`;
+    })
+    .on('end', function(d) {
+      d3.select(_self.draggingNode).selectAll('a').remove();
+      let mouse = d3.mouse(_self.nodesContainer);
+      if (mouse[0] > 0 && mouse[1] > 0) {
+        let pos = {x: mouse[0] - 75, y: mouse[1] - 20};
+        let node = _self.scope.fromTemplate(d, pos);
+        _self.scope.addNode(node);
+        _self.drawNodes();
+      }
+    });
+  }
+
   createPanAndSelectHandler() {
     let _self = this;
     let selectionRect = d3.select(this.selectionRect);
@@ -504,6 +539,7 @@ class Canvas extends Component {
   clearHandlers() {
     delete this.nodeContextMenu;
     delete this.edgeContextMenu;
+    delete this.catalogDrag;
     delete this.edgeDrag;
     delete this.nodeDrag;
   }
@@ -548,39 +584,6 @@ class Canvas extends Component {
   }
 
   drawCatalog() {
-    let _self = this;
-
-    let drag = d3.drag()
-    .on('start', function(d) {
-      let draggingNode = d3.select(_self.draggingNode);
-      draggingNode
-      .append('a')
-      .attr('class', 'list-group-item')
-      .attr('role', 'button')
-      .text(d.title);
-
-      let mouse = d3.mouse(_self.container);
-      let node = draggingNode.node();
-      node.style.left = `${mouse[0]}px`;
-      node.style.top = `${mouse[1]}px`;
-    })
-    .on('drag', function() {
-      let mouse = d3.mouse(_self.container);
-      let node = d3.select(_self.draggingNode).node();
-      node.style.left = `${mouse[0]}px`;
-      node.style.top = `${mouse[1]}px`;
-    })
-    .on('end', function(d) {
-      d3.select(_self.draggingNode).selectAll('a').remove();
-      let mouse = d3.mouse(_self.nodesContainer);
-      if (mouse[0] > 0 && mouse[1] > 0) {
-        let pos = {x: mouse[0] - 75, y: mouse[1] - 20};
-        let node = _self.scope.fromTemplate(d, pos);
-        _self.scope.addNode(node);
-        _self.drawNodes();
-      }
-    });
-
     let cats = {
       kernels: this.kernelsCatalogView,
       compositions: this.compositionsCatalogView
@@ -588,7 +591,9 @@ class Canvas extends Component {
 
     for (let cat in cats) {
       let ref = d3.select(cats[cat]).selectAll('a')
-      .data(theCatalogService.getItems(cat), d => d.identifier);
+      .data(
+        theCatalogService.getItems(cat, this.catalogSearchBox.value), 
+        d => d.identifier);
 
       ref.exit().remove();
 
@@ -597,7 +602,7 @@ class Canvas extends Component {
       .attr('class', 'list-group-item')
       .attr('role', 'button')
       .text(d => d.title)
-      .call(drag);
+      .call(this.catalogDrag);
     }
   }
 
@@ -934,6 +939,7 @@ class Canvas extends Component {
     this.createPanAndSelectHandler();
     this.createNodeDragHandler();
     this.createConnectHandler();
+    this.createCatalogDragHandler();
 
     this.drawAll();
 
@@ -959,6 +965,12 @@ class Canvas extends Component {
       <SaveDialog ref={p => this.saveDialog = p} />
       <OpenDialog ref={p => this.openDialog = p} />
       <div id="catalogView">
+        <div className="form-group has-feedback">
+          <input type="text" className="form-control" placeholder="Search..." 
+                 ref={p => this.catalogSearchBox = p}
+                 onChange={this.updateCatalog} />
+          <i className="glyphicon glyphicon-search form-control-feedback"></i>
+        </div>
         <span>Kernels</span>
         <div ref={p => this.kernelsCatalogView = p} className="list-group">
         </div>
