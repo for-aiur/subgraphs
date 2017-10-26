@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import collections
 import threading
 import requests
 from six.moves import queue
@@ -64,7 +65,9 @@ class Worker(object):
                 uid=self.settings["uid"],
                 identifier=identifier)
         )
-        data = response.json()
+        data = response.json(
+            object_hook=lambda d: collections.namedtuple(
+                'json', d.keys())(*d.values()))
         self.graph = graph.Graph(data)
 
     def update(self):

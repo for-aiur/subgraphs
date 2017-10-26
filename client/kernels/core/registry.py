@@ -2,19 +2,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-_KERNELS = []
+_KERNELS = {}
 _CUSTOM_KERNELS = []
 
 
 def register_kernel(cls):
     config = cls.get_config()
-    old_init = cls.__init__
-    def init(self):
-        for attr in config.attributes:
-            setattr(self, attr.name, attr.value)
-        old_init(self)
-    cls.__init__ = init
-    _KERNELS.append(cls)
+    _KERNELS[config.identifier] = cls
     return cls
 
 
@@ -30,3 +24,9 @@ def get_kernels():
 
 def get_custom_kernels():
     return _CUSTOM_KERNELS
+
+
+def get_kernel(identifier):
+    if not identifier in _KERNELS:
+        raise RuntimeError("Kernel {0} not found.".format(identifier))
+    return _KERNELS[identifier]

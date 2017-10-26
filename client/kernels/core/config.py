@@ -17,6 +17,7 @@ _Config = collections.namedtuple(
 class Config(_Config):
     def __new__(cls, title, identifier):
         self = super(Config, cls).__new__(
+            cls,
             title=title,
             identifier=identifier,
             inputs=[],

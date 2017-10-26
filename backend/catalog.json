@@ -1,13 +1,5 @@
 [
     {
-        "title": "Run",
-        "identifier": "run",
-        "category": "kernel",
-        "inputs": [{"name": "inputs"}],
-        "outputs": [],
-        "attributes": []
-    },
-    {
         "title": "Random Uniform",
         "identifier": "random_uniform",
         "category": "kernel",
