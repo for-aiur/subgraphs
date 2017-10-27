@@ -25,5 +25,6 @@ class Optimize(core.Kernel):
             loss,
             global_step,
             self.learning_rate,
-            self.method)
+            self.method,
+            increment_global_step=False)
         return dict(outputs=outputs)

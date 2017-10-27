@@ -117,6 +117,7 @@ class Graph(object):
         self._outputs = self._root.call()
         self._summaries = tf.summary.merge_all()
         self._step = tf.contrib.framework.get_or_create_global_step()
+        self._increment_step = tf.assign_add(self._step, 1)
 
         identifier = data.identifier
         self._model_dir = "outputs/{0}/model/checkpoint".format(identifier)
@@ -144,7 +145,7 @@ class Graph(object):
 
     def run(self):
         print("Updating graph")
-        fetch = {"step": self._step}
+        fetch = {"step": self._increment_step}
         if self._outputs:
             fetch["outputs"] = self._outputs
         if self._summaries is not None:
