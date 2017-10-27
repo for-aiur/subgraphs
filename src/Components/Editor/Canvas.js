@@ -37,7 +37,6 @@ class Canvas extends Component {
   }
   
   openSubgraph(p) {
-    p = Object.assign(new Node(), p).clone();
     let i = this.openNodes.findIndex(q => q.identifier === p.identifier);
     if (i >= 0) {
       this.openNodes.splice(i, 1);
@@ -51,6 +50,7 @@ class Canvas extends Component {
       theCatalogService.getIdentifiers('compositions'),
       (identifier) => {
         let p = theCatalogService.getItemByIdentifier('compositions', identifier);
+        p = Object.assign(new Node(), p).clone();
         this.openSubgraph(p);
       },
       () => {});
@@ -248,8 +248,10 @@ class Canvas extends Component {
         items.push({
           name: 'Open',
           callback: function() {
-            _self.openSubgraph(_self.scope.getNodeById(d.id));
-          },
+            let p = _self.scope.getNodeById(d.id);
+            p.parent = _self.scope;
+            _self.openSubgraph(p);
+          }
         });
       }
 
@@ -569,13 +571,12 @@ class Canvas extends Component {
       .attr('role', 'button')
       .on('click', function() {
         d3.event.stopPropagation();
-        if (this.scope.name === null &&
-          this.scope.nodeData.length > 0) {
+        if (this.scope.parent) {
+          this.closeSubgraph(p);
+        } else {
           this.saveSubgraph(
             () => this.closeSubgraph(p),
             () => this.closeSubgraph(p));
-        } else {
-          this.closeSubgraph(p);
         }
       }.bind(this))
       .append('i')
