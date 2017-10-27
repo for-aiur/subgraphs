@@ -8,7 +8,7 @@ class Service {
   }
 
   unsubscribe(func) {
-    let it = this.subscribers.find(func);
+    let it = this.subscribers.find(d => d == func);
     this.subscribers.splice(it, 1);
   }
 
