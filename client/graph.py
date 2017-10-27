@@ -88,6 +88,8 @@ class Composition(object):
     def convert_attr(self, value, type):
         if type == "int":
             return int(value)
+        if type == "bool":
+            return value in ["True", "true"]
         if type == "float":
             return float(value)
         if type == "array":
@@ -119,7 +121,11 @@ class Graph(object):
         tf.reset_default_graph()
         self._root = Composition(data)
         self._outputs = self._root.call()
-        self._session = tf.Session()
+
+        session_config = tf.ConfigProto()
+        session_config.allow_soft_placement = True
+        session_config.gpu_options.allow_growth = True
+        self._session = tf.Session(config=session_config)
 
     def run(self):
         print("Updating graph")

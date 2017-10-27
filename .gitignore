@@ -9,7 +9,7 @@
 # production
 /build
 
-# Built files
+# Backend
 /backend/lib
 /backend/index.html
 /backend/static
@@ -17,6 +17,9 @@
 /backend/favicon.ico
 /backend/manifest.json
 /backend/service-worker.js
+
+# Client
+/client/data
 
 # misc
 .DS_Store

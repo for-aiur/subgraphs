@@ -34,10 +34,8 @@ class Worker(object):
     def run(self, identifier):
         print("Running graph", identifier)
         self.status = "run"
-        try:
-            self.fetch_graph(identifier)
-        except:
-            print("Failed to fetch graph {0}.".format(identifier))
+        data = self.fetch_graph(identifier)
+        self.graph = graph.Graph(data)
 
     @register_command
     def stop(self, identifier=None):
@@ -74,10 +72,14 @@ class Worker(object):
         data = response.json(
             object_hook=lambda d: collections.namedtuple(
                 'json', d.keys())(*d.values()))
-        self.graph = graph.Graph(data)
+        return data
 
     def update(self):
         if self.graph is None:
             self.stop()
             return
-        self.graph.run()
+        try:
+            self.graph.run()
+        except Exception as e:
+            self.stop()
+            print(e)
