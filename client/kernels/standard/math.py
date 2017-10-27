@@ -6,11 +6,11 @@ import kernels.core as core
 import tensorflow as tf
 
 @core.register_std_kernel
-class Sum(core.Kernel):
+class Add(core.Kernel):
 
     @staticmethod
     def get_config():
-        config = core.Config("Sum", "sum")
+        config = core.Config("Add", "add")
         config.add_input(core.Port(name="inputs"))
         config.add_output(core.Port(name="outputs"))
         return config

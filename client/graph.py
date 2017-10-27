@@ -20,14 +20,7 @@ class Composition(object):
 
         # Create nodes that have at least one external output port
         for node in self._data.nodeData:
-            is_external = False
-            for port in node.outputs:
-                if port.alias:
-                    is_external = True
-                    break
-
-            if is_external:
-                self.create_node(node)
+            self.create_node(node)
 
         # Retrieve the output ports' values
         outputs = {}
@@ -119,14 +112,51 @@ class Graph(object):
 
     def __init__(self, data):
         tf.reset_default_graph()
+
         self._root = Composition(data)
         self._outputs = self._root.call()
+        self._summaries = tf.summary.merge_all()
+        self._step = tf.contrib.framework.get_or_create_global_step()
+
+        identifier = data.identifier
+        self._model_dir = "outputs/{0}/model/checkpoint".format(identifier)
+        logdir = "outputs/{0}/log".format(identifier)
+
+        if tf.trainable_variables():
+            self._saver = tf.train.Saver()
+        else:
+            self._saver = None
+
+        if self._summaries is not None:
+            self._writer = tf.summary.FileWriter(logdir)
+        else:
+            self._writer = None
+
+        self._i = 0
 
         session_config = tf.ConfigProto()
         session_config.allow_soft_placement = True
         session_config.gpu_options.allow_growth = True
         self._session = tf.Session(config=session_config)
+        self._session.run(tf.global_variables_initializer())
+        self._session.run(tf.local_variables_initializer())
+        self._session.run(tf.tables_initializer())
 
     def run(self):
         print("Updating graph")
-        self._session.run([self._outputs])
+        fetch = {"step": self._step}
+        if self._outputs:
+            fetch["outputs"] = self._outputs
+        if self._summaries is not None:
+            fetch["summaries"] = self._summaries
+        outputs = self._session.run(fetch)
+
+        if self._i % 100 == 0:
+            if self._saver:
+                self._saver.save(
+                    self._session, self._model_dir, outputs["step"])
+            if self._writer:
+                self._writer.add_summary(
+                    outputs["summaries"], outputs["step"])
+
+        self._i += 1

@@ -20,6 +20,7 @@
 
 # Client
 /client/data
+/client/outputs
 
 # misc
 .DS_Store
