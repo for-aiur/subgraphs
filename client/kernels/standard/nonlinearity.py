@@ -5,33 +5,47 @@ from __future__ import print_function
 import kernels.core as core
 import tensorflow as tf
 
+
 @core.register_std_kernel
-class Flatten(core.Kernel):
+class ReLU(core.Kernel):
 
     @staticmethod
     def get_config():
-        config = core.Config("Flatten", "flatten")
+        config = core.Config("ReLU", "relu")
         config.add_input(core.Port(name="inputs"))
         config.add_output(core.Port(name="outputs"))
         return config
 
     def call(self, inputs):
-        outputs = tf.contrib.layers.flatten(inputs[0])
+        outputs = tf.nn.relu(inputs[0])
         return dict(outputs=outputs)
 
 
 @core.register_std_kernel
-class Reshape(core.Kernel):
+class Softmax(core.Kernel):
 
     @staticmethod
     def get_config():
-        config = core.Config("Reshape", "reshape")
+        config = core.Config("Softmax", "softmax")
         config.add_input(core.Port(name="inputs"))
         config.add_output(core.Port(name="outputs"))
-        config.add_attribute(
-            core.Attribute(name="shape", type="array", value="[-1]"))
         return config
 
     def call(self, inputs):
-        outputs = tf.reshape(inputs[0], self.shape)
+        outputs = tf.nn.softmax(inputs[0])
+        return dict(outputs=outputs)
+
+
+@core.register_std_kernel
+class Sigmoid(core.Kernel):
+
+    @staticmethod
+    def get_config():
+        config = core.Config("Sigmoid", "sigmoid")
+        config.add_input(core.Port(name="inputs"))
+        config.add_output(core.Port(name="outputs"))
+        return config
+
+    def call(self, inputs):
+        outputs = tf.sigmoid(inputs[0])
         return dict(outputs=outputs)

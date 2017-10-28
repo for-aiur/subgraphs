@@ -3,6 +3,7 @@ import datasets
 import losses
 import math
 import nn
+import nonlinearity
 import optimization
 import random
 import reduction

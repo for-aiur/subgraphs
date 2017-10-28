@@ -120,7 +120,7 @@ class Graph(object):
         self._increment_step = tf.assign_add(self._step, 1)
 
         identifier = data.identifier
-        self._model_dir = "outputs/{0}/model/checkpoint".format(identifier)
+        self._model_dir = "outputs/{0}/model".format(identifier)
         logdir = "outputs/{0}/log".format(identifier)
 
         if tf.trainable_variables():

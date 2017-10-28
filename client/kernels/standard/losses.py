@@ -18,10 +18,10 @@ class CrossEntropy(core.Kernel):
         return config
 
     def call(self, logits, labels):
-        if inputs.dtype in [tf.int32, tf.int64]:
-            outputs = tf.losses.sparse_softmax_cross_entropy(
+        if labels[0].dtype in [tf.int32, tf.int64]:
+            loss = tf.losses.sparse_softmax_cross_entropy(
                 labels=labels[0], logits=logits[0])
         else:
-            outputs = tf.losses.softmax_cross_entropy(
+            loss = tf.losses.softmax_cross_entropy(
                 onehot_labels=labels[0], logits=logits[0])
-        return dict(outputs=outputs)
+        return dict(loss=loss)
