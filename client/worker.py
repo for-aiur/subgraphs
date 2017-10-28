@@ -82,4 +82,4 @@ class Worker(object):
             self.graph.run()
         except Exception as e:
             self.stop()
-            print(e)
+            print("Unhandled exception", e)

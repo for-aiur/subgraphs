@@ -5,7 +5,7 @@ import theCatalogService from '../../Services/CatalogService';
 import theCommandService from '../../Services/CommandService';
 import Node from '../../Graph/Node';
 import Port from '../../Graph/Port';
-import { SaveDialog, OpenDialog, MessageDialog } from './Dialogs';
+import { OpenDialog, SaveDialog, DeleteDialog, MessageDialog } from './Dialogs';
 import './Canvas.css';
 
 class Canvas extends Component {
@@ -35,7 +35,7 @@ class Canvas extends Component {
     this.openNodes.push(node);
     this.setScope(node);
   }
-  
+
   openSubgraph(p) {
     let i = this.openNodes.findIndex(q => q.identifier === p.identifier);
     if (i >= 0) {
@@ -49,7 +49,8 @@ class Canvas extends Component {
     this.openDialog.open(
       theCatalogService.getIdentifiers('compositions'),
       (identifier) => {
-        let p = theCatalogService.getItemByIdentifier('compositions', identifier);
+        let p = theCatalogService.getItemByIdentifier(
+          'compositions', identifier);
         p = Object.assign(new Node(), p).clone();
         this.openSubgraph(p);
       },
@@ -92,15 +93,28 @@ class Canvas extends Component {
   }
 
   deleteSubgraph() {
-    let p = this.scope;
-    this.closeSubgraph(p)
-    theCatalogService.remove('compositions', p, () => {
-      this.messageDialog.open(
-        'Error', 'Failed to communicate with the server. '+
-        'Perhaps you are not logged in?');
-    });
-
-    this.drawCatalog();
+    let existing = theCatalogService.getItemByIdentifier(
+      'compositions', this.scope.identifier);
+    if (!existing) {
+      let p = this.scope;
+      this.closeSubgraph(p);
+      this.drawCatalog();
+      return;
+    }
+    this.deleteDialog.open(
+      this.scope.identifier,
+      () => {
+        let p = this.scope;
+        this.closeSubgraph(p);
+        theCatalogService.remove('compositions', p, () => {
+          this.messageDialog.open(
+            'Error', 'Failed to communicate with the server. '+
+            'Perhaps you are not logged in?');
+        });
+        this.drawCatalog();
+      },
+      () => {}
+    );
   }
 
   setScope(newScope) {
@@ -124,7 +138,7 @@ class Canvas extends Component {
     let nodeIds = new Set();
     selection.each(function(nodeDatum) {
       nodeIds.add(nodeDatum.id);
-    }); 
+    });
 
     // Move nodes and edges
     let moveEdges = new Set();
@@ -143,7 +157,7 @@ class Canvas extends Component {
           let edges = _self.scope.getPortEdges(port.id);
           let newPort = edges.length === 0;
           let rewireEdges = new Set();
-          for (let edge of edges) {           
+          for (let edge of edges) {
             let srcNodeId = Port.fromId(edge[st]).nodeId;
             if (!nodeIds.has(srcNodeId)) {
               newPort = true;
@@ -206,7 +220,7 @@ class Canvas extends Component {
 
       let contextItem = contextMenu.selectAll('.contextItem')
       .data(get_data(selectedDatum));
-      
+
       contextItem.exit().remove();
 
       let enter = contextItem
@@ -401,7 +415,7 @@ class Canvas extends Component {
 
   createCatalogDragHandler() {
     let _self = this;
-    
+
     this.catalogDrag = d3.drag()
     .on('start', function(d) {
       let draggingNode = d3.select(_self.draggingNode);
@@ -593,7 +607,7 @@ class Canvas extends Component {
     for (let cat in cats) {
       let ref = d3.select(cats[cat]).selectAll('a')
       .data(
-        theCatalogService.getItems(cat, this.catalogSearchBox.value), 
+        theCatalogService.getItems(cat, this.catalogSearchBox.value),
         d => d.identifier);
 
       ref.exit().remove();
@@ -616,7 +630,7 @@ class Canvas extends Component {
 
     if (selection.size() === 0) {
       let d = this.scope;
-      
+
       let group = propertiesView.append('div')
       .attr('class', 'form-group');
       group.append('label').text('Title');
@@ -730,7 +744,7 @@ class Canvas extends Component {
         for (let i in d[item.side]) {
           let port = d[item.side][i];
           let group = propertiesView.append('div')
-          .attr('class', 'form-group');  
+          .attr('class', 'form-group');
           group.append('label').text(port.name);
 
           let p = d3.select(d3.selectAll(`#${d.id} .${item.class} > text`).nodes()[i]);
@@ -818,7 +832,7 @@ class Canvas extends Component {
       .enter()
       .append('g')
       .attr('class', item.class);
-  
+
       nodeInputs
       .append('circle')
       .attr('id', d => d.id)
@@ -828,7 +842,7 @@ class Canvas extends Component {
       .text(d => d)
       .on('mouseenter', this.portEnter)
       .call(this.edgeDrag);
-  
+
       nodeInputs
       .append('text')
       .attr('x', item.tX)
@@ -962,12 +976,13 @@ class Canvas extends Component {
   render() {
     return (
     <div id="container" ref={p => this.container = p} >
-      <MessageDialog ref={p => this.messageDialog = p} />
-      <SaveDialog ref={p => this.saveDialog = p} />
       <OpenDialog ref={p => this.openDialog = p} />
+      <SaveDialog ref={p => this.saveDialog = p} />
+      <DeleteDialog ref={p => this.deleteDialog = p} />
+      <MessageDialog ref={p => this.messageDialog = p} />
       <div id="catalogView">
         <div className="form-group has-feedback">
-          <input type="text" className="form-control" placeholder="Search..." 
+          <input type="text" className="form-control" placeholder="Search..."
                  ref={p => this.catalogSearchBox = p}
                  onChange={this.updateCatalog} />
           <i className="glyphicon glyphicon-search form-control-feedback"></i>

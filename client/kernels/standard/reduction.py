@@ -15,7 +15,7 @@ class ReduceMean(core.Kernel):
         config.add_input(core.Port(name="inputs"))
         config.add_output(core.Port(name="outputs"))
         config.add_attribute(
-            core.Attribute(name="axis", type="array", value="0"))
+            core.Attribute(name="axis", type="array", value="-1"))
         config.add_attribute(
             core.Attribute(name="keep_dims", type="bool", value="false"))
         return config
@@ -35,7 +35,7 @@ class ReduceSum(core.Kernel):
         config.add_input(core.Port(name="inputs"))
         config.add_output(core.Port(name="outputs"))
         config.add_attribute(
-            core.Attribute(name="axis", type="array", value="0"))
+            core.Attribute(name="axis", type="array", value="-1"))
         config.add_attribute(
             core.Attribute(name="keep_dims", type="bool", value="false"))
         return config

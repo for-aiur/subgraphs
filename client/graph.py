@@ -72,7 +72,8 @@ class Composition(object):
                 inputs[in_port.name].extend(self._inputs[in_port.alias])
 
         # Store outputs
-        outputs = new_node.call(**inputs)
+        with tf.variable_scope(node.name):
+            outputs = new_node.call(**inputs)
         ports = {output.name: output for output in node.outputs}
         for k, v in outputs.items():
             port = ports[k]
@@ -119,9 +120,18 @@ class Graph(object):
         self._step = tf.contrib.framework.get_or_create_global_step()
         self._increment_step = tf.assign_add(self._step, 1)
 
+        session_config = tf.ConfigProto()
+        session_config.allow_soft_placement = True
+        session_config.gpu_options.allow_growth = True
+
+        self._session = tf.Session(config=session_config)
+        self._session.run(tf.global_variables_initializer())
+        self._session.run(tf.local_variables_initializer())
+        self._session.run(tf.tables_initializer())
+
         identifier = data.identifier
         self._model_dir = "outputs/{0}/model".format(identifier)
-        logdir = "outputs/{0}/log".format(identifier)
+        logdir = "outputs/{0}".format(identifier)
 
         if tf.trainable_variables():
             self._saver = tf.train.Saver()
@@ -129,27 +139,21 @@ class Graph(object):
             self._saver = None
 
         if self._summaries is not None:
-            self._writer = tf.summary.FileWriter(logdir)
+            self._writer = tf.summary.FileWriter(
+                logdir, graph=self._session.graph)
         else:
             self._writer = None
 
         self._i = 0
 
-        session_config = tf.ConfigProto()
-        session_config.allow_soft_placement = True
-        session_config.gpu_options.allow_growth = True
-        self._session = tf.Session(config=session_config)
-        self._session.run(tf.global_variables_initializer())
-        self._session.run(tf.local_variables_initializer())
-        self._session.run(tf.tables_initializer())
-
     def run(self):
         print("Updating graph")
         fetch = {"step": self._increment_step}
-        if self._outputs:
-            fetch["outputs"] = self._outputs
         if self._summaries is not None:
             fetch["summaries"] = self._summaries
+        update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+        if update_ops:
+            fetch["updates"] = update_ops
         outputs = self._session.run(fetch)
 
         if self._i % 100 == 0:

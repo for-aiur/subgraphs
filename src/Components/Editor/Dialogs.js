@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { 
+import {
   Modal, Button, FormGroup, FormControl, ControlLabel, HelpBlock,
   ListGroup, ListGroupItem
 } from 'react-bootstrap';
@@ -8,7 +8,7 @@ class SaveDialog extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { 
+    this.state = {
       showModal: false,
       reserved: new Set(),
       title: '',
@@ -25,9 +25,9 @@ class SaveDialog extends Component {
     this.changeTitle = this.changeTitle.bind(this);
     this.changeType = this.changeType.bind(this);
   }
-  
+
   open(title, identifier, reserved, callbackOK, callbackCancel) {
-    this.setState({ 
+    this.setState({
       showModal: true,
       title: title,
       identifier: identifier,
@@ -38,17 +38,17 @@ class SaveDialog extends Component {
   }
 
   onOK() {
-    if (this.validateTitle() === 'error' || 
+    if (this.validateTitle() === 'error' ||
         this.validateType() === 'error') return;
-    this.setState({ 
-      showModal: false 
+    this.setState({
+      showModal: false
     });
     this.state.callbackOK(this.state.title, this.state.identifier);
   }
 
   onCancel() {
-    this.setState({ 
-      showModal: false 
+    this.setState({
+      showModal: false
     });
     this.state.callbackCancel();
   }
@@ -66,7 +66,7 @@ class SaveDialog extends Component {
   changeTitle(e) {
     this.setState({ title: e.target.value });
   }
-  
+
   changeType(e) {
     this.setState({ identifier: e.target.value });
   }
@@ -79,15 +79,15 @@ class SaveDialog extends Component {
           <Modal.Header>
             <Modal.Title>Save subgraph</Modal.Title>
           </Modal.Header>
-    
+
           <Modal.Body>
 
             <form>
               <FormGroup controlId="title" validationState={this.validateTitle()}>
                 <ControlLabel>Title</ControlLabel>
-                <FormControl type="text" 
+                <FormControl type="text"
                              value={this.state.title}
-                             placeholder="Title" 
+                             placeholder="Title"
                              onChange={this.changeTitle} />
                 <FormControl.Feedback />
                 <HelpBlock>
@@ -97,20 +97,20 @@ class SaveDialog extends Component {
 
               <FormGroup controlId="identifier" validationState={this.validateType()}>
                 <ControlLabel>Identifier</ControlLabel>
-                <FormControl type="text" 
+                <FormControl type="text"
                              value={this.state.identifier}
-                             placeholder="identifier" 
+                             placeholder="identifier"
                              onChange={this.changeType} />
                 <FormControl.Feedback />
                 <HelpBlock>
-                  The unique identifier must be consisted of alphanumerics with no 
+                  The unique identifier must be consisted of alphanumerics with no
                   special characters.
                 </HelpBlock>
               </FormGroup>
             </form>
 
           </Modal.Body>
-    
+
           <Modal.Footer>
             <Button bsStyle="default" onClick={this.onCancel}>Cancel</Button>
             <Button bsStyle="primary" onClick={this.onOK}>
@@ -119,7 +119,7 @@ class SaveDialog extends Component {
             }
             </Button>
           </Modal.Footer>
-    
+
         </Modal.Dialog>
         ): null}
       </div>
@@ -131,7 +131,7 @@ class OpenDialog extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { 
+    this.state = {
       showModal: false,
       items: [],
       callbackOK: function() {},
@@ -142,9 +142,9 @@ class OpenDialog extends Component {
     this.onOK = this.onOK.bind(this);
     this.onCancel = this.onCancel.bind(this);
   }
-  
+
   open(items, callbackOK, callbackCancel) {
-    this.setState({ 
+    this.setState({
       showModal: true,
       items: items,
       callbackOK: callbackOK,
@@ -154,15 +154,15 @@ class OpenDialog extends Component {
 
   onOK(e) {
     let selection = e.target.dataset.identifier;
-    this.setState({ 
-      showModal: false 
+    this.setState({
+      showModal: false
     });
     this.state.callbackOK(selection);
   }
 
   onCancel() {
-    this.setState({ 
-      showModal: false 
+    this.setState({
+      showModal: false
     });
     this.state.callbackCancel();
   }
@@ -175,7 +175,7 @@ class OpenDialog extends Component {
           <Modal.Header>
             <Modal.Title>Open subgraph</Modal.Title>
           </Modal.Header>
-    
+
           <Modal.Body>
 
             <ListGroup>
@@ -184,7 +184,7 @@ class OpenDialog extends Component {
               }
               {
                 this.state.items.map(
-                  item => 
+                  item =>
                   <ListGroupItem onClick={this.onOK} key={item} data-identifier={item}>
                     {item}
                   </ListGroupItem>)
@@ -192,11 +192,75 @@ class OpenDialog extends Component {
             </ListGroup>
 
           </Modal.Body>
-    
+
           <Modal.Footer>
             <Button bsStyle="default" onClick={this.onCancel}>Cancel</Button>
           </Modal.Footer>
-    
+
+        </Modal.Dialog>
+        ): null}
+      </div>
+    );
+  }
+}
+
+class DeleteDialog extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      showModal: false,
+      name: "",
+      callbackOK: function() {},
+      callbackCancel: function() {},
+    };
+
+    this.open = this.open.bind(this);
+    this.onOK = this.onOK.bind(this);
+    this.onCancel = this.onCancel.bind(this);
+  }
+
+  open(name, callbackOK, callbackCancel) {
+    this.setState({
+      showModal: true,
+      name: name,
+      callbackOK: callbackOK,
+      callbackCancel: callbackCancel
+    });
+  }
+
+  onOK(e) {
+    this.setState({
+      showModal: false
+    });
+    this.state.callbackOK();
+  }
+
+  onCancel() {
+    this.setState({
+      showModal: false
+    });
+    this.state.callbackCancel();
+  }
+
+  render() {
+    return (
+      <div>
+        {this.state.showModal ? (
+        <Modal.Dialog>
+          <Modal.Header>
+            <Modal.Title>Delete subgraph</Modal.Title>
+          </Modal.Header>
+
+          <Modal.Body>
+            Are you sure you want to delete {this.name}?
+          </Modal.Body>
+
+          <Modal.Footer>
+            <Button bsStyle="default" onClick={this.onCancel}>Cancel</Button>
+            <Button bsStyle="primary" onClick={this.onOK}>Confirm</Button>
+          </Modal.Footer>
+
         </Modal.Dialog>
         ): null}
       </div>
@@ -208,7 +272,7 @@ class MessageDialog extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { 
+    this.state = {
       showModal: false,
       title: '',
       message: ''
@@ -217,9 +281,9 @@ class MessageDialog extends Component {
     this.open = this.open.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
   }
-  
+
   open(title, message) {
-    this.setState({ 
+    this.setState({
       showModal: true,
       title: title,
       message: message
@@ -227,8 +291,8 @@ class MessageDialog extends Component {
   }
 
   onDismiss() {
-    this.setState({ 
-      showModal: false 
+    this.setState({
+      showModal: false
     });
   }
 
@@ -240,13 +304,13 @@ class MessageDialog extends Component {
           <Modal.Header>
             <Modal.Title>{this.state.title}</Modal.Title>
           </Modal.Header>
-    
+
           <Modal.Body>{this.state.message}</Modal.Body>
-    
+
           <Modal.Footer>
             <Button bsStyle="default" onClick={this.onDismiss}>Dismiss</Button>
           </Modal.Footer>
-    
+
         </Modal.Dialog>
         ): null}
       </div>
@@ -254,4 +318,4 @@ class MessageDialog extends Component {
   }
 }
 
-export { SaveDialog, OpenDialog, MessageDialog };
+export { OpenDialog, SaveDialog, DeleteDialog, MessageDialog };
