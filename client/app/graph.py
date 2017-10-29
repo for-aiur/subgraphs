@@ -12,7 +12,10 @@ class Graph(object):
         tf.reset_default_graph()
 
         self._root = composition.Composition(data)
-        self._outputs = self._root.call()
+        with tf.variable_scope(
+            tf.get_variable_scope(), 
+            custom_getter=self._reuse_getter):
+            self._outputs = self._root.call()
         self._summaries = tf.summary.merge_all()
         self._step = tf.contrib.framework.get_or_create_global_step()
         self._increment_step = tf.assign_add(self._step, 1)
@@ -62,3 +65,11 @@ class Graph(object):
                     outputs["summaries"], outputs["step"])
 
         self._i += 1
+
+    @staticmethod
+    def _reuse_getter(getter, name, *args, **kwargs):
+        var = tf.contrib.framework.get_variables_by_name(name)
+        if var:
+            return var[0]
+        else:
+            return getter(name, *args, **kwargs)

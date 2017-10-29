@@ -5,33 +5,33 @@ from __future__ import print_function
 import tensorflow as tf
 from kernels import core
 
+
 @core.register_std_kernel
-class Flatten(core.Kernel):
+class Equal(core.Kernel):
 
     @staticmethod
     def get_config():
-        config = core.Config("Flatten", "flatten")
-        config.add_input(core.Port(name="input"))
+        config = core.Config("Equal", "equal")
+        config.add_input(core.Port(name="x"))
+        config.add_input(core.Port(name="y"))
         config.add_output(core.Port(name="output"))
         return config
 
-    def call(self, input):
-        output = tf.contrib.layers.flatten(input[0])
+    def call(self, x, y):
+        output = tf.equal(x[0], y[0])
         return dict(output=output)
 
 
 @core.register_std_kernel
-class Reshape(core.Kernel):
+class Negative(core.Kernel):
 
     @staticmethod
     def get_config():
-        config = core.Config("Reshape", "reshape")
+        config = core.Config("Negative", "negative")
         config.add_input(core.Port(name="input"))
         config.add_output(core.Port(name="output"))
-        config.add_attribute(
-            core.Attribute(name="shape", type="array", value="[-1]"))
         return config
 
     def call(self, input):
-        output = tf.reshape(input[0], self.shape)
+        output = tf.negative(input[0])
         return dict(output=output)

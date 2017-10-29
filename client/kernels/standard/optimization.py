@@ -13,7 +13,7 @@ class Optimize(core.Kernel):
     def get_config():
         config = core.Config("Optimize", "optimize")
         config.add_input(core.Port(name="loss"))
-        config.add_output(core.Port(name="outputs"))
+        config.add_output(core.Port(name="output"))
         config.add_attribute(
             core.Attribute(name="learning_rate", type="float", value="0.001"))
         config.add_attribute(
@@ -22,10 +22,10 @@ class Optimize(core.Kernel):
 
     def call(self, loss):
         global_step = tf.contrib.framework.get_or_create_global_step()
-        outputs = tf.contrib.layers.optimize_loss(
+        output = tf.contrib.layers.optimize_loss(
             loss[0],
             global_step,
             self.learning_rate,
             self.method,
             increment_global_step=False)
-        return dict(outputs=outputs)
+        return dict(output=output)

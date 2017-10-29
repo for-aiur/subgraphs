@@ -11,7 +11,7 @@ class RandomUniform(core.Kernel):
     @staticmethod
     def get_config():
         config = core.Config("Random Uniform", "random_uniform")
-        config.add_output(core.Port(name="outputs"))
+        config.add_output(core.Port(name="output"))
         config.add_attribute(
             core.Attribute(name="shape", type="array", value="[]"))
         config.add_attribute(
@@ -21,8 +21,8 @@ class RandomUniform(core.Kernel):
         return config
 
     def call(self):
-        outputs = tf.random_uniform(self.shape, self.min, self.max)
-        return dict(outputs=outputs)
+        output = tf.random_uniform(self.shape, self.min, self.max)
+        return dict(output=output)
 
 
 @core.register_std_kernel
@@ -31,7 +31,7 @@ class RandomNormal(core.Kernel):
     @staticmethod
     def get_config():
         config = core.Config("Random Normal", "random_normal")
-        config.add_output(core.Port(name="outputs"))
+        config.add_output(core.Port(name="output"))
         config.add_attribute(
             core.Attribute(name="shape", type="array", value="[]"))
         config.add_attribute(
@@ -41,5 +41,5 @@ class RandomNormal(core.Kernel):
         return config
 
     def call(self):
-        outputs = tf.random_normal(self.shape, self.mean, self.stddev)
-        return dict(outputs=outputs)
+        output = tf.random_normal(self.shape, self.mean, self.stddev)
+        return dict(output=output)

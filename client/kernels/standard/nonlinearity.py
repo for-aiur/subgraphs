@@ -12,13 +12,13 @@ class ReLU(core.Kernel):
     @staticmethod
     def get_config():
         config = core.Config("ReLU", "relu")
-        config.add_input(core.Port(name="inputs"))
-        config.add_output(core.Port(name="outputs"))
+        config.add_input(core.Port(name="input"))
+        config.add_output(core.Port(name="output"))
         return config
 
-    def call(self, inputs):
-        outputs = tf.nn.relu(inputs[0])
-        return dict(outputs=outputs)
+    def call(self, input):
+        output = tf.nn.relu(input[0])
+        return dict(output=output)
 
 
 @core.register_std_kernel
@@ -27,13 +27,13 @@ class Softmax(core.Kernel):
     @staticmethod
     def get_config():
         config = core.Config("Softmax", "softmax")
-        config.add_input(core.Port(name="inputs"))
-        config.add_output(core.Port(name="outputs"))
+        config.add_input(core.Port(name="input"))
+        config.add_output(core.Port(name="output"))
         return config
 
-    def call(self, inputs):
-        outputs = tf.nn.softmax(inputs[0])
-        return dict(outputs=outputs)
+    def call(self, input):
+        output = tf.nn.softmax(input[0])
+        return dict(output=output)
 
 
 @core.register_std_kernel
@@ -42,10 +42,10 @@ class Sigmoid(core.Kernel):
     @staticmethod
     def get_config():
         config = core.Config("Sigmoid", "sigmoid")
-        config.add_input(core.Port(name="inputs"))
-        config.add_output(core.Port(name="outputs"))
+        config.add_input(core.Port(name="input"))
+        config.add_output(core.Port(name="output"))
         return config
 
-    def call(self, inputs):
-        outputs = tf.sigmoid(inputs[0])
-        return dict(outputs=outputs)
+    def call(self, input):
+        output = tf.sigmoid(input[0])
+        return dict(output=output)

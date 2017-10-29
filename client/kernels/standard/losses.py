@@ -7,11 +7,11 @@ from kernels import core
 
 
 @core.register_std_kernel
-class CrossEntropy(core.Kernel):
+class SoftmaxCrossEntropy(core.Kernel):
 
     @staticmethod
     def get_config():
-        config = core.Config("Cross Entropy", "cross_entropy")
+        config = core.Config("Softmax Cross Entropy", "softmax_xe")
         config.add_input(core.Port(name="logits"))
         config.add_input(core.Port(name="labels"))
         config.add_output(core.Port(name="loss"))
@@ -24,4 +24,20 @@ class CrossEntropy(core.Kernel):
         else:
             loss = tf.losses.softmax_cross_entropy(
                 onehot_labels=labels[0], logits=logits[0])
+        return dict(loss=loss)
+
+
+@core.register_std_kernel
+class L2Loss(core.Kernel):
+
+    @staticmethod
+    def get_config():
+        config = core.Config("L2 loss", "l2_loss")
+        config.add_input(core.Port(name="predictions"))
+        config.add_input(core.Port(name="targets"))
+        config.add_output(core.Port(name="loss"))
+        return config
+
+    def call(self, logits, labels):
+        loss = tf.reduce_mean(tf.square(logits[0] - labels[0]))
         return dict(loss=loss)
