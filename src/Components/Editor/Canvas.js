@@ -283,7 +283,7 @@ class Canvas extends Component {
         callback: function(selectedNodeDatum) {
           let mouse = d3.mouse(_self.nodesContainer);
           let pos = {x: mouse[0] - 75, y: mouse[1] - 20};
-          let node = _self.scope.fromTemplate(d, pos);
+          let node = _self.scope.fromTemplate(d.toTemplate(), pos);
           _self.scope.addNode(node);
           _self.drawNodes();
         }
@@ -294,7 +294,7 @@ class Canvas extends Component {
         callback: function(selectedNodeDatum) {
           let mouse = d3.mouse(_self.nodesContainer);
           let pos = {x: mouse[0] - 75, y: mouse[1] - 20};
-          let node = _self.scope.fromTemplate(d, pos);
+          let node = _self.scope.fromTemplate(d.toTemplate(), pos);
           node.name = d.name;
           _self.scope.addNode(node);
           _self.drawNodes();
