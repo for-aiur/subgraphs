@@ -46,6 +46,12 @@ class CatalogService extends Service {
         return d.title.match(re) != null
       });
     }
+    items = items.sort(
+      (a, b) => {
+        if (a.title < b.title) return -1;
+        if (a.title > b.title) return 1;
+        return 0;
+      });
     return items;
   }
 

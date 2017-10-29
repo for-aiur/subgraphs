@@ -171,16 +171,16 @@ class Node {
   }
 
   updatePorts() {
-    let newNode = {inputs: [],  outputs: []};
+    let ports = {inputs: [],  outputs: []};
+    let idx = {inputs: 0, outputs: 0}
     this.nodeData.forEach(function(node) {
       for (let side of ['inputs', 'outputs']) {
-        let j = 0;
         for (let i in node[side]) {
           let port = node[side][i];
           if (port.alias) {
-            newNode[side].push({
+            ports[side].push({
               name: port.alias,
-              id: new Port(this.id, side, j++).id,
+              id: new Port(this.id, side, idx[side]++).id,
               edges: new Set(),
               alias: null
             });
@@ -188,8 +188,9 @@ class Node {
         }
       }
     }.bind(this));
-    this.inputs = newNode.inputs;
-    this.outputs = newNode.outputs;
+    this.inputs = ports.inputs;
+    this.outputs = ports.outputs;
+    console.log(this.outputs);
   }
 
   updateAttributes() {
