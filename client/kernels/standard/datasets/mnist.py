@@ -78,8 +78,8 @@ class CIFARDataset(core.Kernel):
 
         d = tf.contrib.data.Dataset.from_tensor_slices((images, labels))
         d = d.cache()
+        d = d.repeat()
         if self.split == "train":
-            d = d.repeat()
             d = d.shuffle(self.batch_size * NUM_SHUFFLE_BATCHES)
         d = d.map(_parse, num_threads=NUM_THREADS)
         d = d.batch(self.batch_size)
