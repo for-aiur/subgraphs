@@ -57,7 +57,7 @@ class CollageSummary(core.Kernel):
         config.add_input(core.Port(name="input"))
         config.add_attribute(core.Attribute(name="rows", type="int", value="8"))
         config.add_attribute(core.Attribute(name="cols", type="int", value="8"))
-        config.add_attribute(core.Attribute(name="clip", type="bool", value="false"))
+        config.add_attribute(core.Attribute(name="clip", type="bool", value="true"))
         return config
 
     def call(self, input):

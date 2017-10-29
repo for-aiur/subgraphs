@@ -38,6 +38,6 @@ class L2Loss(core.Kernel):
         config.add_output(core.Port(name="loss"))
         return config
 
-    def call(self, logits, labels):
-        loss = tf.reduce_mean(tf.square(logits[0] - labels[0]))
+    def call(self, predictions, targets):
+        loss = tf.reduce_mean(tf.square(predictions[0] - targets[0]))
         return dict(loss=loss)

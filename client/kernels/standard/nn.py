@@ -37,7 +37,8 @@ class Conv2D(core.Kernel):
 
     def call(self, input):
         output = tf.layers.conv2d(
-            input[0], self.filters, self.kernel_size, self.strides)
+            input[0], self.filters, self.kernel_size, self.strides,
+            padding="same")
         return dict(output=output)
 
 
@@ -56,5 +57,6 @@ class TransposedConv2D(core.Kernel):
 
     def call(self, input):
         output = tf.layers.conv2d_transpose(
-            input[0], self.filters, self.kernel_size, self.strides)
+            input[0], self.filters, self.kernel_size, self.strides,
+            padding="same")
         return dict(output=output)
