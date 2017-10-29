@@ -21,6 +21,7 @@
 # Client
 /client/data
 /client/outputs
+/client/settings.json
 
 # misc
 .DS_Store

@@ -6,7 +6,9 @@ import collections
 import threading
 import requests
 from six.moves import queue
-import graph
+from app import graph
+from app import traceback
+
 
 COMMANDS = {}
 
@@ -51,9 +53,14 @@ class Worker(object):
                 item = self.queue.get(block)
             except queue.Empty:
                 self.update()
-            else:
+                continue
+
+            try:
                 name, args = item
                 COMMANDS[name](self, **args)
+            except Exception as e:
+                print("Failed to build the graph.", e)
+                traceback.pretty_print()
 
     def join(self):
         self.thread.join()
@@ -81,5 +88,6 @@ class Worker(object):
         try:
             self.graph.run()
         except Exception as e:
+            print("Failed to update the graph.", e)
+            traceback.pretty_print()
             self.stop()
-            print("Unhandled exception", e)
