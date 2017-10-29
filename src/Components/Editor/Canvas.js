@@ -71,15 +71,15 @@ class Canvas extends Component {
     this.drawTabs();
   }
 
-  saveSubgraph(onOK=null, onCancel=null) {
+  saveSubgraph(p, onOK=null, onCancel=null) {
     this.saveDialog.open(
-      this.scope.title,
-      this.scope.identifier,
+      p.title,
+      p.identifier,
       new Set(theCatalogService.getIdentifiers('compositions')),
       (title, identifier) => {
-        this.scope.title = title;
-        this.scope.identifier = identifier;
-        theCatalogService.add('compositions', this.scope.toTemplate(), () => {
+        p.title = title;
+        p.identifier = identifier;
+        theCatalogService.add('compositions', p.toTemplate(), () => {
           this.messageDialog.open(
             'Error', 'Failed to communicate with the server. '+
             'Perhaps you are not logged in?');
@@ -608,10 +608,11 @@ class Canvas extends Component {
       .attr('role', 'button')
       .on('click', function() {
         d3.event.stopPropagation();
-        if (this.scope.parent) {
+        if (p.parent || p.nodeData.length === 0) {
           this.closeSubgraph(p);
         } else {
           this.saveSubgraph(
+            p,
             () => this.closeSubgraph(p),
             () => this.closeSubgraph(p));
         }

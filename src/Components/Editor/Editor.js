@@ -15,9 +15,9 @@ class Editor extends Component {
   }
 
   onSave() {
-    this.canvas.saveSubgraph();
+    this.canvas.saveSubgraph(this.canvas.scope);
   }
-  
+
   onDelete() {
     this.canvas.deleteSubgraph();
   }
