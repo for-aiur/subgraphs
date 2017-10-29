@@ -22,9 +22,9 @@ class Guide extends Component {
           <h2 className="text-center">Creating subgraphs</h2>
           <p className="lead">
             Click on the new button to create an empty subgraph. You can then specify
-            a title and a name for your subgraph. Make sure to specify a unique 
+            a title and an identifier for your subgraph. Make sure to specify a unique 
             identifier for your subgraphs. You can only use alphanumerical characters
-            and underline for the identifier name.
+            and underline for the identifier.
           </p>
           <p className="text-center">
             <img src="https://i.imgur.com/oOoMGg6.gif" alt="" />
@@ -34,7 +34,7 @@ class Guide extends Component {
         <div>
           <h2 className="text-center">Inserting nodes</h2>
           <p className="lead">
-            Simply drag and drop nodes from the catalog to the canvas and specify 
+            Simply drag and drop any node from the catalog to the canvas and specify 
             its attributes. You can then connect the nodes by dragging the ports.
           </p>
           <p className="text-center">
