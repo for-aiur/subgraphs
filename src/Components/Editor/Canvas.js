@@ -278,6 +278,29 @@ class Canvas extends Component {
         }
       });
 
+      items.push({
+        name: 'Make copy',
+        callback: function(selectedNodeDatum) {
+          let mouse = d3.mouse(_self.nodesContainer);
+          let pos = {x: mouse[0] - 75, y: mouse[1] - 20};
+          let node = _self.scope.fromTemplate(d, pos);
+          _self.scope.addNode(node);
+          _self.drawNodes();
+        }
+      });
+
+      items.push({
+        name: 'Make reference',
+        callback: function(selectedNodeDatum) {
+          let mouse = d3.mouse(_self.nodesContainer);
+          let pos = {x: mouse[0] - 75, y: mouse[1] - 20};
+          let node = _self.scope.fromTemplate(d, pos);
+          node.name = d.name;
+          _self.scope.addNode(node);
+          _self.drawNodes();
+        }
+      });
+
       let selection = d3.selectAll('.selected');
       if (selection.empty()) {
         return items;
