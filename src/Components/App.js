@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { HashRouter, Route } from 'react-router-dom';
 import About from './About/About.js';
+import Guide from './About/Guide.js';
 import Editor from './Editor/Editor.js';
 import Login from './User/Login.js';
 import Profile from './User/Profile.js';
@@ -43,7 +44,7 @@ class App extends Component {
         <div>
           <Navigation user={this.state.user} />
           <Route exact path="/" component={About}></Route>
-          <Route exact path="/About" component={About}></Route>
+          <Route exact path="/Guide" component={Guide}></Route>
           <Route exact path="/Editor" component={Editor}></Route>
           <Route exact path="/Login" component={Login}></Route>
           <Route exact path="/Profile" render={props => (

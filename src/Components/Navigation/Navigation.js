@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
 import './Navigation.css';
 
@@ -10,7 +10,7 @@ class Navigation extends Component {
       <Navbar fluid collapseOnSelect>
         <Navbar.Header>
           <Navbar.Brand>
-            <a href="/">Subgraphs<sup>&alpha;</sup></a>
+            <Link to="/">Subgraphs<sup>&alpha;</sup></Link>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>
@@ -18,6 +18,9 @@ class Navigation extends Component {
           <Nav>
             <NavItem eventKey={1} onClick={e => this.props.history.push("/editor")}>
               Editor
+            </NavItem>
+            <NavItem eventKey={1} onClick={e => this.props.history.push("/guide")}>
+              Guide
             </NavItem>
           </Nav>
           <Nav pullRight>
