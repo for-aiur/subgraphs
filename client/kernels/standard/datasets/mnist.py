@@ -7,8 +7,8 @@ import gzip
 import struct
 import numpy as np
 from six.moves import urllib
-import kernels.core as core
 import tensorflow as tf
+from kernels import core
 
 REMOTE_URL = "http://yann.lecun.com/exdb/mnist/"
 LOCAL_DIR = "data/mnist/"

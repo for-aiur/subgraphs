@@ -7,8 +7,8 @@ import tarfile
 import numpy as np
 from six.moves import cPickle
 from six.moves import urllib
-import kernels.core as core
 import tensorflow as tf
+from kernels import core
 
 REMOTE_URL = "https://www.cs.toronto.edu/~kriz/cifar-100-python.tar.gz"
 LOCAL_DIR = os.path.join("data/cifar100/")

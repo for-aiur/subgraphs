@@ -2,8 +2,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import kernels.core as core
 import tensorflow as tf
+from kernels import core
+
 
 @core.register_std_kernel
 class Constant(core.Kernel):
