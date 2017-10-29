@@ -48,7 +48,7 @@ class Guide extends Component {
             You can expose any subgraph's internal attributes and ports so that it can be 
             reused in different places. Select a node, and go to property view on the
             right. Press "external" to expose the port or attribute. You can further
-            specify an alias for the port or attribute name.
+            specify external aliases for ports or attributes.
           </p>
           <p className="text-center">
             <img src="https://i.imgur.com/B2d8IPn.gif" alt="" />
@@ -59,9 +59,9 @@ class Guide extends Component {
           <h2 className="text-center">Terminal nodes</h2>
           <p className="lead">
             Ops won't get executed by default. In order to run ops, they have to be
-            connected to a terminal node. "Run" node is a terminal that will be executed
-            at each iteration. It's usually connected to the training op in the graph.
-            "Summary" nodes get executed every few iterations, and the output of them
+            connected to a terminal node. "Run" node is a terminal node that gets
+            executed at each iteration. It's usually connected to the training op in the graph.
+            "Summary" nodes get executed every few iterations, and their output
             will be visualized on TensorBoard.
           </p>
           <p className="text-center">
@@ -72,7 +72,7 @@ class Guide extends Component {
         <div>
           <h2 className="text-center">Running subgraphs</h2>
           <p className="lead">
-            In order to run your models you will need to download and the client application.
+            In order to run your models you will need to download the client application.
             Follow the instructions from <a href="https://github.com/vahidk/subgraphs">here</a>.
           </p>
         </div>
