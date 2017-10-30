@@ -8,7 +8,7 @@ class CommandService extends Service {
 
     this.fetchCommands = this.fetchCommands.bind(this);
     this.fetchCommands();
-    setInterval(this.fetchCommands, 1000);
+    // setInterval(this.fetchCommands, 1000);
   }
 
   fetchCommands() {
