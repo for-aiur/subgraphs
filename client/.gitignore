@@ -1,6 +1,0 @@
-/data
-/outputs
-/settings.json
-.DS_Store
-.vscode/chrome
-*.pyc
