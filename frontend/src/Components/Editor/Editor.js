@@ -3,7 +3,7 @@ import GraphEditor from './GraphEditor'
 import CodeEditor from './CodeEditor'
 import Menu from './Menu'
 import TabsBar from './TabsBar';
-import { OpenDialog, SaveDialog, DeleteDialog, MessageDialog } from './Dialogs';
+import { NewDialog, OpenDialog, SaveDialog, DeleteDialog, MessageDialog } from './Dialogs';
 import theCatalogService from '../../Services/CatalogService'
 import Node from '../../Graph/Node';
 import * as Utils from '../../Common/Utils';
@@ -30,17 +30,34 @@ class Editor extends Component {
   }
 
   get mode() {
-    return mode.GRAPH;
+    if (this.state.scope.category === 'graph') {
+      return mode.GRAPH;
+    } else {
+      return mode.CODE;
+    }
   }
 
   uniqueIdentifier(identifier) {
     let identifiers = this.state.openNodes.map(d => d.identifier).concat(
-      theCatalogService.getIdentifiers('compositions'));
+      theCatalogService.getIdentifiers('graph'));
     return Utils.uniqueName(identifier, identifiers);
   }
 
   onNew = () => {
+    this.newDialog.open(
+      {
+        'graph': 'Graph',
+        'kernel': 'Kernel'
+      },
+      (category) => {
+        this.onNewSubgraph(category);
+      },
+      () => {});
+  };
+
+  onNewSubgraph = (category = 'graph') => {
     let node = new Node('New Project', this.uniqueIdentifier('project'));
+    node.category = category;
     let openNodes = this.state.openNodes;
     openNodes.push(node);
     this.setState({
@@ -51,10 +68,10 @@ class Editor extends Component {
 
   onOpen = () => {
     this.openDialog.open(
-      theCatalogService.getIdentifiers('compositions'),
+      theCatalogService.getIdentifiers('graph'),
       (identifier) => {
         let p = theCatalogService.getItemByIdentifier(
-          'compositions', identifier);
+          'graph', identifier);
         p = Object.assign(new Node(), p).clone();
         this.onOpenSubgraph(p);
       },
@@ -82,7 +99,7 @@ class Editor extends Component {
     this.setState({openNodes: openNodes});
     if (this.state.scope === p) {
       if (openNodes.length === 0) {
-        this.onNew();
+        this.onNewSubgraph();
       } else {
         this.onSetScope(openNodes[Math.max(0, i - 1)]);
       }
@@ -98,11 +115,11 @@ class Editor extends Component {
     this.saveDialog.open(
       p.title,
       p.identifier,
-      new Set(theCatalogService.getIdentifiers('compositions')),
+      new Set(theCatalogService.getIdentifiers('graph')),
       (title, identifier) => {
         p.title = title;
         p.identifier = identifier;
-        theCatalogService.add('compositions', p.toTemplate(), () => {
+        theCatalogService.add('graph', p.toTemplate(), () => {
           this.messageDialog.open(
             'Error', 'Failed to communicate with the server. '+
             'Perhaps you are not logged in?');
@@ -117,7 +134,7 @@ class Editor extends Component {
 
   onDelete = () => {
     let existing = theCatalogService.getItemByIdentifier(
-      'compositions', this.state.scope.identifier);
+      'graph', this.state.scope.identifier);
     if (!existing) {
       let p = this.state.scope;
       this.onClose(p);
@@ -128,7 +145,7 @@ class Editor extends Component {
       () => {
         let p = this.state.scope;
         this.onClose(p);
-        theCatalogService.remove('compositions', p, () => {
+        theCatalogService.remove('graph', p, () => {
           this.messageDialog.open(
             'Error', 'Failed to communicate with the server. '+
             'Perhaps you are not logged in?');
@@ -140,7 +157,7 @@ class Editor extends Component {
 
   onRun = () => {
     let identifier = this.state.scope.identifier;
-    if (!theCatalogService.getItemByIdentifier('compositions', identifier)) {
+    if (!theCatalogService.getItemByIdentifier('graph', identifier)) {
       this.messageDialog.open(
         'Error', 'Current project is not saved.');
       return;
@@ -174,6 +191,7 @@ class Editor extends Component {
 
     return (
       <div className="app">
+        <NewDialog ref={p => this.newDialog = p} />
         <OpenDialog ref={p => this.openDialog = p} />
         <SaveDialog ref={p => this.saveDialog = p} />
         <DeleteDialog ref={p => this.deleteDialog = p} />

@@ -33,8 +33,8 @@ class CatalogService extends Service {
   constructor() {
     super();
     this.items = {
-      kernels: sampleKernels,
-      compositions: []
+      kernel: sampleKernels,
+      graph: []
     };
     this.fetchCatalog();
   }
@@ -58,8 +58,8 @@ class CatalogService extends Service {
     // })
     // .then(d => d.json())
     // .then(items => {
-    //   this.items.kernels = items.filter(d => d.category === 'kernel');
-    //   this.items.compositions = items.filter(d => d.category === 'composition');
+    //   this.items.kernel = items.filter(d => d.category === 'kernel');
+    //   this.items.graph = items.filter(d => d.category === 'graph');
     //   this.publish(this.items);
     // }).catch(() => {});
   }

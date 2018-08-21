@@ -4,6 +4,73 @@ import {
   ListGroup, ListGroupItem
 } from 'react-bootstrap';
 
+class NewDialog extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      types: {},
+      showModal: false,
+      callbackOK: function() {},
+      callbackCancel: function() {},
+    };
+  }
+
+  open = (types, callbackOK, callbackCancel) => {
+    this.setState({
+      types: types,
+      showModal: true,
+      callbackOK: callbackOK,
+      callbackCancel: callbackCancel
+    });
+  };
+
+  onOK = (type) => {
+    this.setState({
+      showModal: false
+    });
+    this.state.callbackOK(type);
+  };
+
+  onCancel = () => {
+    this.setState({
+      showModal: false
+    });
+    this.state.callbackCancel();
+  };
+
+  render() {
+    let buttons = Object.keys(this.state.types).map((key) =>
+      <div className="btn-group" key={key}>
+        <Button bsStyle="primary" onClick={() => this.onOK(key)}>
+          {this.state.types[key]}
+        </Button>
+      </div>
+    );
+
+    return (
+      <div>
+        {this.state.showModal ? (
+        <Modal.Dialog>
+          <Modal.Header>
+            <Modal.Title>New subgraph</Modal.Title>
+          </Modal.Header>
+
+          <Modal.Body>
+            {buttons}
+          </Modal.Body>
+
+          <Modal.Footer>
+            <Button bsStyle="default" onClick={this.onCancel}>Cancel</Button>
+          </Modal.Footer>
+
+        </Modal.Dialog>
+        ): null}
+      </div>
+    );
+  }
+}
+
 class SaveDialog extends Component {
   constructor(props) {
     super(props);
@@ -299,4 +366,4 @@ class MessageDialog extends Component {
   }
 }
 
-export { OpenDialog, SaveDialog, DeleteDialog, MessageDialog };
+export { NewDialog, OpenDialog, SaveDialog, DeleteDialog, MessageDialog };

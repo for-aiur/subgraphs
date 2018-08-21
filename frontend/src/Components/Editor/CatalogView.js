@@ -61,8 +61,8 @@ class CatalogView extends Component {
 
   drawCatalog() {
     let cats = {
-      kernels: this.kernelsCatalogView,
-      compositions: this.compositionsCatalogView
+      kernel: this.kernelCatalogView,
+      graph: this.graphCatalogView
     };
 
     for (let cat in cats) {
@@ -92,10 +92,10 @@ class CatalogView extends Component {
           <i className="glyphicon glyphicon-search form-control-feedback"></i>
         </div>
         <span>Kernels</span>
-        <div ref={p => this.kernelsCatalogView = p} className="list-group">
+        <div ref={p => this.kernelCatalogView = p} className="list-group">
         </div>
-        <span>Compositions</span>
-        <div ref={p => this.compositionsCatalogView = p} className="list-group">
+        <span>Graphs</span>
+        <div ref={p => this.graphCatalogView = p} className="list-group">
         </div>
       </div>
     );
