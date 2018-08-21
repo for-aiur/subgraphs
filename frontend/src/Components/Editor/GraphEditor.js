@@ -635,51 +635,51 @@ class GraphEditor extends Component {
 
   render() {
     return (
-    <div id="container" ref={p => this.container = p} >
+    <div id="ge-container" ref={p => this.container = p} >
       <div id="catalogView">
         <CatalogView draggingNode={this.draggingNode}
                      nodesContainer={this.nodesContainer}
                      onDrop={this.onAddNode} />
       </div>
       <div id="canvas">
-      <svg ref={p => this.canvas = p}>
-        <defs>
-          <pattern id="grid" width="32" height="32"
-              patternUnits="userSpaceOnUse">
-            <circle cx="16" cy="16" r="2" fill="#ccc">
-            </circle>
-          </pattern>
-          <marker id="arrow"
-              markerWidth="7"
-              markerHeight="7"
-              refX="6" refY="2"
-              orient="auto"
-              markerUnits="strokeWidth">
-            <path d="M0,0L0,4L7,2z" fill="#555"  />
-          </marker>
-        </defs>
+        <svg ref={p => this.canvas = p}>
+          <defs>
+            <pattern id="grid" width="32" height="32"
+                patternUnits="userSpaceOnUse">
+              <circle cx="16" cy="16" r="2" fill="#ccc">
+              </circle>
+            </pattern>
+            <marker id="arrow"
+                markerWidth="7"
+                markerHeight="7"
+                refX="6" refY="2"
+                orient="auto"
+                markerUnits="strokeWidth">
+              <path d="M0,0L0,4L7,2z" fill="#555"  />
+            </marker>
+          </defs>
 
-        <g ref={p => this.background = p}>
-          <rect ref={p => this.nodesContainer = p}
-              className="wallpaper"
-              x="-10000px" y="-10000px"
-              width="20000px" height="20000px"
-              fill="url(#grid)">
+          <g ref={p => this.background = p}>
+            <rect ref={p => this.nodesContainer = p}
+                className="wallpaper"
+                x="-10000px" y="-10000px"
+                width="20000px" height="20000px"
+                fill="url(#grid)">
+            </rect>
+          </g>
+          <g ref={p => this.edgesContainer = p}></g>
+          <line ref={p => this.line = p}
+              className="nodeLink"
+              visibility="hidden"
+              markerEnd="url(#arrow)">
+          </line>
+          <g ref={p => this.nodesContainer = p}></g>
+          <rect ref={p => this.selectionRect = p} className="selectionRect"
+              visibility="hidden">
           </rect>
-        </g>
-        <g ref={p => this.edgesContainer = p}></g>
-        <line ref={p => this.line = p}
-            className="nodeLink"
-            visibility="hidden"
-            markerEnd="url(#arrow)">
-        </line>
-        <g ref={p => this.nodesContainer = p}></g>
-        <rect ref={p => this.selectionRect = p} className="selectionRect"
-            visibility="hidden">
-        </rect>
-        <g ref={p => this.contextMenu = p} className="contextMenu">
-        </g>
-      </svg>
+          <g ref={p => this.contextMenu = p} className="contextMenu">
+          </g>
+        </svg>
       </div>
       <div id="propertiesView">
         <PropertiesView selection={this.state.selection}

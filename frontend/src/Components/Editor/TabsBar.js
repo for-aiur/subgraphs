@@ -1,7 +1,21 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import d3 from '../../Common/D3Ext';
+import './TabsBar.css';
 
 class TabsBar extends Component {
+  static propTypes = {
+    scope: PropTypes.object,
+    openNodes: PropTypes.array,
+    onSetScope: PropTypes.func,
+    onSaveSubgraph: PropTypes.func,
+    onCloseSubgraph: PropTypes.func,
+  };
+
+  componentDidMount() {
+    this.drawTabs();
+  }
+
   componentDidUpdate() {
     this.drawTabs();
   }

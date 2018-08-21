@@ -34,7 +34,7 @@ class CodeEditor extends Component {
 
   render() {
     return (
-      <div id="container" ref={p => this.container = p}>
+      <div id="ce-container" ref={p => this.container = p}>
         {this.props.code}
       </div>
     );

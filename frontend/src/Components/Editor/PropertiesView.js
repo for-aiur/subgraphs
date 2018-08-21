@@ -4,6 +4,10 @@ import './PropertiesView.css';
 
 class PropertiesView extends Component {
 
+  componentDidMount() {
+    this.drawPropertiesView();
+  }
+
   componentDidUpdate() {
     this.drawPropertiesView();
   }

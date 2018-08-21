@@ -38,7 +38,7 @@ class Editor extends Component {
 
   onNew = () => {
     let node = new Node('New Project', this.uniqueIdentifier('project'));
-    let openNodes = this.openNodes;
+    let openNodes = this.state.openNodes;
     openNodes.push(node);
     this.setState({openNodes: openNodes});
     this.onSetScope(node);
@@ -51,28 +51,24 @@ class Editor extends Component {
         let p = theCatalogService.getItemByIdentifier(
           'compositions', identifier);
         p = Object.assign(new Node(), p).clone();
-        this.onOpenSubgraph(p);
+        let openNodes = this.state.openNodes;
+        let i = openNodes.findIndex(q => q.identifier === p.identifier);
+        if (i >= 0) {
+          openNodes.splice(i, 1);
+        }
+        openNodes.push(p);
+        this.setState({openNodes: openNodes});
+        this.onSetScope(p);
       },
       () => {});
   };
 
-  onOpenSubgraph = (p) => {
-    let openNodes = this.state.openNodes;
-    let i = openNodes.findIndex(q => q.identifier === p.identifier);
-    if (i >= 0) {
-      openNodes.splice(i, 1);
-    }
-    openNodes.push(p);
-    this.setState({openNodes: openNodes});
-    this.onSetScope(p);
-  };
-
-  onCloseSubgraph = (p) => {
+  onClose = (p) => {
     let openNodes = this.state.openNodes;
     let i = openNodes.indexOf(p);
     openNodes.splice(i, 1);
     this.setState({openNodes: openNodes});
-    if (this.props.scope === p) {
+    if (this.state.scope === p) {
       if (openNodes.length === 0) {
         this.onNew();
       } else {
@@ -175,14 +171,15 @@ class Editor extends Component {
         <div className="tabsBar">
           <TabsBar scope={this.state.scope}
                    openNodes={this.state.openNodes}
-                   onSetScope={this.onSetScope} />
+                   onSetScope={this.onSetScope}
+                   onSaveSubgraph={this.onSaveSubgraph}
+                   onCloseSubgraph={this.onClose} />
         </div>
         {
           this.mode === mode.GRAPH ?
           <div className="editor">
             <GraphEditor ref={p => this.editor = p}
-                         scope={this.state.scope}
-                         onSaveSubgraph={this.onSaveSubgraph} />
+                         scope={this.state.scope} />
           </div>
           :
           <div className="editor">
