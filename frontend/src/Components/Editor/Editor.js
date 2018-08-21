@@ -78,8 +78,8 @@ class Editor extends Component {
       } else {
         this.state.scope.pruneEdges();
         this.setState({
-          state: p,
-          openNodes: openNodes[Math.max(0, i - 1)]
+          scope: openNodes[Math.max(0, i - 1)],
+          openNodes: openNodes
         });
       }
       return;
@@ -180,7 +180,7 @@ class Editor extends Component {
           <TabsBar scope={this.state.scope}
                    openNodes={this.state.openNodes}
                    onSetScope={this.onSetScope}
-                   onSaveSubgraph={this.onSaveSubgraph}
+                   onSaveSubgraph={this.onSave}
                    onCloseSubgraph={this.onClose} />
         </div>
         {
