@@ -12,31 +12,31 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { isOpen: false, user: {} };
-
-    this.updateUser = this.updateUser.bind(this);
-    this.toggleDialog = this.toggleDialog.bind(this);
+    this.state = {
+      isOpen: false,
+      user: {}
+    };
   }
 
   componentDidMount() {
-    theUserService.subscribe(this.updateUser);
+    theUserService.subscribe(this.onUpdateUser);
   }
 
   componentWillUnmount() {
-    theUserService.unsubscribe(this.updateUser)
+    theUserService.unsubscribe(this.onUpdateUser)
   }
 
-  updateUser(user) {
+  onUpdateUser = (user) => {
     this.setState({
       user: user
     });
-  }
+  };
 
-  toggleDialog() {
+  onToggleDialog = () => {
     this.setState({
       isOpen: !this.state.isOpen
     });
-  }
+  };
 
   render() {
     return (

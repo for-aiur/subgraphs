@@ -190,7 +190,6 @@ class Node {
     }.bind(this));
     this.inputs = ports.inputs;
     this.outputs = ports.outputs;
-    console.log(this.outputs);
   }
 
   updateAttributes() {

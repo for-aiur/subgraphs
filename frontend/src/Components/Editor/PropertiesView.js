@@ -40,7 +40,6 @@ class PropertiesView extends Component {
       .on('input', function() {
         d.identifier = this.value;
         d3.select(`#${d.id} > g > text`).text(this.value);
-        _self.props.onChangeIdentifier();
       });
 
       propertiesView.append('hr').attr('class', 'divider');

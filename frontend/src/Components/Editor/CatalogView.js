@@ -1,27 +1,30 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import d3 from '../../Common/D3Ext';
 import theCatalogService from '../../Services/CatalogService';
 import './CatalogView.css';
 
 class CatalogView extends Component {
-  constructor() {
-    super();
-    this.updateCatalog = this.updateCatalog.bind(this);
-  }
+  static propTypes = {
+    draggingNode: PropTypes.object,
+    nodesContainer: PropTypes.object,
+    onDrop: PropTypes.func
+  };
 
   componentDidMount() {
     this.createCatalogDragHandler();
-    theCatalogService.subscribe(this.updateCatalog);
+    this.drawCatalog();
+    theCatalogService.subscribe(this.onUpdateCatalog);
   }
 
   componentWillUnmount() {
-    theCatalogService.unsubscribe(this.updateCatalog);
+    theCatalogService.unsubscribe(this.onUpdateCatalog);
     delete this.catalogDrag;
   }
 
-  updateCatalog(data) {
+  onUpdateCatalog = (data) => {
     this.drawCatalog();
-  }
+  };
 
   createCatalogDragHandler() {
     let _self = this;
@@ -35,13 +38,13 @@ class CatalogView extends Component {
       .attr('role', 'button')
       .text(d.title);
 
-      let mouse = d3.mouse(_self.container.parentElement);
+      let mouse = d3.mouse(_self.container);
       let node = draggingNode.node();
       node.style.left = `${mouse[0]}px`;
       node.style.top = `${mouse[1]}px`;
     })
     .on('drag', function() {
-      let mouse = d3.mouse(_self.container.parentElement);
+      let mouse = d3.mouse(_self.container);
       let node = d3.select(_self.props.draggingNode).node();
       node.style.left = `${mouse[0]}px`;
       node.style.top = `${mouse[1]}px`;
@@ -85,7 +88,7 @@ class CatalogView extends Component {
         <div className="form-group has-feedback">
           <input type="text" className="form-control" placeholder="Search..."
                  ref={p => this.catalogSearchBox = p}
-                 onChange={this.updateCatalog} />
+                 onChange={this.onUpdateCatalog} />
           <i className="glyphicon glyphicon-search form-control-feedback"></i>
         </div>
         <span>Kernels</span>

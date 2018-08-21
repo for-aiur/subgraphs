@@ -16,17 +16,9 @@ class SaveDialog extends Component {
       callbackOK: function() {},
       callbackCancel: function() {},
     };
-
-    this.open = this.open.bind(this);
-    this.onOK = this.onOK.bind(this);
-    this.onCancel = this.onCancel.bind(this);
-    this.validateTitle = this.validateTitle.bind(this);
-    this.validateType = this.validateType.bind(this);
-    this.changeTitle = this.changeTitle.bind(this);
-    this.changeType = this.changeType.bind(this);
   }
 
-  open(title, identifier, reserved, callbackOK, callbackCancel) {
+  open = (title, identifier, reserved, callbackOK, callbackCancel) => {
     this.setState({
       showModal: true,
       title: title,
@@ -35,41 +27,41 @@ class SaveDialog extends Component {
       callbackOK: callbackOK,
       callbackCancel: callbackCancel
     });
-  }
+  };
 
-  onOK() {
+  onOK = () => {
     if (this.validateTitle() === 'error' ||
         this.validateType() === 'error') return;
     this.setState({
       showModal: false
     });
     this.state.callbackOK(this.state.title, this.state.identifier);
-  }
+  };
 
-  onCancel() {
+  onCancel = () => {
     this.setState({
       showModal: false
     });
     this.state.callbackCancel();
-  }
+  };
 
-  validateTitle() {
+  validateTitle = () => {
     if (this.state.title.length < 3) return 'error';
     return 'success';
-  }
+  };
 
-  validateType() {
+  validateType = () => {
     if (this.state.title.length < 3) return 'error';
     return 'success';
-  }
+  };
 
-  changeTitle(e) {
+  changeTitle = (e) => {
     this.setState({ title: e.target.value });
-  }
+  };
 
-  changeType(e) {
+  changeType = (e) => {
     this.setState({ identifier: e.target.value });
-  }
+  };
 
   render() {
     return (
@@ -137,35 +129,31 @@ class OpenDialog extends Component {
       callbackOK: function() {},
       callbackCancel: function() {},
     };
-
-    this.open = this.open.bind(this);
-    this.onOK = this.onOK.bind(this);
-    this.onCancel = this.onCancel.bind(this);
   }
 
-  open(items, callbackOK, callbackCancel) {
+  open = (items, callbackOK, callbackCancel) => {
     this.setState({
       showModal: true,
       items: items,
       callbackOK: callbackOK,
       callbackCancel: callbackCancel
     });
-  }
+  };
 
-  onOK(e) {
+  onOK = (e) => {
     let selection = e.target.dataset.identifier;
     this.setState({
       showModal: false
     });
     this.state.callbackOK(selection);
-  }
+  };
 
-  onCancel() {
+  onCancel = () => {
     this.setState({
       showModal: false
     });
     this.state.callbackCancel();
-  }
+  };
 
   render() {
     return (
@@ -214,13 +202,9 @@ class DeleteDialog extends Component {
       callbackOK: function() {},
       callbackCancel: function() {},
     };
-
-    this.open = this.open.bind(this);
-    this.onOK = this.onOK.bind(this);
-    this.onCancel = this.onCancel.bind(this);
   }
 
-  open(name, callbackOK, callbackCancel) {
+  open = (name, callbackOK, callbackCancel) => {
     this.setState({
       showModal: true,
       name: name,
@@ -229,14 +213,14 @@ class DeleteDialog extends Component {
     });
   }
 
-  onOK(e) {
+  onOK = (e) => {
     this.setState({
       showModal: false
     });
     this.state.callbackOK();
   }
 
-  onCancel() {
+  onCancel = () => {
     this.setState({
       showModal: false
     });
@@ -277,12 +261,9 @@ class MessageDialog extends Component {
       title: '',
       message: ''
     };
-
-    this.open = this.open.bind(this);
-    this.onDismiss = this.onDismiss.bind(this);
   }
 
-  open(title, message) {
+  open = (title, message) => {
     this.setState({
       showModal: true,
       title: title,
@@ -290,7 +271,7 @@ class MessageDialog extends Component {
     });
   }
 
-  onDismiss() {
+  onDismiss = () => {
     this.setState({
       showModal: false
     });

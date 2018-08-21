@@ -6,24 +6,19 @@ class Profile extends Component {
     super(props);
 
     this.state = this.props.user;
-
-    this.onUpdate = this.onUpdate.bind(this);
-    this.onGenerate = this.onGenerate.bind(this);
-    this.onChange = this.onChange.bind(this);
-    this.showKey = this.showKey.bind(this);
   }
 
-  onUpdate(e) {
+  onUpdate = (e) => {
     e.preventDefault();
     theUserService.updateUser(this.state);
   }
 
-  onGenerate(e) {
+  onGenerate = (e) => {
     e.preventDefault();
     theUserService.generateKey();
   }
 
-  onChange(e) {
+  onChange = (e) => {
     var val;
     if (e.target.type === 'text') {
       val = e.target.value;
@@ -35,7 +30,7 @@ class Profile extends Component {
     });
   }
 
-  showKey() {
+  onShowKey = () => {
     if (this.authKey.type === 'text') {
       this.authKey.type = 'password';
       this.revealButton.innerText = 'Reveal';
@@ -107,7 +102,7 @@ class Profile extends Component {
             </div>
             <div className="col-sm-1">
               <button type="button" className="btn btn-default"
-                      onClick={this.showKey}
+                      onClick={this.onShowKey}
                       ref={p => this.revealButton = p}>Reveal</button>
             </div>
             <div className="col-sm-1">

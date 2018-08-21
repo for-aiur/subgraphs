@@ -25,6 +25,10 @@ class Editor extends Component {
     };
   }
 
+  componentDidMount() {
+    this.setState({});
+  }
+
   get mode() {
     return mode.GRAPH;
   }
@@ -52,19 +56,23 @@ class Editor extends Component {
         let p = theCatalogService.getItemByIdentifier(
           'compositions', identifier);
         p = Object.assign(new Node(), p).clone();
-        let openNodes = this.state.openNodes;
-        let i = openNodes.findIndex(q => q.identifier === p.identifier);
-        if (i >= 0) {
-          openNodes.splice(i, 1);
-        }
-        openNodes.push(p);
-        this.state.scope.pruneEdges();
-        this.setState({
-          scope: p,
-          openNodes: openNodes
-        });
+        this.onOpenSubgraph(p);
       },
       () => {});
+  };
+
+  onOpenSubgraph = (p) => {
+    let openNodes = this.state.openNodes;
+    let i = openNodes.findIndex(q => q.identifier === p.identifier);
+    if (i >= 0) {
+      openNodes.splice(i, 1);
+    }
+    openNodes.push(p);
+    this.state.scope.pruneEdges();
+    this.setState({
+      scope: p,
+      openNodes: openNodes
+    });
   };
 
   onClose = (p) => {
@@ -104,6 +112,7 @@ class Editor extends Component {
             'Perhaps you are not logged in?');
         });
         if (onOK) onOK();
+        this.setState({scope: p});
       },
       () => {
         if (onCancel) onCancel();
@@ -187,7 +196,8 @@ class Editor extends Component {
           this.mode === mode.GRAPH ?
           <div className="editor">
             <GraphEditor ref={p => this.editor = p}
-                         scope={this.state.scope} />
+                         scope={this.state.scope}
+                         onOpenSubgraph={this.onOpenSubgraph} />
           </div>
           :
           <div className="editor">

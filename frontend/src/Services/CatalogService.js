@@ -29,42 +29,39 @@ let sampleKernels = [
   }
 ];
 
-
-
 class CatalogService extends Service {
   constructor() {
     super();
     this.items = {
-      kernels: [],
+      kernels: sampleKernels,
       compositions: []
     };
     this.fetchCatalog();
   }
 
   fetchCatalog() {
-    fetch('/api/doc/list', {
-      method: 'POST',
-      headers: new Headers({
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      }),
-      body: "{}",
-      credentials: 'same-origin'
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw Error('Failed to fetch user information.')
-      }
-      return response;
-    })
-    .then(d => d.json())
-    .then(items => {
-      this.items.kernels = items.filter(d => d.category === 'kernel');
-      this.items.compositions = items.filter(d => d.category === 'composition');
-      // TODO(vahid): remove this
-      this.items.kernels = sampleKernels;
-      this.publish(this.items);
-    }).catch(() => {});
+    this.publish(this.items);
+    // fetch('/api/doc/list', {
+    //   method: 'POST',
+    //   headers: new Headers({
+    //     'Content-Type': 'application/json',
+    //     Accept: 'application/json'
+    //   }),
+    //   body: "{}",
+    //   credentials: 'same-origin'
+    // })
+    // .then(response => {
+    //   if (!response.ok) {
+    //     throw Error('Failed to fetch user information.')
+    //   }
+    //   return response;
+    // })
+    // .then(d => d.json())
+    // .then(items => {
+    //   this.items.kernels = items.filter(d => d.category === 'kernel');
+    //   this.items.compositions = items.filter(d => d.category === 'composition');
+    //   this.publish(this.items);
+    // }).catch(() => {});
   }
 
   getIdentifiers(category) {
@@ -98,19 +95,21 @@ class CatalogService extends Service {
     item["public"] = false;
     items.push(item);
 
-    fetch('/api/doc/save', {
-      method: 'POST',
-      headers: new Headers({
-        'Content-Type': 'application/json',
-      }),
-      body: JSON.stringify(item),
-      credentials: 'same-origin'
-    })
-    .then(response => {
-      if (!response.ok && errorCallback) {
-        errorCallback();
-      }
-    });
+    // fetch('/api/doc/save', {
+    //   method: 'POST',
+    //   headers: new Headers({
+    //     'Content-Type': 'application/json',
+    //   }),
+    //   body: JSON.stringify(item),
+    //   credentials: 'same-origin'
+    // })
+    // .then(response => {
+    //   if (!response.ok && errorCallback) {
+    //     errorCallback();
+    //   }
+    // });
+
+    this.publish(this.items);
   }
 
   remove(category, item, errorCallback=null) {
@@ -122,19 +121,21 @@ class CatalogService extends Service {
       }
     }
 
-    fetch('/api/doc/delete', {
-      method: 'POST',
-      headers: new Headers({
-        'Content-Type': 'application/json',
-      }),
-      body: JSON.stringify(item),
-      credentials: 'same-origin'
-    })
-    .then(response => {
-      if (!response.ok && errorCallback) {
-        errorCallback();
-      }
-    });
+    // fetch('/api/doc/delete', {
+    //   method: 'POST',
+    //   headers: new Headers({
+    //     'Content-Type': 'application/json',
+    //   }),
+    //   body: JSON.stringify(item),
+    //   credentials: 'same-origin'
+    // })
+    // .then(response => {
+    //   if (!response.ok && errorCallback) {
+    //     errorCallback();
+    //   }
+    // });
+
+    this.publish(this.items);
   }
 }
 

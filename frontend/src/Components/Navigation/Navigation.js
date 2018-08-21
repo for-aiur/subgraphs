@@ -5,6 +5,12 @@ import './Navigation.css';
 
 class Navigation extends Component {
 
+  goto(pathname, e) {
+    if (this.props.location.pathname !== pathname) {
+      this.props.history.push(pathname);
+    }
+  }
+
   render() {
     return (
       <Navbar fluid collapseOnSelect>
@@ -16,25 +22,25 @@ class Navigation extends Component {
         </Navbar.Header>
         <Navbar.Collapse>
           <Nav>
-            <NavItem eventKey={1} onClick={e => this.props.history.push("/editor")}>
+            <NavItem eventKey={1} onClick={this.goto.bind(this, "/editor")}>
               Editor
             </NavItem>
-            <NavItem eventKey={1} onClick={e => this.props.history.push("/guide")}>
+            <NavItem eventKey={1} onClick={this.goto.bind(this, "/guide")}>
               Guide
             </NavItem>
           </Nav>
           <Nav pullRight>
             {
               this.props.user.uid === undefined ? (
-                <NavItem eventKey={3} onClick={e => this.props.history.push("/login")}>Login</NavItem>
+                <NavItem eventKey={3} onClick={this.goto.bind(this, "/login")}>Login</NavItem>
               ) : (
-                <NavDropdown eventKey={3} 
+                <NavDropdown eventKey={3}
                              title={<span>
                                     <i className='fa fa-user'></i>&nbsp;
                                     {this.props.user.name}
                                     </span>}
                              id='nav-user'>
-                  <MenuItem eventKey={3.1} onClick={e => this.props.history.push("/profile")}>Profile</MenuItem>
+                  <MenuItem eventKey={3.1} onClick={this.goto.bind(this, "/profile")}>Profile</MenuItem>
                   <MenuItem divider />
                   <MenuItem eventKey={3.2} onClick={e => window.location = "/api/user/logout"}>Logout</MenuItem>
                 </NavDropdown>

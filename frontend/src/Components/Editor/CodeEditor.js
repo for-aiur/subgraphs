@@ -11,18 +11,6 @@ class CodeEditor extends Component {
     code: '//write your code here',
   };
 
-  openSubgraph(p) {
-  }
-
-  closeSubgraph(p) {
-  }
-
-  saveSubgraph(p, onOK=null, onCancel=null) {
-  }
-
-  deleteSubgraph() {
-  }
-
   componentDidMount(){
     this.editor = window.ace.edit(this.container, {
       mode: "ace/mode/javascript",

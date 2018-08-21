@@ -54,7 +54,7 @@ class GraphEditor extends Component {
         let st = {inputs: 'source', outputs: 'target'}[side];
         let ts = {inputs: 'target', outputs: 'source'}[side];
         for (let port of nodeDatum[side]) {
-          let edges = _self.scope.getPortEdges(port.id);
+          let edges = _self.props.scope.getPortEdges(port.id);
           let newPort = edges.length === 0;
           let rewireEdges = new Set();
           for (let edge of edges) {
@@ -96,7 +96,7 @@ class GraphEditor extends Component {
 
     selection
     .each(function(d) {
-      _self.scope.removeNode(d);
+      _self.props.scope.removeNode(d);
     });
     _self.drawNodes();
     _self.drawEdges();
@@ -162,9 +162,9 @@ class GraphEditor extends Component {
         items.push({
           name: 'Open',
           callback: function() {
-            let p = _self.scope.getNodeById(d.id);
-            p.parent = _self.scope;
-            _self.openSubgraph(p);
+            let p = _self.props.scope.getNodeById(d.id);
+            p.parent = _self.props.scope;
+            _self.props.openSubgraph(p);
           }
         });
       }
@@ -172,7 +172,7 @@ class GraphEditor extends Component {
       items.push({
         name: 'Remove',
         callback: function(selectedNodeDatum) {
-          _self.scope.removeNode(selectedNodeDatum);
+          _self.props.scope.removeNode(selectedNodeDatum);
           _self.drawNodes();
           _self.drawEdges();
         }
@@ -183,8 +183,8 @@ class GraphEditor extends Component {
         callback: function(selectedNodeDatum) {
           let mouse = d3.mouse(_self.nodesContainer);
           let pos = {x: mouse[0] - 75, y: mouse[1] - 20};
-          let node = _self.scope.fromTemplate(d.toTemplate(), pos);
-          _self.scope.addNode(node);
+          let node = _self.props.scope.fromTemplate(d.toTemplate(), pos);
+          _self.props.scope.addNode(node);
           _self.drawNodes();
         }
       });
@@ -194,9 +194,9 @@ class GraphEditor extends Component {
         callback: function(selectedNodeDatum) {
           let mouse = d3.mouse(_self.nodesContainer);
           let pos = {x: mouse[0] - 75, y: mouse[1] - 20};
-          let node = _self.scope.fromTemplate(d.toTemplate(), pos);
+          let node = _self.props.scope.fromTemplate(d.toTemplate(), pos);
           node.name = d.name;
-          _self.scope.addNode(node);
+          _self.props.scope.addNode(node);
           _self.drawNodes();
         }
       });
@@ -211,7 +211,7 @@ class GraphEditor extends Component {
         callback: function() {
           selection
           .each(function(d) {
-            _self.scope.removeNode(d);
+            _self.props.scope.removeNode(d);
           });
           _self.drawNodes();
           _self.drawEdges();
@@ -235,7 +235,7 @@ class GraphEditor extends Component {
       {
         name: 'Remove',
         callback: function(selectedEdgeIdDatum) {
-          _self.scope.removeEdge(selectedEdgeIdDatum);
+          _self.props.scope.removeEdge(selectedEdgeIdDatum);
           _self.drawEdges();
         },
       },
@@ -286,7 +286,7 @@ class GraphEditor extends Component {
         if (src != null && tar != null) {
           let srcId = d3.select(src).attr('id');
           let tarId = d3.select(tar).attr('id');
-          _self.scope.addEdge(srcId, tarId);
+          _self.props.scope.addEdge(srcId, tarId);
           _self.drawEdges();
         }
       }
@@ -622,7 +622,7 @@ class GraphEditor extends Component {
     this.createNodeDragHandler();
     this.createConnectHandler();
 
-    this.drawAll();
+    this.setState({});
   }
 
   componentDidUpdate() {
@@ -683,8 +683,7 @@ class GraphEditor extends Component {
       </div>
       <div id="propertiesView">
         <PropertiesView selection={this.state.selection}
-                        scope={this.props.scope}
-                        onChangeIdentifier={this.props.onChangeIdentifier} />
+                        scope={this.props.scope} />
       </div>
       <div id="overlay">
         <div ref={p => this.draggingNode = p} className="list-group">
