@@ -79,16 +79,12 @@ class Editor extends Component {
     let openNodes = this.state.openNodes;
     let i = openNodes.indexOf(p);
     openNodes.splice(i, 1);
+    this.setState({openNodes: openNodes});
     if (this.state.scope === p) {
       if (openNodes.length === 0) {
-        this.setState({openNodes: openNodes});
         this.onNew();
       } else {
-        this.state.scope.pruneEdges();
-        this.setState({
-          scope: openNodes[Math.max(0, i - 1)],
-          openNodes: openNodes
-        });
+        this.onSetScope(openNodes[Math.max(0, i - 1)]);
       }
       return;
     }
