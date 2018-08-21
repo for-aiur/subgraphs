@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import theUserService from '../../Services/UserService.js';
+import theUserService from '../../Services/UserService';
 
 class Profile extends Component {
   constructor(props) {
@@ -58,14 +58,14 @@ class Profile extends Component {
             <span className="fa fa-user" aria-hidden="true"></span>&nbsp;
             Profile
           </h3>
-        </div>   
+        </div>
 
         <form className="form-horizontal">
           <div className="form-group">
             <label className="col-sm-3 control-label">Name</label>
             <div className="col-sm-5">
-              <input type="text" size="20" className="form-control" 
-                     placeholder="name" name="name" required 
+              <input type="text" size="20" className="form-control"
+                     placeholder="name" name="name" required
                      value={this.state.name || '' }
                      onChange={this.onChange} />
             </div>
@@ -73,7 +73,7 @@ class Profile extends Component {
           <div className="form-group">
             <label className="col-sm-3 control-label">Newsletter</label>
             <div className="col-sm-5">
-              <input type="checkbox" name="subscribed" 
+              <input type="checkbox" name="subscribed"
                      checked={this.state.subscribed || ''}
                      onChange={this.onChange} />
             </div>
@@ -94,7 +94,7 @@ class Profile extends Component {
             <label className="col-sm-3 control-label">UID</label>
             <div className="col-sm-5">
               <input type="text" size="100" className="form-control" readOnly
-                     value={this.state.uid || '' } 
+                     value={this.state.uid || '' }
                      ref={p => this.uid = p} />
             </div>
           </div>
@@ -102,7 +102,7 @@ class Profile extends Component {
             <label className="col-sm-3 control-label">Authorization Key</label>
             <div className="col-sm-5">
               <input type="password" size="100" className="form-control" readOnly
-                     value={this.state.authKey || '' } 
+                     value={this.state.authKey || '' }
                      ref={p => this.authKey = p} />
             </div>
             <div className="col-sm-1">

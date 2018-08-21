@@ -4,32 +4,32 @@ threadsafe: yes
 
 handlers:
 - url: /static/css/(.*\.(css|map))$
-  static_files: static/css/\1
-  upload: static/css/.*\.(css|map)$
+  static_files: www/static/css/\1
+  upload: www/static/css/.*\.(css|map)$
 
 - url: /static/js/(.*\.(js|map))$
-  static_files: static/js/\1
-  upload: static/js/.*\.(js|map)$
+  static_files: www/static/js/\1
+  upload: www/static/js/.*\.(js|map)$
 
 - url: /service-worker.js
-  static_files: service-worker.js
-  upload: service-worker.js
+  static_files: www/service-worker.js
+  upload: www/service-worker.js
 
 - url: /favicon.ico
-  static_files: favicon.ico
-  upload: favicon.ico
+  static_files: www/favicon.ico
+  upload: www/favicon.ico
 
 - url: /robots.txt
-  static_files: robots.txt
-  upload: robots.txt
+  static_files: www/robots.txt
+  upload: www/robots.txt
 
 - url: /api.*
   script: main.APP
   secure: always
 
 - url: /.*
-  static_files: index.html
-  upload: index.html
+  static_files: www/index.html
+  upload: www/index.html
   secure: always
 
 libraries:
@@ -38,4 +38,6 @@ libraries:
 - name: markupsafe
   version: latest
 - name: webob
+  version: latest
+- name: ssl
   version: latest

@@ -1,128 +1,28 @@
 import React, { Component}  from 'react';
 import d3 from '../../Common/D3Ext';
+import CatalogView from './CatalogView';
+import PropertiesView from './PropertiesView';
 import * as Utils from '../../Common/Utils';
-import theCatalogService from '../../Services/CatalogService';
-import theCommandService from '../../Services/CommandService';
 import Node from '../../Graph/Node';
 import Port from '../../Graph/Port';
-import { OpenDialog, SaveDialog, DeleteDialog, MessageDialog } from './Dialogs';
-import './Canvas.css';
+import './GraphEditor.css';
 
-class Canvas extends Component {
+class GraphEditor extends Component {
   constructor(props) {
     super(props);
 
-    this.scope = new Node('New Project', 'project0');
-    this.openNodes = [this.scope];
-
-    window.scope = this.scope;
-
-    this.updateCatalog = this.updateCatalog.bind(this);
-    this.updateCommand = this.updateCommand.bind(this);
+    this.state = {
+      selection: null
+    };
   }
 
-  get nodeData() { return this.scope.nodeData; }
-  get edgeData() { return this.scope.edgeData; }
+  get nodeData() { return this.props.scope.nodeData; }
+  get edgeData() { return this.props.scope.edgeData; }
 
-  uniqueIdentifier(identifier) {
-    let identifiers = this.openNodes.map(d => d.identifier).concat(
-      theCatalogService.getIdentifiers('compositions'));
-    return Utils.uniqueName(identifier, identifiers);
-  }
-
-  newSubgraph() {
-    let node = new Node('New Project', this.uniqueIdentifier('project'));
-    this.openNodes.push(node);
-    this.setScope(node);
-  }
-
-  openSubgraph(p) {
-    let i = this.openNodes.findIndex(q => q.identifier === p.identifier);
-    if (i >= 0) {
-      this.openNodes.splice(i, 1);
-    }
-    this.openNodes.push(p);
-    this.setScope(p);
-  }
-
-  openSubgraphDialog() {
-    this.openDialog.open(
-      theCatalogService.getIdentifiers('compositions'),
-      (identifier) => {
-        let p = theCatalogService.getItemByIdentifier(
-          'compositions', identifier);
-        p = Object.assign(new Node(), p).clone();
-        this.openSubgraph(p);
-      },
-      () => {});
-  }
-
-  closeSubgraph(p) {
-    let i = this.openNodes.indexOf(p);
-    this.openNodes.splice(i, 1);
-    if (this.scope === p) {
-      if (this.openNodes.length === 0) {
-        this.newSubgraph();
-      } else {
-        this.setScope(this.openNodes[Math.max(0, i - 1)]);
-      }
-      return;
-    }
-    this.drawTabs();
-  }
-
-  saveSubgraph(p, onOK=null, onCancel=null) {
-    this.saveDialog.open(
-      p.title,
-      p.identifier,
-      new Set(theCatalogService.getIdentifiers('compositions')),
-      (title, identifier) => {
-        p.title = title;
-        p.identifier = identifier;
-        theCatalogService.add('compositions', p.toTemplate(), () => {
-          this.messageDialog.open(
-            'Error', 'Failed to communicate with the server. '+
-            'Perhaps you are not logged in?');
-        });
-        this.drawCatalog();
-        if (onOK) onOK();
-      },
-      () => {
-        if (onCancel) onCancel();
-      });
-  }
-
-  deleteSubgraph() {
-    let existing = theCatalogService.getItemByIdentifier(
-      'compositions', this.scope.identifier);
-    if (!existing) {
-      let p = this.scope;
-      this.closeSubgraph(p);
-      this.drawCatalog();
-      return;
-    }
-    this.deleteDialog.open(
-      this.scope.identifier,
-      () => {
-        let p = this.scope;
-        this.closeSubgraph(p);
-        theCatalogService.remove('compositions', p, () => {
-          this.messageDialog.open(
-            'Error', 'Failed to communicate with the server. '+
-            'Perhaps you are not logged in?');
-        });
-        this.drawCatalog();
-      },
-      () => {}
-    );
-  }
-
-  setScope(newScope) {
-    newScope.pruneEdges();
-
-    this.scope = newScope;
-
-    this.drawAll();
+  onAddNode = (template, pos) => {
+    let node = this.props.scope.fromTemplate(template, pos);
+    this.props.scope.addNode(node);
+    this.drawNodes();
   }
 
   groupSelection(selection) {
@@ -131,7 +31,7 @@ class Canvas extends Component {
     // Create a new node
     let title = 'Group';
     let identifier = 'group';
-    let name = this.scope.uniqueName(identifier);
+    let name = this.props.scope.uniqueName(identifier);
     let newNode = new Node(title, identifier, name);
 
     // Create a set of node ids
@@ -416,7 +316,7 @@ class Canvas extends Component {
         d3.selectAll('.selected').classed('selected', false);
       }
       d3.select(this).classed('selected', true);
-      _self.drawPropertiesView();
+      _self.updateSelection();
     })
     .on('drag', function(d) {
       d.position.x += d3.event.dx;
@@ -433,41 +333,6 @@ class Canvas extends Component {
         return 'translate(' + [ d.position.x, d.position.y ] + ')'
       })
       _self.drawEdges();
-    });
-  }
-
-  createCatalogDragHandler() {
-    let _self = this;
-
-    this.catalogDrag = d3.drag()
-    .on('start', function(d) {
-      let draggingNode = d3.select(_self.draggingNode);
-      draggingNode
-      .append('a')
-      .attr('class', 'list-group-item')
-      .attr('role', 'button')
-      .text(d.title);
-
-      let mouse = d3.mouse(_self.container);
-      let node = draggingNode.node();
-      node.style.left = `${mouse[0]}px`;
-      node.style.top = `${mouse[1]}px`;
-    })
-    .on('drag', function() {
-      let mouse = d3.mouse(_self.container);
-      let node = d3.select(_self.draggingNode).node();
-      node.style.left = `${mouse[0]}px`;
-      node.style.top = `${mouse[1]}px`;
-    })
-    .on('end', function(d) {
-      d3.select(_self.draggingNode).selectAll('a').remove();
-      let mouse = d3.mouse(_self.nodesContainer);
-      if (mouse[0] > 0 && mouse[1] > 0) {
-        let pos = {x: mouse[0] - 75, y: mouse[1] - 20};
-        let node = _self.scope.fromTemplate(d, pos);
-        _self.scope.addNode(node);
-        _self.drawNodes();
-      }
     });
   }
 
@@ -505,7 +370,7 @@ class Canvas extends Component {
         .attr('height', 0);
       }
       d3.selectAll('.selected').classed('selected', false);
-      _self.drawPropertiesView();
+      _self.updateSelection();
     })
     .on('mousemove.select', function() {
       if (!mouseDown) return;
@@ -570,7 +435,7 @@ class Canvas extends Component {
         nodes.each(function() {
           quadtree.visit(collide);
         });
-        _self.drawPropertiesView();
+        _self.updateSelection();
       }
     });
   }
@@ -578,228 +443,16 @@ class Canvas extends Component {
   clearHandlers() {
     delete this.nodeContextMenu;
     delete this.edgeContextMenu;
-    delete this.catalogDrag;
     delete this.edgeDrag;
     delete this.nodeDrag;
   }
 
-  drawTabs() {
-    let elements = d3.select(this.tabsContainer);
-
-    elements.selectAll('li').remove();
-
-    for (let i in this.openNodes) {
-      let p = this.openNodes[i];
-      let item = elements.append('li')
-      .attr('role', 'button')
-      .on('click', function() {
-        d3.event.stopPropagation();
-        this.setScope(p);
-      }.bind(this));
-
-      if (this.scope === p) {
-        item.attr('class', 'active');
-      }
-
-      item.append('span').text(p.identifier);
-
-      item
-      .append('a')
-      .attr('role', 'button')
-      .on('click', function() {
-        d3.event.stopPropagation();
-        if (p.parent || p.nodeData.length === 0) {
-          this.closeSubgraph(p);
-        } else {
-          this.saveSubgraph(
-            p,
-            () => this.closeSubgraph(p),
-            () => this.closeSubgraph(p));
-        }
-      }.bind(this))
-      .append('i')
-      .attr('class', 'fa fa-close');
-    }
-  }
-
-  drawCatalog() {
-    let cats = {
-      kernels: this.kernelsCatalogView,
-      compositions: this.compositionsCatalogView
-    };
-
-    for (let cat in cats) {
-      let ref = d3.select(cats[cat]).selectAll('a')
-      .data(
-        theCatalogService.getItems(cat, this.catalogSearchBox.value),
-        d => d.identifier);
-
-      ref.exit().remove();
-
-      ref.enter()
-      .append('a')
-      .attr('class', 'list-group-item')
-      .attr('role', 'button')
-      .text(d => d.title)
-      .call(this.catalogDrag);
-    }
-  }
-
-  drawPropertiesView() {
-    let _self = this;
+  updateSelection() {
     let selection = d3.selectAll('.selected');
-
-    let propertiesView = d3.select(this.propertiesView);
-    propertiesView.selectAll('*').remove();
-
-    if (selection.size() === 0) {
-      let d = this.scope;
-
-      let group = propertiesView.append('div')
-      .attr('class', 'form-group');
-      group.append('label').text('Title');
-      group.append('input').attr('class', 'form-control input-sm')
-      .attr('value', d.title)
-      .on('input', function() {
-        d.title = this.value;
-        d3.select(`#${d.id} > g > text`).text(this.value);
-      });
-
-      group = propertiesView.append('div')
-      .attr('class', 'form-group');
-      group.append('label').text('Identifier');
-      group.append('input').attr('class', 'form-control input-sm')
-      .attr('value', d.identifier)
-      .on('input', function() {
-        d.identifier = this.value;
-        d3.select(`#${d.id} > g > text`).text(this.value);
-        _self.drawTabs();
-      });
-
-      propertiesView.append('hr').attr('class', 'divider');
-
-      for (let i in d.attributes) {
-        let attribute = d.attributes[i];
-        let group = propertiesView.append('div')
-        .attr('class', 'form-group');;
-
-        group.append('label').text(attribute.name);
-        group.append('input')
-        .attr('class', 'form-control input-sm')
-        .attr('value', attribute.value)
-        .on('input', function() {
-          attribute.value = this.value;
-          let p = d3.select(d3.selectAll(
-            `#${d.id} .nodeAttr > text`).nodes()[i]);
-          p.text(`${attribute.name}: ${this.value}`);
-        });
-      }
-    } else if (selection.size() === 1) {
-      let d = selection.datum();
-
-      let group = propertiesView.append('div')
-      .attr('class', 'form-group');
-      group.append('label').text('Name');
-      group.append('input').attr('class', 'form-control input-sm')
-      .attr('value', d.name)
-      .on('input', function() {
-        d.name = this.value;
-        d3.select(`#${d.id} > g > text`).text(this.value);
-      });
-
-      group = propertiesView.append('div')
-      .attr('class', 'form-group');
-      group.append('label').text('Identifier');
-      group.append('input').attr('class', 'form-control input-sm')
-      .attr('value', d.identifier)
-      .attr('readonly', true);
-
-      propertiesView.append('hr').attr('class', 'divider');
-
-      for (let i in d.attributes) {
-        let attribute = d.attributes[i];
-        let group = propertiesView.append('div')
-        .attr('class', 'form-group');
-
-        let p = d3.select(d3.selectAll(`#${d.id} .nodeAttr > text`).nodes()[i]);
-
-        group.append('label').text(attribute.name);
-        group.append('input')
-        .attr('class', 'form-control input-sm')
-        .attr('value', attribute.value)
-        .on('input', function() {
-          attribute.value = this.value;
-          p.text(`${attribute.name}: ${this.value}`);
-        });
-
-        group = propertiesView.append('div')
-        .attr('class', 'form-group');
-        if (attribute.alias) {
-          group.append('label').text('Alias');
-          group.append('input')
-          .attr('class', 'form-control input-sm')
-          .attr('value', attribute.alias)
-          .on('input', function() {
-            _self.scope.setAttributeAlias(attribute, this.value);
-            if (!this.value) {
-              _self.drawPropertiesView();
-              p.attr('class', '');
-            }
-          });
-        } else {
-          group.append('input')
-          .attr('type', 'button')
-          .attr('class', 'btn btn-default btn-sm')
-          .attr('value', 'External')
-          .on('click', function() {
-            _self.scope.setAttributeAlias(attribute, attribute.name);
-            _self.drawPropertiesView();
-            p.attr('class', 'alias');
-          });
-        }
-      }
-
-      propertiesView.append('hr').attr('class', 'divider');
-
-      for (let item of [
-        {side: 'inputs', class: 'nodeInput'},
-        {side: 'outputs', class: 'nodeOutput'}
-      ]) {
-        for (let i in d[item.side]) {
-          let port = d[item.side][i];
-          let group = propertiesView.append('div')
-          .attr('class', 'form-group');
-          group.append('label').text(port.name);
-
-          let p = d3.select(d3.selectAll(`#${d.id} .${item.class} > text`).nodes()[i]);
-
-          group = propertiesView.append('div')
-          .attr('class', 'form-group');
-          if (port.alias) {
-            group.append('label').text('Alias');
-            group.append('input')
-            .attr('class', 'form-control input-sm')
-            .attr('value', port.alias)
-            .on('input', function() {
-              _self.scope.setPortAlias(port, this.value);
-              if (!this.value) {
-                _self.drawPropertiesView();
-                p.attr('class', '');
-              }
-            });
-          } else {
-            group.append('input')
-            .attr('type', 'button')
-            .attr('class', 'btn btn-default btn-sm')
-            .attr('value', 'External')
-            .on('click', function() {
-              _self.scope.setPortAlias(port, port.name);
-              _self.drawPropertiesView();
-              p.attr('class', 'alias');
-            });
-          }
-        }
-      }
+    if (selection.size() === 1) {
+      this.setState({selection: selection.datum()});
+    } else  {
+      this.setState({selection: null});
     }
   }
 
@@ -957,18 +610,8 @@ class Canvas extends Component {
   }
 
   drawAll() {
-    this.drawTabs();
-    this.drawCatalog();
-    this.drawPropertiesView();
     this.drawNodes();
     this.drawEdges();
-  }
-
-  updateCatalog(data) {
-    this.drawCatalog();
-  }
-
-  updateCommand(cmd) {
   }
 
   componentDidMount() {
@@ -978,12 +621,8 @@ class Canvas extends Component {
     this.createPanAndSelectHandler();
     this.createNodeDragHandler();
     this.createConnectHandler();
-    this.createCatalogDragHandler();
 
     this.drawAll();
-
-    theCatalogService.subscribe(this.updateCatalog);
-    theCommandService.subscribe(this.updateCommand);
   }
 
   componentDidUpdate() {
@@ -992,34 +631,15 @@ class Canvas extends Component {
 
   componentWillUnmount() {
     this.clearHandlers();
-
-    theCatalogService.unsubscribe(this.updateCatalog);
-    theCommandService.unsubscribe(this.updateCommand);
   }
 
   render() {
     return (
     <div id="container" ref={p => this.container = p} >
-      <OpenDialog ref={p => this.openDialog = p} />
-      <SaveDialog ref={p => this.saveDialog = p} />
-      <DeleteDialog ref={p => this.deleteDialog = p} />
-      <MessageDialog ref={p => this.messageDialog = p} />
       <div id="catalogView">
-        <div className="form-group has-feedback">
-          <input type="text" className="form-control" placeholder="Search..."
-                 ref={p => this.catalogSearchBox = p}
-                 onChange={this.updateCatalog} />
-          <i className="glyphicon glyphicon-search form-control-feedback"></i>
-        </div>
-        <span>Kernels</span>
-        <div ref={p => this.kernelsCatalogView = p} className="list-group">
-        </div>
-        <span>Compositions</span>
-        <div ref={p => this.compositionsCatalogView = p} className="list-group">
-        </div>
-      </div>
-      <div id="tabsContainer">
-        <ul ref={p => this.tabsContainer = p} className="list-inline"></ul>
+        <CatalogView draggingNode={this.draggingNode}
+                     nodesContainer={this.nodesContainer}
+                     onDrop={this.onAddNode} />
       </div>
       <div id="canvas">
       <svg ref={p => this.canvas = p}>
@@ -1062,8 +682,9 @@ class Canvas extends Component {
       </svg>
       </div>
       <div id="propertiesView">
-        <form ref={p => this.propertiesView = p}>
-        </form>
+        <PropertiesView selection={this.state.selection}
+                        scope={this.props.scope}
+                        onChangeIdentifier={this.props.onChangeIdentifier} />
       </div>
       <div id="overlay">
         <div ref={p => this.draggingNode = p} className="list-group">
@@ -1074,4 +695,4 @@ class Canvas extends Component {
   }
 }
 
-export default Canvas;
+export default GraphEditor;

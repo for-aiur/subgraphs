@@ -1,13 +1,12 @@
 import datetime
 import logging
 import flask
-from api import user, document, command
+from api import user, document
 
 
 APP = flask.Flask(__name__, template_folder="./")
 APP.register_blueprint(document.APP, url_prefix="/api/doc")
 APP.register_blueprint(user.APP, url_prefix="/api/user")
-APP.register_blueprint(command.APP, url_prefix="/api/cmd")
 APP.config["SECRET_KEY"] = user.SECRET_KEY
 
 

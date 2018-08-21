@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { HashRouter, Route } from 'react-router-dom';
-import About from './About/About.js';
-import Guide from './About/Guide.js';
-import Editor from './Editor/Editor.js';
-import Login from './User/Login.js';
-import Profile from './User/Profile.js';
-import Navigation from './Navigation/Navigation.js';
-import theUserService from '../Services/UserService.js';
+import About from './About/About';
+import Guide from './About/Guide';
+import Editor from './Editor/Editor';
+import Login from './User/Login';
+import Profile from './User/Profile';
+import Navigation from './Navigation/Navigation';
+import theUserService from '../Services/UserService';
 
 class App extends Component {
   constructor(props) {

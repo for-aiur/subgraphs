@@ -1,8 +1,9 @@
+import json
+import uuid
 import flask
 import authomatic
 from authomatic.providers import oauth2
 from authomatic.extras.flask import FlaskAuthomatic
-import uuid
 
 from google.appengine.ext import ndb  # pylint: disable=E0401,E0611
 
@@ -13,20 +14,21 @@ from storage.user import User
 APP = flask.Blueprint("user", __name__)
 SESSION = flask.session
 
+KEYS = json.load(open("keys.json"))
+
+SECRET_KEY = KEYS["secret_key"]
+
 CONFIG = {
     "google": {
         "class_": oauth2.Google,
-        "consumer_key": "235897629498-v1sfl9g078vsfju5pghrpkq4m615dv9t.apps.googleusercontent.com",
-        "consumer_secret": "8UZbPfa4z_Q2o-uR4sweSD5l",
+        "consumer_key": KEYS["google"]["client_id"],
+        "consumer_secret": KEYS["google"]["client_secret"],
         "scope": ["profile", "email"],
         "id": authomatic.provider_id()
     }
 }
 
-SECRET_KEY = "Arkham City"
-
 FA = FlaskAuthomatic(config=CONFIG, secret=SECRET_KEY, session_max_age=6e6)
-
 
 @APP.route("/auth/google", methods=["GET", "POST"])
 @FA.login("google")

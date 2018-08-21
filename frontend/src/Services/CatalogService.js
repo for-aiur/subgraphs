@@ -1,5 +1,19 @@
 import Service from './Service';
 
+let sampleKernel = {
+  "category": "kernel",
+  "inputs": [{"name": "input"}],
+  "title": "Transposed Conv2D",
+  "outputs": [{"name": "output"}],
+  "attributes": [
+    {"type": "int", "name": "filters", "value": "128"},
+    {"type": "int", "name": "kernel_size", "value": "3"},
+    {"type": "int", "name": "strides", "value": "1"}
+  ],
+  "identifier": "tconv2d",
+  "public": true
+};
+
 class CatalogService extends Service {
   constructor() {
     super();
@@ -30,7 +44,8 @@ class CatalogService extends Service {
     .then(items => {
       this.items.kernels = items.filter(d => d.category === 'kernel');
       this.items.compositions = items.filter(d => d.category === 'composition');
-      this.publish(this.items.kernels);
+      this.items.kernels = [sampleKernel];
+      this.publish(this.items);
     }).catch(() => {});
   }
 
@@ -96,7 +111,7 @@ class CatalogService extends Service {
       }),
       body: JSON.stringify(item),
       credentials: 'same-origin'
-    })    
+    })
     .then(response => {
       if (!response.ok && errorCallback) {
         errorCallback();

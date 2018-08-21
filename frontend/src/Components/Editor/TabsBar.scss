@@ -1,0 +1,26 @@
+#tabsContainer {
+  background-color: #dadada;
+  height: 30px;
+  line-height: 30px;
+}
+
+#tabsContainer li {
+  background-color: #e0e0e0;
+  text-align: center;
+}
+
+#tabsContainer li:hover {
+  background-color: #f5f5f5;
+}
+
+#tabsContainer li.active {
+  background-color: #eee;
+}
+
+#tabsContainer span {
+  margin: 5px;
+}
+
+#tabsContainer a {
+  margin: 2px;
+}
