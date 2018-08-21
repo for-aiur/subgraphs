@@ -19,7 +19,6 @@ class Editor extends Component {
     super(props);
 
     let scope = new Node('New Project', 'project0');
-
     this.state = {
       scope: scope,
       openNodes: [scope]
@@ -40,8 +39,10 @@ class Editor extends Component {
     let node = new Node('New Project', this.uniqueIdentifier('project'));
     let openNodes = this.state.openNodes;
     openNodes.push(node);
-    this.setState({openNodes: openNodes});
-    this.onSetScope(node);
+    this.setState({
+      scope: node,
+      openNodes: openNodes
+    });
   };
 
   onOpen = () => {
@@ -57,8 +58,11 @@ class Editor extends Component {
           openNodes.splice(i, 1);
         }
         openNodes.push(p);
-        this.setState({openNodes: openNodes});
-        this.onSetScope(p);
+        this.state.scope.pruneEdges();
+        this.setState({
+          scope: p,
+          openNodes: openNodes
+        });
       },
       () => {});
   };
@@ -67,12 +71,16 @@ class Editor extends Component {
     let openNodes = this.state.openNodes;
     let i = openNodes.indexOf(p);
     openNodes.splice(i, 1);
-    this.setState({openNodes: openNodes});
     if (this.state.scope === p) {
       if (openNodes.length === 0) {
+        this.setState({openNodes: openNodes});
         this.onNew();
       } else {
-        this.onSetScope(openNodes[Math.max(0, i - 1)]);
+        this.state.scope.pruneEdges();
+        this.setState({
+          state: p,
+          openNodes: openNodes[Math.max(0, i - 1)]
+        });
       }
       return;
     }
@@ -107,14 +115,14 @@ class Editor extends Component {
       'compositions', this.state.scope.identifier);
     if (!existing) {
       let p = this.state.scope;
-      this.closeSubgraph(p);
+      this.onClose(p);
       return;
     }
     this.deleteDialog.open(
       this.state.scope.identifier,
       () => {
         let p = this.state.scope;
-        this.closeSubgraph(p);
+        this.onClose(p);
         theCatalogService.remove('compositions', p, () => {
           this.messageDialog.open(
             'Error', 'Failed to communicate with the server. '+
@@ -139,9 +147,9 @@ class Editor extends Component {
   };
 
   onSetScope = (p) => {
-    p.pruneEdges();
+    this.state.scope.pruneEdges();
     this.setState({
-      state: p
+      scope: p
     });
   }
 
