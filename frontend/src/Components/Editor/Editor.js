@@ -9,9 +9,9 @@ import Node from '../../Graph/Node';
 import * as Utils from '../../Common/Utils';
 import './Editor.css';
 
-const mode = {
-  GRAPH: 0,
-  CODE: 1
+const modes = {
+  GRAPH: 'graph',
+  CODE: 'code'
 };
 
 class Editor extends Component {
@@ -30,24 +30,24 @@ class Editor extends Component {
   }
 
   get mode() {
-    if (this.state.scope.category === 'graph') {
-      return mode.GRAPH;
+    if (this.state.scope.category === Node.categories.GRAPH) {
+      return modes.GRAPH;
     } else {
-      return mode.CODE;
+      return modes.CODE;
     }
   }
 
   uniqueIdentifier(identifier) {
     let identifiers = this.state.openNodes.map(d => d.identifier).concat(
-      theCatalogService.getIdentifiers('graph'));
+      theCatalogService.getIdentifiers(Node.categories.GRAPH));
     return Utils.uniqueName(identifier, identifiers);
   }
 
   onNew = () => {
     this.newDialog.open(
       {
-        'graph': 'Graph',
-        'kernel': 'Kernel'
+        graph: 'Graph',
+        kernel: 'Kernel'
       },
       (category) => {
         this.onNewSubgraph(category);
@@ -55,7 +55,7 @@ class Editor extends Component {
       () => {});
   };
 
-  onNewSubgraph = (category = 'graph') => {
+  onNewSubgraph = (category = Node.categories.GRAPH) => {
     let node = new Node('New Project', this.uniqueIdentifier('project'));
     node.category = category;
     let openNodes = this.state.openNodes;
@@ -68,10 +68,10 @@ class Editor extends Component {
 
   onOpen = () => {
     this.openDialog.open(
-      theCatalogService.getIdentifiers('graph'),
+      theCatalogService.getIdentifiers(Node.categories.GRAPH),
       (identifier) => {
         let p = theCatalogService.getItemByIdentifier(
-          'graph', identifier);
+          Node.categories.GRAPH, identifier);
         p = Object.assign(new Node(), p).clone();
         this.onOpenSubgraph(p);
       },
@@ -115,11 +115,11 @@ class Editor extends Component {
     this.saveDialog.open(
       p.title,
       p.identifier,
-      new Set(theCatalogService.getIdentifiers('graph')),
+      new Set(theCatalogService.getIdentifiers(Node.categories.GRAPH)),
       (title, identifier) => {
         p.title = title;
         p.identifier = identifier;
-        theCatalogService.add('graph', p.toTemplate(), () => {
+        theCatalogService.add(Node.categories.GRAPH, p.toTemplate(), () => {
           this.messageDialog.open(
             'Error', 'Failed to communicate with the server. '+
             'Perhaps you are not logged in?');
@@ -134,7 +134,7 @@ class Editor extends Component {
 
   onDelete = () => {
     let existing = theCatalogService.getItemByIdentifier(
-      'graph', this.state.scope.identifier);
+      Node.categories.GRAPH, this.state.scope.identifier);
     if (!existing) {
       let p = this.state.scope;
       this.onClose(p);
@@ -145,7 +145,7 @@ class Editor extends Component {
       () => {
         let p = this.state.scope;
         this.onClose(p);
-        theCatalogService.remove('graph', p, () => {
+        theCatalogService.remove(Node.categories.GRAPH, p, () => {
           this.messageDialog.open(
             'Error', 'Failed to communicate with the server. '+
             'Perhaps you are not logged in?');
@@ -157,7 +157,8 @@ class Editor extends Component {
 
   onRun = () => {
     let identifier = this.state.scope.identifier;
-    if (!theCatalogService.getItemByIdentifier('graph', identifier)) {
+    if (!theCatalogService.getItemByIdentifier(
+        Node.categories.GRAPH, identifier)) {
       this.messageDialog.open(
         'Error', 'Current project is not saved.');
       return;
@@ -207,7 +208,7 @@ class Editor extends Component {
                    onCloseSubgraph={this.onClose} />
         </div>
         {
-          this.mode === mode.GRAPH ?
+          this.mode === modes.GRAPH ?
           <div className="editor">
             <GraphEditor ref={p => this.editor = p}
                          scope={this.state.scope}

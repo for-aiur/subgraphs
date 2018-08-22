@@ -58,8 +58,8 @@ class CatalogService extends Service {
     // })
     // .then(d => d.json())
     // .then(items => {
-    //   this.items.kernel = items.filter(d => d.category === 'kernel');
-    //   this.items.graph = items.filter(d => d.category === 'graph');
+    //   this.items.kernel = items.filter(d => d.category === Node.categories.KERNEL);
+    //   this.items.graph = items.filter(d => d.category === Node.categories.GRAPH);
     //   this.publish(this.items);
     // }).catch(() => {});
   }

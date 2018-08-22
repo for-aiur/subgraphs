@@ -3,11 +3,16 @@ import Edge from './Edge';
 import Port from './Port';
 
 class Node {
+  static categories = {
+    GRAPH: 'graph',
+    KERNEL: 'kernel'
+  };
+
   constructor(title=null, identifier=null, name=null) {
     this.title = title;
     this.name = name;
     this.identifier = identifier;
-    this.category = 'graph';
+    this.category = Node.categories.GRAPH;
     this.id = Utils.generateUID();
     this.position = {x: 0, y: 0};
     this.inputs = [];
@@ -15,7 +20,6 @@ class Node {
     this.attributes = [];
     this.nodeData = [];
     this.edgeData = [];
-    this.code = '';
   }
 
   uniqueName(name) {
@@ -43,7 +47,6 @@ class Node {
       edge = Object.assign(new Edge(), edge).clone()
       d.edgeData.push(edge);
     }
-    d.code = this.code;
     return d;
   }
 
