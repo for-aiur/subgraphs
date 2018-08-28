@@ -62,15 +62,29 @@ class CatalogService extends Service {
     return this.items[category].find(d => d.identifier === identifier);
   }
 
+  findIndex(item) {
+    let items = this.items[item.category];
+    for (let i in items) {
+      if (items[i].identifier === item.identifier) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
   addLocal(item) {
     let items = this.items[item.category];
-    item.public = false;
-    items.push(item);
+    let i = this.findIndex(item);
+    if (i >= 0) {
+      items[i] = item;
+    } else {
+      item.public = false;
+      items.push(item);
+    }
     this.publish(this.items);
   }
 
   add(item, errorCallback=null) {
-    this.removeLocal(item);
     this.addLocal(item);
 
     fetch('/api/doc/save', {
@@ -89,14 +103,12 @@ class CatalogService extends Service {
   }
 
   removeLocal(item) {
-    let items = this.items[item.category];
-    for (let i in items) {
-      if (items[i].identifier === item.identifier) {
-        items.splice(i, 1);
-        break;
-      }
+    let i = this.findIndex(item);
+    if (i >= 0) {
+      let items = this.items[item.category];
+      items.splice(i, 1);
+      this.publish(this.items);
     }
-    this.publish(this.items);
   }
 
   remove(item, errorCallback=null) {
