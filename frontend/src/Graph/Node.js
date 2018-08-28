@@ -20,6 +20,7 @@ class Node {
     this.attributes = [];
     this.nodeData = [];
     this.edgeData = [];
+    this.code = '';
   }
 
   uniqueName(name) {
@@ -47,6 +48,7 @@ class Node {
       edge = Object.assign(new Edge(), edge).clone()
       d.edgeData.push(edge);
     }
+    d.code = this.code;
     return d;
   }
 

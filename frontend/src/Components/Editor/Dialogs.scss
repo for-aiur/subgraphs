@@ -1,0 +1,13 @@
+.openDialog .modal-dialog{
+  overflow-y: initial !important
+}
+
+.openDialog .modal-body{
+  height: 250px;
+  overflow-y: auto;
+}
+
+.openDialog span {
+  margin: 10px;
+  line-height: 30px;
+}

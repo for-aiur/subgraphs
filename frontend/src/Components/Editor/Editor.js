@@ -71,10 +71,21 @@ class Editor extends Component {
 
   onOpen = () => {
     this.openDialog.open(
-      theCatalogService.getIdentifiers(Node.categories.GRAPH),
-      (identifier) => {
+      [
+        {
+          'title': 'Kernels',
+          'category': Node.categories.KERNEL,
+          'items': theCatalogService.getIdentifiers(Node.categories.KERNEL),
+        },
+        {
+          'title': 'Graphs',
+          'category': Node.categories.GRAPH,
+          'items': theCatalogService.getIdentifiers(Node.categories.GRAPH),
+        }
+      ],
+      (category, identifier) => {
         let p = theCatalogService.getItemByIdentifier(
-          Node.categories.GRAPH, identifier);
+          category, identifier);
         p = Object.assign(new Node(), p).clone();
         this.onOpenSubgraph(p);
       },
@@ -89,6 +100,7 @@ class Editor extends Component {
     }
     openNodes.push(p);
     if (this.state.scope !== null) {
+      this.editor.updateScope();
       this.state.scope.pruneEdges();
     }
     this.setState({
@@ -125,6 +137,9 @@ class Editor extends Component {
       }
     }
 
+    this.editor.updateScope();
+    p.pruneEdges();
+
     this.saveDialog.open(
       p.title,
       p.identifier,
@@ -132,7 +147,7 @@ class Editor extends Component {
       (title, identifier) => {
         p.title = title;
         p.identifier = identifier;
-        theCatalogService.add(Node.categories.GRAPH, p.toTemplate(), () => {
+        theCatalogService.add(p.toTemplate(), () => {
           this.messageDialog.open(
             'Error', 'Failed to communicate with the server. '+
             'Perhaps you are not logged in?');
@@ -162,7 +177,7 @@ class Editor extends Component {
       () => {
         let p = this.state.scope;
         this.onClose(p);
-        theCatalogService.remove(Node.categories.GRAPH, p, () => {
+        theCatalogService.remove(p, () => {
           this.messageDialog.open(
             'Error', 'Failed to communicate with the server. '+
             'Perhaps you are not logged in?');
@@ -177,14 +192,6 @@ class Editor extends Component {
       this.messageDialog.open('Error', 'Invalid action.');
       return;
     }
-
-    let identifier = this.state.scope.identifier;
-    if (!theCatalogService.getItemByIdentifier(
-        Node.categories.GRAPH, identifier)) {
-      this.messageDialog.open(
-        'Error', 'Current project is not saved.');
-      return;
-    }
   };
 
   onStop = () => {
@@ -196,6 +203,7 @@ class Editor extends Component {
 
   onSetScope = (p) => {
     if (this.state.scope !== null) {
+      this.editor.updateScope();
       this.state.scope.pruneEdges();
     }
     this.setState({
@@ -238,12 +246,12 @@ class Editor extends Component {
         {
           this.mode === modes.GRAPH &&
           <GraphEditor ref={p => this.editor = p}
-                        scope={this.state.scope}
-                        onOpenSubgraph={this.onOpenSubgraph} />
+                       scope={this.state.scope} />
         }
         {
           this.mode === modes.CODE &&
-          <CodeEditor ref={p => this.editor = p} scope={this.state.scope} />
+          <CodeEditor ref={p => this.editor = p}
+                      scope={this.state.scope} />
         }
         </div>
       </div>

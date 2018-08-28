@@ -3,6 +3,7 @@ import {
   Modal, Button, FormGroup, FormControl, ControlLabel, HelpBlock,
   ListGroup, ListGroupItem
 } from 'react-bootstrap';
+import './Dialogs.css';
 
 class NewDialog extends Component {
   constructor(props) {
@@ -208,11 +209,11 @@ class OpenDialog extends Component {
   };
 
   onOK = (e) => {
-    let selection = e.target.dataset.identifier;
+    let {category, identifier} = e.target.dataset;
     this.setState({
       showModal: false
     });
-    this.state.callbackOK(selection);
+    this.state.callbackOK(category, identifier);
   };
 
   onCancel = () => {
@@ -224,29 +225,33 @@ class OpenDialog extends Component {
 
   render() {
     return (
-      <div>
+      <div className="openDialog">
         {this.state.showModal ? (
         <Modal.Dialog>
           <Modal.Header>
             <Modal.Title>Open subgraph</Modal.Title>
           </Modal.Header>
 
-          <Modal.Body>
-
+          { this.state.items.map(item =>
+          <Modal.Body key={item.category}>
+            <span>{item.title}</span>
             <ListGroup>
               {
-                this.state.items.length === 0 && 'You have no saved subgraphs :('
+                item.items === 0 && 'You have no saved subgraphs :('
               }
               {
-                this.state.items.map(
-                  item =>
-                  <ListGroupItem onClick={this.onOK} key={item} data-identifier={item}>
-                    {item}
+                item.items.map(
+                  identifier =>
+                  <ListGroupItem onClick={this.onOK}
+                                 key={identifier}
+                                 data-identifier={identifier}
+                                 data-category={item.category}>
+                    {identifier}
                   </ListGroupItem>)
               }
             </ListGroup>
-
-          </Modal.Body>
+          </Modal.Body>)
+          }
 
           <Modal.Footer>
             <Button bsStyle="default" onClick={this.onCancel}>Cancel</Button>

@@ -633,6 +633,9 @@ class GraphEditor extends Component {
     this.clearHandlers();
   }
 
+  updateScope = () => {
+  };
+
   render() {
     return (
     <div id="ge-container" ref={p => this.container = p} >
