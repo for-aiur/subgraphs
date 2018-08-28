@@ -88,7 +88,9 @@ class Editor extends Component {
       openNodes.splice(i, 1);
     }
     openNodes.push(p);
-    this.state.scope.pruneEdges();
+    if (this.state.scope !== null) {
+      this.state.scope.pruneEdges();
+    }
     this.setState({
       scope: p,
       openNodes: openNodes
