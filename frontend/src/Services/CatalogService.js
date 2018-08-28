@@ -78,8 +78,8 @@ class CatalogService extends Service {
       credentials: 'same-origin'
     })
     .then(response => {
-      if (!response.ok && errorCallback) {
-        errorCallback();
+      if (!response.ok) {
+        if (errorCallback) errorCallback();
       }
     });
   }
@@ -92,6 +92,7 @@ class CatalogService extends Service {
         break;
       }
     }
+    this.publish(this.items);
 
     fetch('/api/doc/delete', {
       method: 'POST',
@@ -102,12 +103,10 @@ class CatalogService extends Service {
       credentials: 'same-origin'
     })
     .then(response => {
-      if (!response.ok && errorCallback) {
-        errorCallback();
+      if (!response.ok) {
+        if (errorCallback) errorCallback();
       }
     });
-
-    this.publish(this.items);
   }
 }
 

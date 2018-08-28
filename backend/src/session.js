@@ -7,7 +7,10 @@ const sessionConfig = {
   resave: false,
   saveUninitialized: false,
   secret: config.get('SECRET'),
-  signed: true
+  signed: true,
+  cookie: {
+    maxAge: 30 * 24 * 60 * 60 * 1000
+  }
 };
 
 // In production use the Memcache instance to store session data,

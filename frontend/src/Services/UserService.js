@@ -40,22 +40,11 @@ class UserService extends Service {
       credentials: 'same-origin'
     })
     .then(response => {
-      if (response.ok) {
-        this.user = newUser;
-        this.publish(this.user);
-      }
-    });
-  }
-
-  generateKey() {
-    fetch('/api/user/generate_key', {
-      method: 'POST',
-      credentials: 'same-origin'
-    })
-    .then(response => {
-      if (response.ok) {
-        this.fetchUser();
-      }
+      if (!response.ok) throw response.body;
+      this.user = newUser;
+      this.publish(this.user);
+    }).catch(e => {
+      console.log(e);
     });
   }
 

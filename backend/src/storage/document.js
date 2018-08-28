@@ -2,6 +2,10 @@ const {ds, fromDatastore} = require('./datastore');
 
 const documentKind = 'Document';
 
+function getKey(id) {
+  return ds.key([documentKind, parseInt(id, 10)]);
+}
+
 function read({identifier, category, owner, public}) {
   const q = ds.createQuery(documentKind);
 
@@ -20,12 +24,12 @@ function read({identifier, category, owner, public}) {
   return ds.runQuery(q).then(results => fromDatastore(results[0]));
 }
 
-function write({title, identifier, category, owner, public, content}) {
+function update({title, identifier, category, owner, public, content}) {
   return read({identifier, owner}).then(docs => {
     let key, date;
     if (docs.length > 0) {
       let doc = docs[0];
-      key = ds.key([documentKind, doc.key]);
+      key = doc.key;
       date = doc.date;
     } else {
       key = ds.key(documentKind);
@@ -42,12 +46,23 @@ function write({title, identifier, category, owner, public, content}) {
   });
 }
 
-function remove(doc) {
-  ds.delete(doc.key);
+function remove(key) {
+  ds.delete(key);
+}
+
+function findAndRemove({identifier, owner}) {
+  return read({identifier, owner}).then(docs => {
+    if (docs.length > 0) {
+      remove(docs[0].key);
+    }
+  });
 }
 
 module.exports = {
-  read: read,
-  write: write,
-  remove: remove,
+  kind: documentKind,
+  key: getKey,
+  read,
+  update,
+  remove,
+  findAndRemove
 };

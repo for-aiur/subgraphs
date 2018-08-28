@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const bodyParser = require('body-parser');
 const config = require('./config');
 const userData = require('./storage/user');
 
@@ -8,22 +9,10 @@ const userData = require('./storage/user');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-function getOrCreateUser(profile) {
-  let email = profile.emails[0].value;
-  return userData.read({email}).then(users => {
-    if (users.length > 0) {
-      return new Promise((resolve, reject) => {
-        resolve(users[0]);
-      });
-    } else {
-      let name = profile.displayName;
-      return userData.write({name, email});
-    }
-  });
-}
-
 function extractProfile(profile) {
-  return getOrCreateUser(profile).then(user => {
+  let email = profile.emails[0].value;
+  let name = profile.displayName;
+  return userData.getOrCreate({name, email}).then(user => {
     return {
       uid: user.key.id,
       name: user.name,
@@ -86,6 +75,9 @@ function addTemplateVariables (req, res, next) {
 
 const router = express.Router();
 
+// Automatically parse request body as JSON
+router.use(bodyParser.json());
+
 // Begins the authorization flow. The user will be redirected to Google where
 // they can authorize the application to have access to their basic profile
 // information. Upon approval the user is redirected to `/auth/google/callback`.
@@ -126,6 +118,18 @@ router.get(
   }
 );
 // [END callback]
+
+// Update user information.
+router.post('/update', (req, res) => {
+  if (!req.user) {
+    return res.status(403).end();
+  }
+
+  userData.update(req.body).then(() => {
+    req.user.name = req.body.name;
+    return res.status(200).end();
+  });
+});
 
 // Deletes the user's credentials and profile from the session.
 // This does not revoke any active tokens.
