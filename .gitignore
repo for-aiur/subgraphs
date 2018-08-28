@@ -1,6 +1,6 @@
 # Backend
-/backend/lib
 /backend/www
+/backend/node_modules
 
 # Frontend
 /frontend/**/*.css

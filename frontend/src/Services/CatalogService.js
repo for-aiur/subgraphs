@@ -1,67 +1,40 @@
 import Service from './Service';
-
-let sampleKernels = [
-  {
-    "category": "kernel",
-    "inputs": [{"name": "input"}],
-    "title": "Transposed Conv2D",
-    "outputs": [{"name": "output"}],
-    "attributes": [
-      {"type": "int", "name": "filters", "value": "128"},
-      {"type": "int", "name": "kernel_size", "value": "3"},
-      {"type": "int", "name": "strides", "value": "1"}
-    ],
-    "identifier": "tconv2d",
-    "public": true
-  },
-  {
-    "category": "kernel",
-    "inputs": [{"name": "input"}],
-    "title": "Conv2D",
-    "outputs": [{"name": "output"}],
-    "attributes": [
-      {"type": "int", "name": "filters", "value": "128"},
-      {"type": "int", "name": "kernel_size", "value": "3"},
-      {"type": "int", "name": "strides", "value": "1"}
-    ],
-    "identifier": "conv2d",
-    "public": true
-  }
-];
+import Node from '../Graph/Node';
 
 class CatalogService extends Service {
   constructor() {
     super();
     this.items = {
-      kernel: sampleKernels,
+      kernel: [],
       graph: []
     };
     this.fetchCatalog();
   }
 
   fetchCatalog() {
-    this.publish(this.items);
-    // fetch('/api/doc/list', {
-    //   method: 'POST',
-    //   headers: new Headers({
-    //     'Content-Type': 'application/json',
-    //     Accept: 'application/json'
-    //   }),
-    //   body: "{}",
-    //   credentials: 'same-origin'
-    // })
-    // .then(response => {
-    //   if (!response.ok) {
-    //     throw Error('Failed to fetch user information.')
-    //   }
-    //   return response;
-    // })
-    // .then(d => d.json())
-    // .then(items => {
-    //   this.items.kernel = items.filter(d => d.category === Node.categories.KERNEL);
-    //   this.items.graph = items.filter(d => d.category === Node.categories.GRAPH);
-    //   this.publish(this.items);
-    // }).catch(() => {});
+    fetch('/api/doc/list', {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }),
+      body: "{}",
+      credentials: 'same-origin'
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw Error('Failed to fetch user information.')
+      }
+      return response;
+    })
+    .then(d => d.json())
+    .then(items => {
+      this.items.kernel = items.filter(d => d.category === Node.categories.KERNEL);
+      this.items.graph = items.filter(d => d.category === Node.categories.GRAPH);
+      this.publish(this.items);
+    }).catch((err) => {
+      console.log(err);
+    });
   }
 
   getIdentifiers(category) {
@@ -94,22 +67,21 @@ class CatalogService extends Service {
     let items = this.items[category];
     item["public"] = false;
     items.push(item);
-
-    // fetch('/api/doc/save', {
-    //   method: 'POST',
-    //   headers: new Headers({
-    //     'Content-Type': 'application/json',
-    //   }),
-    //   body: JSON.stringify(item),
-    //   credentials: 'same-origin'
-    // })
-    // .then(response => {
-    //   if (!response.ok && errorCallback) {
-    //     errorCallback();
-    //   }
-    // });
-
     this.publish(this.items);
+
+    fetch('/api/doc/save', {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
+      body: JSON.stringify(item),
+      credentials: 'same-origin'
+    })
+    .then(response => {
+      if (!response.ok && errorCallback) {
+        errorCallback();
+      }
+    });
   }
 
   remove(category, item, errorCallback=null) {
@@ -121,19 +93,19 @@ class CatalogService extends Service {
       }
     }
 
-    // fetch('/api/doc/delete', {
-    //   method: 'POST',
-    //   headers: new Headers({
-    //     'Content-Type': 'application/json',
-    //   }),
-    //   body: JSON.stringify(item),
-    //   credentials: 'same-origin'
-    // })
-    // .then(response => {
-    //   if (!response.ok && errorCallback) {
-    //     errorCallback();
-    //   }
-    // });
+    fetch('/api/doc/delete', {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
+      body: JSON.stringify(item),
+      credentials: 'same-origin'
+    })
+    .then(response => {
+      if (!response.ok && errorCallback) {
+        errorCallback();
+      }
+    });
 
     this.publish(this.items);
   }
