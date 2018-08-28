@@ -10,6 +10,7 @@ import * as Utils from '../../Common/Utils';
 import './Editor.css';
 
 const modes = {
+  NONE: 'none',
   GRAPH: 'graph',
   CODE: 'code'
 };
@@ -30,7 +31,9 @@ class Editor extends Component {
   }
 
   get mode() {
-    if (this.state.scope.category === Node.categories.GRAPH) {
+    if (this.state.scope === null) {
+      return modes.NONE;
+    } else if (this.state.scope.category === Node.categories.GRAPH) {
       return modes.GRAPH;
     } else {
       return modes.CODE;
@@ -93,13 +96,17 @@ class Editor extends Component {
   };
 
   onClose = (p) => {
+    if (p === null) {
+      this.messageDialog.open('Error', 'Invalid action.');
+      return;
+    }
     let openNodes = this.state.openNodes;
     let i = openNodes.indexOf(p);
     openNodes.splice(i, 1);
     this.setState({openNodes: openNodes});
     if (this.state.scope === p) {
       if (openNodes.length === 0) {
-        this.onNewSubgraph();
+        this.onSetScope(null);
       } else {
         this.onSetScope(openNodes[Math.max(0, i - 1)]);
       }
@@ -110,6 +117,10 @@ class Editor extends Component {
   onSave = (p=null, onOK=null, onCancel=null) => {
     if (p === null) {
       p = this.state.scope;
+      if (p === null) {
+        this.messageDialog.open('Error', 'Invalid action.');
+        return;
+      }
     }
 
     this.saveDialog.open(
@@ -133,6 +144,10 @@ class Editor extends Component {
   };
 
   onDelete = () => {
+    if (this.state.scope === null) {
+      this.messageDialog.open('Error', 'Invalid action.');
+      return;
+    }
     let existing = theCatalogService.getItemByIdentifier(
       Node.categories.GRAPH, this.state.scope.identifier);
     if (!existing) {
@@ -156,6 +171,11 @@ class Editor extends Component {
   };
 
   onRun = () => {
+    if (this.state.scope === null) {
+      this.messageDialog.open('Error', 'Invalid action.');
+      return;
+    }
+
     let identifier = this.state.scope.identifier;
     if (!theCatalogService.getItemByIdentifier(
         Node.categories.GRAPH, identifier)) {
@@ -166,11 +186,16 @@ class Editor extends Component {
   };
 
   onStop = () => {
-    // let identifier = this.state.scope.identifier;
+    if (this.state.scope === null) {
+      this.messageDialog.open('Error', 'Invalid action.');
+      return;
+    }
   };
 
   onSetScope = (p) => {
-    this.state.scope.pruneEdges();
+    if (this.state.scope !== null) {
+      this.state.scope.pruneEdges();
+    }
     this.setState({
       scope: p
     });
@@ -191,7 +216,7 @@ class Editor extends Component {
     };
 
     return (
-      <div className="app">
+      <div id="editor-container">
         <NewDialog ref={p => this.newDialog = p} />
         <OpenDialog ref={p => this.openDialog = p} />
         <SaveDialog ref={p => this.saveDialog = p} />
@@ -207,19 +232,18 @@ class Editor extends Component {
                    onSaveSubgraph={this.onSave}
                    onCloseSubgraph={this.onClose} />
         </div>
+        <div className="editor">
         {
-          this.mode === modes.GRAPH ?
-          <div className="editor">
-            <GraphEditor ref={p => this.editor = p}
-                         scope={this.state.scope}
-                         onOpenSubgraph={this.onOpenSubgraph} />
-          </div>
-          :
-          <div className="editor">
-            <CodeEditor ref={p => this.editor = p}
-                        scope={this.state.scope} />
-          </div>
+          this.mode === modes.GRAPH &&
+          <GraphEditor ref={p => this.editor = p}
+                        scope={this.state.scope}
+                        onOpenSubgraph={this.onOpenSubgraph} />
         }
+        {
+          this.mode === modes.CODE &&
+          <CodeEditor ref={p => this.editor = p} scope={this.state.scope} />
+        }
+        </div>
       </div>
     );
   }
