@@ -14,12 +14,13 @@ class CodeEditor extends Component {
       theme: "ace/theme/clouds",
       showPrintMargin: false
     });
+    this.editor.setValue(this.props.scope.code, -1);
     this.editor.focus();
-    this.editor.setValue(this.props.scope.code);
   }
 
   componentDidUpdate() {
-    this.editor.setValue(this.props.scope.code);
+    this.editor.setValue(this.props.scope.code, -1);
+    this.editor.focus();
   }
 
   updateScope = () => {
