@@ -36,14 +36,14 @@ class Editor extends Component {
       return modes.NONE;
     } else if (this.state.scope.category === Node.categories.GRAPH) {
       return modes.GRAPH;
-    } else {
+    } else if (this.state.scope.category === Node.categories.KERNEL) {
       return modes.CODE;
     }
   }
 
-  uniqueIdentifier(identifier) {
+  uniqueIdentifier(identifier, category) {
     let identifiers = this.state.openNodes.map(d => d.identifier).concat(
-      theCatalogService.getIdentifiers(Node.categories.GRAPH));
+      theCatalogService.getIdentifiers(category));
     return Utils.uniqueName(identifier, identifiers);
   }
 
@@ -59,9 +59,10 @@ class Editor extends Component {
       () => {});
   };
 
-  onNewSubgraph = (category = Node.categories.GRAPH) => {
-    let node = new Node('New Project', this.uniqueIdentifier('project'));
-    node.category = category;
+  onNewSubgraph = (category) => {
+    let node = new Node('New Project',
+                        this.uniqueIdentifier('project', category),
+                        null, category);
     let openNodes = this.state.openNodes;
     openNodes.push(node);
     this.setState({
@@ -144,7 +145,7 @@ class Editor extends Component {
     this.saveDialog.open(
       p.title,
       p.identifier,
-      new Set(theCatalogService.getIdentifiers(Node.categories.GRAPH)),
+      new Set(theCatalogService.getIdentifiers(p.category)),
       (title, identifier) => {
         p.title = title;
         p.identifier = identifier;
@@ -167,7 +168,7 @@ class Editor extends Component {
       return;
     }
     let existing = theCatalogService.getItemByIdentifier(
-      Node.categories.GRAPH, this.state.scope.identifier);
+      this.state.scope.category, this.state.scope.identifier);
     if (!existing) {
       this.onClose(this.state.scope);
       return;

@@ -8,11 +8,12 @@ class Node {
     KERNEL: 'kernel'
   };
 
-  constructor(title=null, identifier=null, name=null) {
+  constructor(title=null, identifier=null, name=null,
+              category=Node.categories.GRAPH) {
     this.title = title;
     this.name = name;
     this.identifier = identifier;
-    this.category = Node.categories.GRAPH;
+    this.category = category;
     this.id = Utils.generateUID();
     this.position = {x: 0, y: 0};
     this.inputs = [];
