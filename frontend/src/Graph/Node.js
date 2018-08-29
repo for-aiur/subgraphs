@@ -215,9 +215,19 @@ class Node {
   }
 
   updateFromCode(sandbox) {
-    // let {config, call} = (new Function(this.code))();
-    // console.log(config);
-    // console.log(call);
+    let id = this.identifier;
+    let code = `
+    let def_${id} = function() {
+      ${this.code}
+    }();
+    return def_${id}.config;
+    `;
+
+    return sandbox.call(code).then(config => {
+      this.inputs = config.inputs;
+      this.outputs = config.outputs;
+      this.attributes = config.attributes;
+    });
   }
 
   setPortAlias(port, alias) {

@@ -226,7 +226,7 @@ class Editor extends Component {
 
     return (
       <div id="editor-container">
-        <Sandbox ref={this.sandbox} />
+        <Sandbox ref={p => this.sandbox = p} />
         <NewDialog ref={p => this.newDialog = p} />
         <OpenDialog ref={p => this.openDialog = p} />
         <SaveDialog ref={p => this.saveDialog = p} />

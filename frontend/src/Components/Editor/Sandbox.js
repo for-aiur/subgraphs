@@ -27,12 +27,10 @@ class Sandbox extends Component {
   }
 
   receiveMessage = (event) => {
-    if (event.data.id === undefined &&
-        event.data.result === undefined) {
-      return;
-    }
-    let id = event.data.id;
-    let result = event.data.result;
+    let data = event.data;
+    if (data.id === undefined) return;
+    let id = data.id;
+    let result = data.result;
     this.callbacks[id](result);
     delete this.callbacks[id];
   }
@@ -57,16 +55,18 @@ class Sandbox extends Component {
 
   reset() {
     let script = `
-    function receiveMessage(event) {
+    function frameReceiveMessage(event) {
+      if (event.data.id === undefined) return;
       let id = event.data.id;
+      let code = event.data.code
       let result;
       if (event.method == 'eval')
-        result = eval(event.data.code);
+        result = eval(code);
       else
-        result = (new Function(...args, code))();
+        result = (new Function(...event.data.args, code))();
       window.parent.postMessage({id, result}, '*');
     }
-    window.addEventListener('message', receiveMessage, false);
+    window.addEventListener('message', frameReceiveMessage, false);
     `;
     let html = `
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tensorflow/0.12.5/tf.min.js" integrity="sha256-Eq2OUrnzn5xiSxQGei/aKxQnPQR4zrQKoMk4TKlLWBU=" crossorigin="anonymous"></script>
