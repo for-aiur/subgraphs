@@ -196,6 +196,7 @@ class OpenDialog extends Component {
       items: [],
       callbackOK: function() {},
       callbackCancel: function() {},
+      filter: ''
     };
   }
 
@@ -223,35 +224,44 @@ class OpenDialog extends Component {
     this.state.callbackCancel();
   };
 
+  onChange = (event) => {
+    this.setState({
+      filter: event.target.value
+    });
+  }
+
   render() {
+    let re = new RegExp(this.state.filter, 'i');
     return (
-      <div className="openDialog">
+      <div>
         {this.state.showModal ? (
         <Modal.Dialog>
           <Modal.Header>
             <Modal.Title>Open subgraph</Modal.Title>
           </Modal.Header>
 
-          { this.state.items.map(item =>
-          <Modal.Body key={item.category}>
-            <span>{item.title}</span>
-            <ListGroup>
-              {
-                item.items === 0 && 'You have no saved subgraphs :('
-              }
-              {
-                item.items.map(
-                  identifier =>
-                  <ListGroupItem onClick={this.onOK}
-                                 key={identifier}
-                                 data-identifier={identifier}
-                                 data-category={item.category}>
-                    {identifier}
-                  </ListGroupItem>)
-              }
-            </ListGroup>
-          </Modal.Body>)
+          <Modal.Body>
+          <div className="form-group has-feedback">
+            <input type="text" className="form-control" placeholder="Search..."
+                   onChange={this.onChange} />
+            <i className="glyphicon glyphicon-search form-control-feedback"></i>
+          </div>
+          <ListGroup className="scrollable">
+          {
+            this.state.items.map(item =>
+              item.items.map(
+                identifier =>
+                identifier.match(re) != null &&
+                <ListGroupItem onClick={this.onOK}
+                               key={identifier}
+                               data-identifier={identifier}
+                               data-category={item.category}>
+                  {identifier} <span className="light-text">{item.title}</span>
+                </ListGroupItem>)
+            )
           }
+          </ListGroup>
+          </Modal.Body>
 
           <Modal.Footer>
             <Button bsStyle="default" onClick={this.onCancel}>Cancel</Button>
