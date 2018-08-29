@@ -214,6 +214,12 @@ class Node {
     this.attributes = attributes;
   }
 
+  updateFromCode(sandbox) {
+    // let {config, call} = (new Function(this.code))();
+    // console.log(config);
+    // console.log(call);
+  }
+
   setPortAlias(port, alias) {
     port.alias = alias;
     this.updatePorts();

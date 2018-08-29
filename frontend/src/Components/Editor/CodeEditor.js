@@ -5,6 +5,7 @@ import './CodeEditor.css'
 class CodeEditor extends Component {
   static propTypes = {
     scope: PropTypes.object,
+    sandbox: PropTypes.object
   };
 
   componentDidMount() {
@@ -25,6 +26,7 @@ class CodeEditor extends Component {
 
   updateScope = () => {
     this.props.scope.code = this.editor.getValue();
+    this.props.scope.updateFromCode(this.props.sandbox);
   };
 
   render() {

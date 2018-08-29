@@ -4,6 +4,7 @@ import CodeEditor from './CodeEditor'
 import Menu from './Menu'
 import TabsBar from './TabsBar';
 import { NewDialog, OpenDialog, SaveDialog, DeleteDialog, MessageDialog } from './Dialogs';
+import Sandbox from './Sandbox';
 import theCatalogService from '../../Services/CatalogService'
 import Node from '../../Graph/Node';
 import * as Utils from '../../Common/Utils';
@@ -168,16 +169,14 @@ class Editor extends Component {
     let existing = theCatalogService.getItemByIdentifier(
       Node.categories.GRAPH, this.state.scope.identifier);
     if (!existing) {
-      let p = this.state.scope;
-      this.onClose(p);
+      this.onClose(this.state.scope);
       return;
     }
     this.deleteDialog.open(
       this.state.scope.identifier,
       () => {
-        let p = this.state.scope;
-        this.onClose(p);
-        theCatalogService.remove(p, () => {
+        this.onClose(this.state.scope);
+        theCatalogService.remove(this.state.scope, () => {
           this.messageDialog.open(
             'Error', 'Failed to communicate with the server. '+
             'Perhaps you are not logged in?');
@@ -227,6 +226,7 @@ class Editor extends Component {
 
     return (
       <div id="editor-container">
+        <Sandbox ref={this.sandbox} />
         <NewDialog ref={p => this.newDialog = p} />
         <OpenDialog ref={p => this.openDialog = p} />
         <SaveDialog ref={p => this.saveDialog = p} />
@@ -251,7 +251,8 @@ class Editor extends Component {
         {
           this.mode === modes.CODE &&
           <CodeEditor ref={p => this.editor = p}
-                      scope={this.state.scope} />
+                      scope={this.state.scope}
+                      sandbox={this.sandbox} />
         }
         </div>
       </div>
