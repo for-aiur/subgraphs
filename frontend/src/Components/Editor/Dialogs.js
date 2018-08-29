@@ -205,7 +205,8 @@ class OpenDialog extends Component {
       showModal: true,
       items: items,
       callbackOK: callbackOK,
-      callbackCancel: callbackCancel
+      callbackCancel: callbackCancel,
+      filter: ''
     });
   };
 
@@ -242,7 +243,9 @@ class OpenDialog extends Component {
 
           <Modal.Body>
           <div className="form-group has-feedback">
-            <input type="text" className="form-control" placeholder="Search..."
+            <input type="text" className="form-control"
+                   placeholder="Search..."
+                   defaultValue={this.state.filter}
                    onChange={this.onChange} />
             <i className="glyphicon glyphicon-search form-control-feedback"></i>
           </div>
