@@ -31,7 +31,7 @@ nconf
 
     OAUTH2_CLIENT_ID: '235897629498-v1sfl9g078vsfju5pghrpkq4m615dv9t.apps.googleusercontent.com',
     OAUTH2_CLIENT_SECRET: '8UZbPfa4z_Q2o-uR4sweSD5l',
-    OAUTH2_CALLBACK: 'http://localhost:8080/api/user/auth/google/callback',
+    OAUTH2_CALLBACK: '/api/user/auth/google/callback',
 
     PORT: 8080,
 
