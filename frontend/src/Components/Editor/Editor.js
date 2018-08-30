@@ -145,10 +145,12 @@ class Editor extends Component {
     this.saveDialog.open(
       p.title,
       p.identifier,
+      p.public,
       new Set(theCatalogService.getIdentifiers(p.category)),
-      (title, identifier) => {
+      (title, identifier, public_) => {
         p.title = title;
         p.identifier = identifier;
+        p.public = public_;
         theCatalogService.add(p.toTemplate(), () => {
           this.messageDialog.open(
             'Error', 'Failed to communicate with the server. '+

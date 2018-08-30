@@ -1,3 +1,5 @@
+'use strict';
+
 const {ds, fromDatastore} = require('./datastore');
 
 const documentKind = 'Document';
@@ -6,7 +8,7 @@ function getKey(id) {
   return ds.key([documentKind, parseInt(id, 10)]);
 }
 
-function read({identifier, category, owner, public}) {
+function read({identifier, category, owner, public: public_}) {
   const q = ds.createQuery(documentKind);
 
   if (identifier)
@@ -18,13 +20,13 @@ function read({identifier, category, owner, public}) {
   if (owner)
     q.filter('owner', '=', owner);
 
-  if (public)
-    q.filter('public', '=', public);
+  if (public_)
+    q.filter('public', '=', public_);
 
   return ds.runQuery(q).then(results => fromDatastore(results[0]));
 }
 
-function update({title, identifier, category, owner, public, content}) {
+function update({title, identifier, category, owner, public: public_, content}) {
   return read({identifier, owner}).then(docs => {
     let key, date;
     if (docs.length > 0) {
@@ -39,7 +41,7 @@ function update({title, identifier, category, owner, public, content}) {
     const entity = {
       key: key,
       excludeFromIndexes: ['content'],
-      data: {title, identifier, category, owner, public, content, date},
+      data: {title, identifier, category, owner, public: public_, content, date},
     };
 
     return ds.upsert(entity);

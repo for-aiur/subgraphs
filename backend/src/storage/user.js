@@ -1,3 +1,5 @@
+'use strict';
+
 const {ds, fromDatastore} = require('./datastore');
 
 const userKind = 'User';

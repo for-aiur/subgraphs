@@ -1,11 +1,6 @@
 runtime: nodejs8
 
 handlers:
-- url: /api.*
-  script: auto
-  secure: always
-
-- url: /(.*)
-  static_files: www/\1
-  upload: www/.*
-  secure: always
+  - url: /.*
+    script: auto
+    secure: always

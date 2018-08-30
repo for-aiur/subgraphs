@@ -12,7 +12,8 @@
     "sync": "rsync -a frontend/build/ backend/www/ && rm -rf frontend/build",
     "build": "npm run build --prefix frontend",
     "frontend": "npm run start --prefix frontend",
-    "backend": "npm run start --prefix backend",
-    "prod": "npm-run-all build sync backend"
+    "backend": "npm run watch --prefix backend",
+    "deployBackend": "npm run deploy --prefix backend",
+    "deploy": "npm-run-all build sync deployBackend"
   }
 }

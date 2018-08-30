@@ -58,8 +58,8 @@ router.post('/save', (req, res) => {
   let data = req.body;
   let {title, identifier, category, public: public_} = data;
 
-  if (public_ && !req.user.isAdmin) {
-    return res.status(400).end();
+  if (!req.user.isAdmin) {
+    public_ = false;
   }
 
   if (!identifier) {

@@ -51,6 +51,10 @@ class UserService extends Service {
   get isLoggedIn() {
     return this.user.uid !== undefined;
   }
+
+  get isAdmin() {
+    return this.isLoggedIn && this.user.isAdmin;
+  }
 }
 
 let theUserService = new UserService();

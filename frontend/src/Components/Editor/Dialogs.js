@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import {
   Modal, Button, FormGroup, FormControl, ControlLabel, HelpBlock,
-  ListGroup, ListGroupItem
+  ListGroup, ListGroupItem, Checkbox
 } from 'react-bootstrap';
 import './Dialogs.css';
+import theUserService from '../../Services/UserService'
 
 class NewDialog extends Component {
   constructor(props) {
@@ -81,16 +82,18 @@ class SaveDialog extends Component {
       reserved: new Set(),
       title: '',
       identifier: '',
+      public: false,
       callbackOK: function() {},
       callbackCancel: function() {},
     };
   }
 
-  open = (title, identifier, reserved, callbackOK, callbackCancel) => {
+  open = (title, identifier, public_, reserved, callbackOK, callbackCancel) => {
     this.setState({
       showModal: true,
       title: title,
       identifier: identifier,
+      public: public_,
       reserved: reserved,
       callbackOK: callbackOK,
       callbackCancel: callbackCancel
@@ -99,11 +102,12 @@ class SaveDialog extends Component {
 
   onOK = () => {
     if (this.validateTitle() === 'error' ||
-        this.validateType() === 'error') return;
+        this.validateIdentifier() === 'error') return;
     this.setState({
       showModal: false
     });
-    this.state.callbackOK(this.state.title, this.state.identifier);
+    this.state.callbackOK(
+      this.state.title, this.state.identifier, this.state.public);
   };
 
   onCancel = () => {
@@ -118,7 +122,7 @@ class SaveDialog extends Component {
     return 'success';
   };
 
-  validateType = () => {
+  validateIdentifier = () => {
     if (this.state.title.length < 3) return 'error';
     return 'success';
   };
@@ -127,8 +131,12 @@ class SaveDialog extends Component {
     this.setState({ title: e.target.value });
   };
 
-  changeType = (e) => {
+  changeIdentifier = (e) => {
     this.setState({ identifier: e.target.value });
+  };
+
+  changePublic = (e) => {
+    this.setState({ public: e.target.checked });
   };
 
   render() {
@@ -155,18 +163,25 @@ class SaveDialog extends Component {
                 </HelpBlock>
               </FormGroup>
 
-              <FormGroup controlId="identifier" validationState={this.validateType()}>
+              <FormGroup controlId="identifier" validationState={this.validateIdentifier()}>
                 <ControlLabel>Identifier</ControlLabel>
                 <FormControl type="text"
                              value={this.state.identifier}
                              placeholder="identifier"
-                             onChange={this.changeType} />
+                             onChange={this.changeIdentifier} />
                 <FormControl.Feedback />
                 <HelpBlock>
                   The unique identifier must be consisted of alphanumerics with no
                   special characters.
                 </HelpBlock>
               </FormGroup>
+
+              {theUserService.isAdmin && (
+               <FormGroup controlId="public">
+                <Checkbox checked={this.state.public}
+                          onChange={this.changePublic}>Public</Checkbox>
+               </FormGroup>)}
+
             </form>
 
           </Modal.Body>

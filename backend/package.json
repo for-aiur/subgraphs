@@ -3,7 +3,14 @@
   "version": "0.1.0",
   "description": "Subgraphs backend",
   "scripts": {
-    "start": "nodemon --watch src --watch www src/app.js"
+    "start": "node src/app.js",
+    "watch": "nodemon --watch src --watch www src/app.js",
+    "deploy": "gcloud app deploy --project=subgraphs-web",
+    "lint": "repo-tools lint",
+    "pretest": "npm run lint",
+    "system-test": "repo-tools test app",
+    "test": "npm run system-test",
+    "e2e-test": "repo-tools test deploy"
   },
   "cloud-repo-tools": {
     "requiresKeyFile": true,

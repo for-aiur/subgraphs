@@ -1,3 +1,5 @@
+'use strict';
+
 const session = require('express-session');
 const MemcachedStore = require('connect-memjs')(session);
 const config = require('./config');
