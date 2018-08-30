@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "concurrently \"npm run prod\" \"npm run frontend\"",
-    "sync": "rsync -a frontend/build/ backend/www/ && rm -rf frontend/build",
+    "sync": "rm -rf backend/www/static; rsync -a frontend/build/ backend/www/; rm -rf frontend/build",
     "build": "npm run build --prefix frontend",
     "frontend": "npm run start --prefix frontend",
     "backend": "npm run watch --prefix backend",
