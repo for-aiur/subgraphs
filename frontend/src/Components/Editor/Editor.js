@@ -201,6 +201,7 @@ class Editor extends Component {
       this.messageDialog.open('Error', 'Invalid action.');
       return;
     }
+    this.sandbox.reset();
   };
 
   onSetScope = (p) => {
