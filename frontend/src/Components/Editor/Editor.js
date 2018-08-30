@@ -192,6 +192,8 @@ class Editor extends Component {
       this.messageDialog.open('Error', 'Invalid action.');
       return;
     }
+
+    this.state.scope.run();
   };
 
   onStop = () => {
@@ -247,7 +249,8 @@ class Editor extends Component {
         {
           this.mode === modes.GRAPH &&
           <GraphEditor ref={p => this.editor = p}
-                       scope={this.state.scope} />
+                       scope={this.state.scope}
+                       onOpenSubgraph={this.onOpenSubgraph} />
         }
         {
           this.mode === modes.CODE &&

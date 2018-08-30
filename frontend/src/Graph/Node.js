@@ -205,7 +205,6 @@ class Node {
         if (attr.alias) {
           attributes.push({
             name: attr.alias,
-            type: attr.type,
             value: attr.value,
             alias: null
           });
@@ -213,6 +212,16 @@ class Node {
       }
     });
     this.attributes = attributes;
+  }
+
+  setPortAlias(port, alias) {
+    port.alias = alias;
+    this.updatePorts();
+  }
+
+  setAttributeAlias(attr, alias) {
+    attr.alias = alias;
+    this.updateAttributes();
   }
 
   updateFromCode(sandbox) {
@@ -231,14 +240,38 @@ class Node {
     });
   }
 
-  setPortAlias(port, alias) {
-    port.alias = alias;
-    this.updatePorts();
+  run(sandbox) {
+    this.call(sandbox);
   }
 
-  setAttributeAlias(attr, alias) {
-    attr.alias = alias;
-    this.updateAttributes();
+  async call(sandbox, visited=null) {
+    if (visited === null) {
+      visited = new Set();
+    }
+    for (let node of this.nodeData) {
+      if (visited.has(node.id)) continue;
+      visited.push(node.id);
+
+      if (node.category === Node.categories.KERNEL) {
+        await node.updateFromCode(sandbox);
+      }
+
+      // for (let input of this.inputs) {
+      // }
+    }
+  }
+
+  runKernel(sandbox) {
+    // let id = this.identifier;
+    // let code = `
+    // return def_${id}.call()
+    // `;
+
+    // return sandbox.call(code).then(config => {
+    //   this.inputs = config.inputs;
+    //   this.outputs = config.outputs;
+    //   this.attributes = config.attributes;
+    // });
   }
 }
 

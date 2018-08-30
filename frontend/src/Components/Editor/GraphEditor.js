@@ -158,16 +158,14 @@ class GraphEditor extends Component {
     this.nodeContextMenu = this.createContextMenu(function(d) {
       let items = [];
 
-      if (d.nodeData.length > 0) {
-        items.push({
-          name: 'Open',
-          callback: function() {
-            let p = _self.props.scope.getNodeById(d.id);
-            p.parent = _self.props.scope;
-            _self.props.openSubgraph(p);
-          }
-        });
-      }
+      items.push({
+        name: 'Open',
+        callback: function() {
+          let p = _self.props.scope.getNodeById(d.id);
+          p.parent = _self.props.scope;
+          _self.props.onOpenSubgraph(p);
+        }
+      });
 
       items.push({
         name: 'Remove',
