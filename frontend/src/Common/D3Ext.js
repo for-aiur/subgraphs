@@ -1,4 +1,4 @@
-import * as d3 from 'd3';
+const d3 = window.d3;
 
 d3.selection.prototype.moveToFront = function() {
     return this.each(function(){
