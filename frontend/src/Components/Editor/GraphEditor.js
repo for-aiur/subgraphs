@@ -72,7 +72,6 @@ class GraphEditor extends Component {
           newNode[side].push({
             name: port.name,
             id: portId,
-            edges: new Set(),
             alias: ''
           });
           for (let edgeDatum of rewireEdges) {

@@ -60,10 +60,15 @@ class Sandbox extends Component {
       let id = event.data.id;
       let code = event.data.code
       let result;
-      if (event.method == 'eval')
-        result = eval(code);
-      else
-        result = (new Function(...event.data.args, code))();
+      try {
+        if (event.data.method == 'eval') {
+          eval(code);
+        } else {
+          result = (new Function(...event.data.args, code))();
+        }
+      } catch (e) {
+        console.error(e.name + ':' + e.message);
+      }
       window.parent.postMessage({id, result}, '*');
     }
     window.addEventListener('message', frameReceiveMessage, false);

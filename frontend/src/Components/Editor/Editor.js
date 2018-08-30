@@ -193,7 +193,7 @@ class Editor extends Component {
       return;
     }
 
-    this.state.scope.run();
+    this.state.scope.run(this.sandbox);
   };
 
   onStop = () => {

@@ -187,7 +187,6 @@ class Node {
             ports[side].push({
               name: port.alias,
               id: new Port(this.id, side, idx[side]++).id,
-              edges: new Set(),
               alias: null
             });
           }
@@ -214,6 +213,12 @@ class Node {
     this.attributes = attributes;
   }
 
+  updateFromConfig(config) {
+    this.inputs = config.inputs;
+    this.outputs = config.outputs;
+    this.attributes = config.attributes;
+  }
+
   setPortAlias(port, alias) {
     port.alias = alias;
     this.updatePorts();
@@ -224,19 +229,20 @@ class Node {
     this.updateAttributes();
   }
 
-  updateFromCode(sandbox) {
-    let id = this.identifier;
+  defineKernel(sandbox) {
     let code = `
-    let def_${id} = function() {
+    window.def_${this.identifier} = function() {
       ${this.code}
-    }();
-    return def_${id}.config;
-    `;
+    }();`;
+    return sandbox.eval(code);
+  }
 
-    return sandbox.call(code).then(config => {
-      this.inputs = config.inputs;
-      this.outputs = config.outputs;
-      this.attributes = config.attributes;
+  updateFromCode(sandbox) {
+    return this.defineKernel(sandbox).then(() => {
+      let code = `return window.def_${this.identifier}.config`;
+      return sandbox.call(code);
+    }).then(config => {
+      this.updateFromConfig(config);
     });
   }
 
@@ -244,34 +250,51 @@ class Node {
     this.call(sandbox);
   }
 
-  async call(sandbox, visited=null) {
-    if (visited === null) {
-      visited = new Set();
-    }
+  async call(sandbox) {
+    let visited = new Set();
     for (let node of this.nodeData) {
-      if (visited.has(node.id)) continue;
-      visited.push(node.id);
-
-      if (node.category === Node.categories.KERNEL) {
-        await node.updateFromCode(sandbox);
-      }
-
-      // for (let input of this.inputs) {
-      // }
+      await this.createNode(node, visited, sandbox);
     }
   }
 
-  runKernel(sandbox) {
-    // let id = this.identifier;
-    // let code = `
-    // return def_${id}.call()
-    // `;
+  async createNode(node, visited, sandbox) {
+    if (visited.has(node.id)) return;
+    visited.add(node.id);
 
-    // return sandbox.call(code).then(config => {
-    //   this.inputs = config.inputs;
-    //   this.outputs = config.outputs;
-    //   this.attributes = config.attributes;
-    // });
+    if (node.category === Node.categories.KERNEL) {
+      await node.defineKernel(sandbox);
+    }
+
+    let inputArgs = [];
+    let scopeArgs = [];
+    for (let inPort of node.inputs) {
+      let argVals = [];
+      for (let edge of this.getPortEdges(inPort.id)) {
+        let sourcePort = Port.fromId(edge.source);
+        let sourceNode = this.getNodeById(sourcePort.nodeId);
+        let sourcePortName = sourceNode[sourcePort.side][sourcePort.idx].name;
+        this.createNode(sourceNode, visited, sandbox);
+        argVals.push(`window.out_${sourceNode.id}.${sourcePortName}`);
+      }
+      if (inPort.alias) {
+        argVals.push(`...window.in_${this.id}.${inPort.alias}`);
+      }
+      inputArgs.push(`${inPort.name}=[${argVals.join(',')}]`);
+      scopeArgs.push(`window.in_${node.id}=[${argVals.join(',')}];`);
+    }
+
+    await node.call(sandbox);
+
+    // Run the kernel.
+    let code;
+    if (node.category === Node.categories.KERNEL) {
+      code = `window.out_${node.id} = window.def_${node.identifier}.call(${inputArgs});`;
+    } else {
+      code = `${scopeArgs}`;
+    }
+
+    console.log('evaluating', code);
+    await sandbox.eval(code);
   }
 }
 
