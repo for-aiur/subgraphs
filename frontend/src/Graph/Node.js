@@ -263,7 +263,10 @@ class Node {
 
     // Set the input args
     let inputArgs = [];
-    let scopeArgs = [`window.in_${node.id}={};window.at_${node.id}={};`];
+    let scopeArgs = [
+      `window.in_${node.id}={}`,
+      `window.at_${node.id}={}`
+    ];
     for (let inPort of node.inputs) {
       let argVals = [];
       for (let edge of this.getPortEdges(inPort.id)) {
@@ -277,7 +280,7 @@ class Node {
         argVals.push(`...window.in_${this.id}.${inPort.alias}`);
       }
       inputArgs.push(`${inPort.name}=[${argVals.join(',')}]`);
-      scopeArgs.push(`window.in_${node.id}.${inPort.name}=[${argVals.join(',')}];`);
+      scopeArgs.push(`window.in_${node.id}.${inPort.name}=[${argVals.join(',')}]`);
     }
 
     // Set the attributes
@@ -289,16 +292,17 @@ class Node {
         value = `${attr.value}`;
       }
       inputArgs.push(`${attr.name}=${value}`);
-      scopeArgs.push(`window.at_${node.id}.${attr.name}=${value};`);
+      scopeArgs.push(`window.at_${node.id}.${attr.name}=${value}`);
     }
 
     // Run the subgraph
     if (node.category === Node.categories.KERNEL) {
       let code = `
-      window.out_${node.id} = window.def_${node.identifier}.call(${inputArgs});`;
+      window.out_${node.id} = window.def_${node.identifier}.call(
+        ${inputArgs.join(',')});`;
       await sandbox.eval(code);
     } else {
-      let code = `${scopeArgs}`;
+      let code = `${scopeArgs.join(';')}`;
       await sandbox.eval(code);
       await node.run(sandbox);
     }
