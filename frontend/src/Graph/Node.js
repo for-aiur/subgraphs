@@ -34,8 +34,8 @@ class Node {
     d.title = this.title;
     d.name = this.name;
     d.identifier = this.identifier;
-    d.category = this.category;
     d.public = this.public;
+    d.category = this.category;
     d.id = this.id;
     d.position = Utils.clone(this.position);
     d.inputs = Utils.clone(this.inputs);

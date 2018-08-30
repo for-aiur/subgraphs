@@ -78,7 +78,6 @@ class CatalogService extends Service {
     if (i >= 0) {
       items[i] = item;
     } else {
-      item.public = false;
       items.push(item);
     }
     this.publish(this.items);

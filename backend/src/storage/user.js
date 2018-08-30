@@ -11,7 +11,7 @@ function getKey(id) {
 function read({email}) {
   const q = ds.createQuery(userKind);
 
-  if (email)
+  if (email !== undefined)
     q.filter('email', '=', email);
 
   return ds.runQuery(q).then(results => fromDatastore(results[0]));

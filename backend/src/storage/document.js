@@ -11,16 +11,16 @@ function getKey(id) {
 function read({identifier, category, owner, public: public_}) {
   const q = ds.createQuery(documentKind);
 
-  if (identifier)
+  if (identifier !== undefined)
     q.filter('identifier', '=', identifier);
 
-  if (category)
+  if (category !== undefined)
     q.filter('category', '=', category);
 
-  if (owner)
+  if (owner !== undefined)
     q.filter('owner', '=', owner);
 
-  if (public_)
+  if (public_ !== undefined)
     q.filter('public', '=', public_);
 
   return ds.runQuery(q).then(results => fromDatastore(results[0]));
