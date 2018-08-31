@@ -75,14 +75,14 @@ class Editor extends Component {
     this.openDialog.open(
       [
         {
-          'title': 'Kernel',
-          'category': Node.categories.KERNEL,
-          'items': theCatalogService.getIdentifiers(Node.categories.KERNEL),
-        },
-        {
           'title': 'Graph',
           'category': Node.categories.GRAPH,
           'items': theCatalogService.getIdentifiers(Node.categories.GRAPH),
+        },
+        {
+          'title': 'Kernel',
+          'category': Node.categories.KERNEL,
+          'items': theCatalogService.getIdentifiers(Node.categories.KERNEL),
         }
       ],
       (category, identifier) => {
