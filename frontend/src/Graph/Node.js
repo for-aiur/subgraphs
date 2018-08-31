@@ -11,8 +11,8 @@ class Node {
   constructor(title=null, identifier=null, name=null,
               category=Node.categories.GRAPH) {
     this.title = title;
-    this.name = name;
     this.identifier = identifier;
+    this.name = name || identifier;
     this.public = false;
     this.category = category;
     this.id = Utils.generateUID();
@@ -285,9 +285,19 @@ class Node {
 
   async run(sandbox) {
     let visited = new Set();
+
+    // Create all child nodes and set the outputs
+    let outputArgs = [];
     for (let node of this.nodeData) {
       await this.createNode(node, visited, sandbox);
+
+      for (let outPort of node.outputs) {
+        if (outPort.alias) {
+          outputArgs.push(`${outPort.alias}:app.out_${node.id}().${outPort.name}`);
+        }
+      }
     }
+    await sandbox.eval(`app.out_${this.id}=()=>({${outputArgs.join(',')}})`);
   }
 
   async createNode(node, visited, sandbox) {
