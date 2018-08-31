@@ -69,9 +69,15 @@ class Sandbox extends Component {
           result = (new Function(...event.data.args, code))();
         }
       } catch (e) {
-        console.log('context', app);
+        let html = \`
+        <span style="color: red">\${e.name}:</span> \${e.message},
+        occurred while running:<br>\${code}\`;
+        let p = document.createElement('p');
+        p.innerHTML = html;
+        document.body.appendChild(p);
+        console.log('%c ' + e.name + ':' + e.message, 'color: red');
         console.log('code', code);
-        console.error(e.name + ':' + e.message);
+        console.log('context', app);
       }
       window.parent.postMessage({id, result}, '*');
     }
@@ -80,6 +86,9 @@ class Sandbox extends Component {
     let html = `
     <html>
     <head>
+    <style>
+    body { font-family: 'Courier New'; font-size: 12px; }
+    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tensorflow/0.12.5/tf.min.js" integrity="sha256-Eq2OUrnzn5xiSxQGei/aKxQnPQR4zrQKoMk4TKlLWBU=" crossorigin="anonymous"></script>
     <script>${script}</script>
     </head>
