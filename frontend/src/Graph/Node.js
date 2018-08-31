@@ -23,6 +23,7 @@ class Node {
     this.nodeData = [];
     this.edgeData = [];
     this.code = '';
+    this.global = false;
   }
 
   uniqueName(name) {
@@ -52,6 +53,7 @@ class Node {
       d.edgeData.push(edge);
     }
     d.code = this.code;
+    d.global = this.global;
     return d;
   }
 
@@ -229,9 +231,26 @@ class Node {
     }
 
     try {
-      this.inputs = mergeProperties(this.inputs, config.inputs);
-      this.outputs = mergeProperties(this.outputs, config.outputs);
-      this.attributes = mergeProperties(this.attributes, config.attributes);
+      if (config.inputs !== undefined)
+        this.inputs = mergeProperties(this.inputs, config.inputs);
+      else
+        this.inputs = [];
+
+      if (config.outputs !== undefined)
+        this.outputs = mergeProperties(this.outputs, config.outputs);
+      else
+        this.outputs = [];
+
+      if (config.attributes !== undefined)
+        this.attributes = mergeProperties(this.attributes, config.attributes);
+      else
+        this.attributes = [];
+
+      if (config.global !== undefined)
+        this.global = config.global;
+      else
+        this.global = false;
+
     } catch (e) {
       console.error(e.name + ':' + e.message);
     }
@@ -249,7 +268,7 @@ class Node {
 
   defineKernel(sandbox) {
     let code = `
-    window.def_${this.identifier} = function() {
+    app.def_${this.identifier} = function() {
       ${this.code}
     }();`;
     return sandbox.eval(code);
@@ -257,7 +276,7 @@ class Node {
 
   updateFromCode(sandbox) {
     return this.defineKernel(sandbox).then(() => {
-      let code = `return window.def_${this.identifier}.config`;
+      let code = `return app.def_${this.identifier}.config`;
       return sandbox.call(code);
     }).then(config => {
       this.updateFromConfig(config);
@@ -282,42 +301,47 @@ class Node {
     // Set the input args
     let inputArgs = [];
     let scopeArgs = [
-      `window.in_${node.id}={}`,
-      `window.at_${node.id}={}`
+      `app.in_${node.id}={}`,
+      `app.at_${node.id}={}`
     ];
     for (let inPort of node.inputs) {
       let argVals = [];
       for (let edge of this.getPortEdges(inPort.id)) {
-        let sourcePort = Port.fromId(edge.source);
-        let sourceNode = this.getNodeById(sourcePort.nodeId);
-        let sourcePortName = sourceNode[sourcePort.side][sourcePort.idx].name;
-        await this.createNode(sourceNode, visited, sandbox);
-        argVals.push(`window.out_${sourceNode.id}.${sourcePortName}`);
+        let srcPort = Port.fromId(edge.source);
+        let srcNode = this.getNodeById(srcPort.nodeId);
+        let srcPortName = srcNode[srcPort.side][srcPort.idx].name;
+        await this.createNode(srcNode, visited, sandbox);
+        argVals.push(`()=>app.out_${srcNode.id}().${srcPortName}`);
       }
       if (inPort.alias) {
-        argVals.push(`...window.in_${this.id}.${inPort.alias}`);
+        argVals.push(`...app.in_${this.id}.${inPort.alias}`);
       }
       inputArgs.push(`${inPort.name}=[${argVals.join(',')}]`);
-      scopeArgs.push(`window.in_${node.id}.${inPort.name}=[${argVals.join(',')}]`);
+      scopeArgs.push(`app.in_${node.id}.${inPort.name}=[${argVals.join(',')}]`);
     }
 
     // Set the attributes
     for (let attr of node.attributes) {
       let value;
       if (attr.alias) {
-        value = `window.at_${this.id}.${attr.alias}`;
+        value = `app.at_${this.id}.${attr.alias}`;
       } else {
         value = `${attr.value}`;
       }
       inputArgs.push(`${attr.name}=${value}`);
-      scopeArgs.push(`window.at_${node.id}.${attr.name}=${value}`);
+      scopeArgs.push(`app.at_${node.id}.${attr.name}=${value}`);
     }
 
     // Run the subgraph
     if (node.category === Node.categories.KERNEL) {
-      let code = `
-      window.out_${node.id} = window.def_${node.identifier}.call(
-        ${inputArgs.join(',')});`;
+      let fn = `app.def_${node.identifier}.call(${inputArgs.join(',')});`;
+      let code;
+      if (node.global)
+        code = `
+        app.g_${node.id} = ${fn};
+        app.out_${node.id} = () => app.g_${node.id};`;
+      else
+        code = `app.out_${node.id} = () => ${fn};`;
       await sandbox.eval(code);
     } else {
       let code = `${scopeArgs.join(';')}`;

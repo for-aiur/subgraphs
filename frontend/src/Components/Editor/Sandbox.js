@@ -55,6 +55,7 @@ class Sandbox extends Component {
 
   reset() {
     let script = `
+    var app = {};
     function frameReceiveMessage(event) {
       if (event.data.id === undefined) return;
       let id = event.data.id;
@@ -67,6 +68,8 @@ class Sandbox extends Component {
           result = (new Function(...event.data.args, code))();
         }
       } catch (e) {
+        console.log('context', app);
+        console.log('code', code);
         console.error(e.name + ':' + e.message);
       }
       window.parent.postMessage({id, result}, '*');
