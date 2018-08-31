@@ -630,7 +630,7 @@ class GraphEditor extends Component {
     this.clearHandlers();
   }
 
-  updateScope = () => {
+  updateScope = async () => {
   };
 
   render() {

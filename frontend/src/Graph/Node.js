@@ -216,9 +216,25 @@ class Node {
   }
 
   updateFromConfig(config) {
-    this.inputs = config.inputs;
-    this.outputs = config.outputs;
-    this.attributes = config.attributes;
+    function mergeProperties(source, target) {
+      let merged = [];
+      target.forEach(tar => {
+        let src = source.find((src) => src.name === tar.name);
+        if (src !== undefined)
+          merged.push(Object.assign(src, tar));
+        else
+          merged.push(tar);
+      });
+      return merged;
+    }
+
+    try {
+      this.inputs = mergeProperties(this.inputs, config.inputs);
+      this.outputs = mergeProperties(this.outputs, config.outputs);
+      this.attributes = mergeProperties(this.attributes, config.attributes);
+    } catch (e) {
+      console.error(e.name + ':' + e.message);
+    }
   }
 
   setPortAlias(port, alias) {

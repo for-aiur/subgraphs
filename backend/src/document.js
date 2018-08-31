@@ -37,8 +37,8 @@ router.post('/list', (req, res) => {
     let contents = docs.map(doc => JSON.parse(doc.content));
     return contents;
   })
-  .catch(error => {
-    console.log(error);
+  .catch(e => {
+    console.error(e.name + ':' + e.message);
   })
   .then(contents => {
     res.json(contents);

@@ -26,7 +26,7 @@ class UserService extends Service {
       this.user = d;
       this.publish(this.user);
     }).catch((e) => {
-      console.log(e);
+      console.error(e.name + ':' + e.message);
     });
   }
 
@@ -44,7 +44,7 @@ class UserService extends Service {
       this.user = newUser;
       this.publish(this.user);
     }).catch(e => {
-      console.log(e);
+      console.error(e.name + ':' + e.message);
     });
   }
 

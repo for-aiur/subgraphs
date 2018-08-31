@@ -32,8 +32,8 @@ class CatalogService extends Service {
       this.items.kernel = items.filter(d => d.category === Node.categories.KERNEL);
       this.items.graph = items.filter(d => d.category === Node.categories.GRAPH);
       this.publish(this.items);
-    }).catch((err) => {
-      console.log(err);
+    }).catch(e => {
+      console.error(e.name + ':' + e.message);
     });
   }
 

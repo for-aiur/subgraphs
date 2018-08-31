@@ -94,43 +94,45 @@ class Editor extends Component {
       () => {});
   };
 
-  onOpenSubgraph = (p) => {
+  onOpenSubgraph = async (p) => {
     let openNodes = this.state.openNodes;
     let i = openNodes.findIndex(q => q.identifier === p.identifier);
     if (i >= 0) {
       openNodes.splice(i, 1);
     }
     openNodes.push(p);
-    if (this.state.scope !== null) {
-      this.editor.updateScope();
-      this.state.scope.pruneEdges();
-    }
+    await this.updateScope();
     this.setState({
       scope: p,
       openNodes: openNodes
     });
   };
 
-  onClose = (p) => {
+  onClose = async (p) => {
     if (p === null) {
       this.messageDialog.open('Error', 'Invalid action.');
       return;
     }
+
+    // Find index of the current tab
     let openNodes = this.state.openNodes;
     let i = openNodes.indexOf(p);
+
+    // Set scope to an open tab
+    if (this.state.scope === p) {
+      if (openNodes.length === 1) {
+        await this.onSetScope(null);
+      } else {
+        await this.onSetScope(openNodes[Math.max(0, i - 1)]);
+      }
+    }
+
+    // Remove current tab
     openNodes.splice(i, 1);
     this.setState({openNodes: openNodes});
-    if (this.state.scope === p) {
-      if (openNodes.length === 0) {
-        this.onSetScope(null);
-      } else {
-        this.onSetScope(openNodes[Math.max(0, i - 1)]);
-      }
-      return;
-    }
   };
 
-  onSave = (p=null, onOK=null, onCancel=null) => {
+  onSave = async (p=null, onOK=null, onCancel=null) => {
     if (p === null) {
       p = this.state.scope;
       if (p === null) {
@@ -139,8 +141,7 @@ class Editor extends Component {
       }
     }
 
-    this.editor.updateScope();
-    p.pruneEdges();
+    await this.updateScope();
 
     this.saveDialog.open(
       p.title,
@@ -164,7 +165,7 @@ class Editor extends Component {
       });
   };
 
-  onDelete = () => {
+  onDelete = async () => {
     if (this.state.scope === null) {
       this.messageDialog.open('Error', 'Invalid action.');
       return;
@@ -172,13 +173,13 @@ class Editor extends Component {
     let existing = theCatalogService.getItemByIdentifier(
       this.state.scope.category, this.state.scope.identifier);
     if (!existing) {
-      this.onClose(this.state.scope);
+      await this.onClose(this.state.scope);
       return;
     }
     this.deleteDialog.open(
       this.state.scope.identifier,
-      () => {
-        this.onClose(this.state.scope);
+      async () => {
+        await this.onClose(this.state.scope);
         theCatalogService.remove(this.state.scope, () => {
           this.messageDialog.open(
             'Error', 'Failed to communicate with the server. '+
@@ -206,14 +207,20 @@ class Editor extends Component {
     this.sandbox.reset();
   };
 
-  onSetScope = (p) => {
-    if (this.state.scope !== null) {
-      this.editor.updateScope();
-      this.state.scope.pruneEdges();
-    }
+  onSetScope = async (p) => {
+    await this.updateScope();
     this.setState({
       scope: p
     });
+  }
+
+  updateScope = async () => {
+    if (this.state.scope !== null) {
+      await this.editor.updateScope();
+      if (this.state.scope.parent) {
+        this.state.scope.parent.pruneEdges();
+      }
+    }
   }
 
   onChangeIdentifier = () => {

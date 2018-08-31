@@ -24,9 +24,9 @@ class CodeEditor extends Component {
     this.editor.focus();
   }
 
-  updateScope = () => {
+  updateScope = async () => {
     this.props.scope.code = this.editor.getValue();
-    this.props.scope.updateFromCode(this.props.sandbox);
+    await this.props.scope.updateFromCode(this.props.sandbox);
   };
 
   render() {
