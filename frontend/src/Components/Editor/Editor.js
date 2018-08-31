@@ -3,8 +3,8 @@ import GraphEditor from './GraphEditor'
 import CodeEditor from './CodeEditor'
 import Menu from './Menu'
 import TabsBar from './TabsBar';
-import { NewDialog, OpenDialog, SaveDialog, DeleteDialog, MessageDialog } from './Dialogs';
-import Sandbox from './Sandbox';
+import { NewDialog, OpenDialog, SaveDialog, DeleteDialog, MessageDialog,
+         SandboxDialog } from './Dialogs';
 import theCatalogService from '../../Services/CatalogService'
 import Node from '../../Graph/Node';
 import * as Utils from '../../Common/Utils';
@@ -196,15 +196,7 @@ class Editor extends Component {
       return;
     }
 
-    this.state.scope.run(this.sandbox);
-  };
-
-  onStop = () => {
-    if (this.state.scope === null) {
-      this.messageDialog.open('Error', 'Invalid action.');
-      return;
-    }
-    this.sandbox.reset();
+    this.sandboxDialog.open(this.state.scope);
   };
 
   onSetScope = async (p) => {
@@ -233,13 +225,12 @@ class Editor extends Component {
       open: this.onOpen,
       save: this.onSave,
       delete: this.onDelete,
-      run: this.onRun,
-      stop: this.onStop,
+      run: this.onRun
     };
 
     return (
       <div id="editor-container">
-        <Sandbox ref={p => this.sandbox = p} />
+        <SandboxDialog ref={p => this.sandboxDialog = p} />
         <NewDialog ref={p => this.newDialog = p} />
         <OpenDialog ref={p => this.openDialog = p} />
         <SaveDialog ref={p => this.saveDialog = p} />
@@ -266,7 +257,7 @@ class Editor extends Component {
           this.mode === modes.CODE &&
           <CodeEditor ref={p => this.editor = p}
                       scope={this.state.scope}
-                      sandbox={this.sandbox} />
+                      sandbox={this.sandboxDialog.sandbox} />
         }
         </div>
       </div>

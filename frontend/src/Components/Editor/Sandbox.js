@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import './Sandbox.css';
 
 class Sandbox extends Component {
   constructor(props) {
@@ -77,8 +78,13 @@ class Sandbox extends Component {
     window.addEventListener('message', frameReceiveMessage, false);
     `;
     let html = `
+    <html>
+    <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tensorflow/0.12.5/tf.min.js" integrity="sha256-Eq2OUrnzn5xiSxQGei/aKxQnPQR4zrQKoMk4TKlLWBU=" crossorigin="anonymous"></script>
     <script>${script}</script>
+    </head>
+    <body></body>
+    </html>
     `;
     this.ifr.src = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
   }
@@ -88,7 +94,7 @@ class Sandbox extends Component {
       <iframe ref={(p) => this.ifr = p}
               title="Sandbox"
               sandbox="allow-scripts"
-              style={{display: 'none'}}>
+              className="sandbox">
       </iframe>
     );
   }

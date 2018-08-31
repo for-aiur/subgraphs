@@ -5,6 +5,7 @@ import {
 } from 'react-bootstrap';
 import './Dialogs.css';
 import theUserService from '../../Services/UserService'
+import Sandbox from './Sandbox';
 
 class NewDialog extends Component {
   constructor(props) {
@@ -399,4 +400,58 @@ class MessageDialog extends Component {
   }
 }
 
-export { NewDialog, OpenDialog, SaveDialog, DeleteDialog, MessageDialog };
+class SandboxDialog extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      scope: {},
+      showModal: false
+    };
+  }
+
+  open = (scope) => {
+    scope.run(this.sandbox);
+    this.setState({
+      scope: scope,
+      showModal: true
+    });
+  }
+
+  onDismiss = () => {
+    this.sandbox.reset();
+    this.setState({
+      showModal: false
+    });
+  }
+
+  render() {
+    return (
+      <div style={{display: this.state.showModal ? 'block': 'none'}}>
+        <Modal.Dialog>
+          <Modal.Header>
+            <Modal.Title>{this.state.scope.title}</Modal.Title>
+          </Modal.Header>
+
+          <Modal.Body>
+          <Sandbox ref={p => this.sandbox = p} />
+          </Modal.Body>
+
+          <Modal.Footer>
+            <Button bsStyle="default" onClick={this.onDismiss}>Dismiss</Button>
+          </Modal.Footer>
+
+        </Modal.Dialog>
+      </div>
+    );
+  }
+}
+
+export {
+  NewDialog,
+  OpenDialog,
+  SaveDialog,
+  DeleteDialog,
+  MessageDialog,
+  SandboxDialog
+};
