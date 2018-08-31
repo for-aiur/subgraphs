@@ -179,12 +179,12 @@ class Editor extends Component {
     this.deleteDialog.open(
       this.state.scope.identifier,
       async () => {
-        await this.onClose(this.state.scope);
         theCatalogService.remove(this.state.scope, () => {
           this.messageDialog.open(
             'Error', 'Failed to communicate with the server. '+
             'Perhaps you are not logged in?');
         });
+        await this.onClose(this.state.scope);
       },
       () => {}
     );
