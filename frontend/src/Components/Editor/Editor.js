@@ -33,7 +33,10 @@ class Editor extends Component {
             return;
           }
           p = Object.assign(new Node(), p).clone();
-          this.setState({scope: p, openNodes: []});
+          this.setState({
+            scope: p,
+            openNodes: [p]
+          });
         }
       );
     } else {
