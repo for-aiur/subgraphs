@@ -1,5 +1,6 @@
 import Service from './Service';
 import Node from '../Graph/Node';
+import theUserService from './UserService';
 
 class CatalogService extends Service {
   constructor() {
@@ -23,7 +24,7 @@ class CatalogService extends Service {
     })
     .then(response => {
       if (!response.ok) {
-        throw Error('Failed to fetch user information.')
+        throw Error('Failed to fetch the documents.')
       }
       return response;
     })
@@ -31,8 +32,34 @@ class CatalogService extends Service {
     .then(items => {
       this.items.kernel = items.filter(d => d.category === Node.categories.KERNEL);
       this.items.graph = items.filter(d => d.category === Node.categories.GRAPH);
-      this.publish(this.items);
+      this.publish('init');
     }).catch(e => {
+      console.error(e.name + ':' + e.message);
+    });
+  }
+
+  queryItem(identifier, owner) {
+    let query = `/api/doc/get/${identifier}`;
+    if (owner) {
+      query += `/${owner}`;
+    }
+    return fetch(query, {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }),
+      body: "{}",
+      credentials: 'same-origin'
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw Error('Failed to fetch the documents.')
+      }
+      return response;
+    })
+    .then(d => d.json())
+    .catch(e => {
       console.error(e.name + ':' + e.message);
     });
   }
@@ -73,6 +100,9 @@ class CatalogService extends Service {
   }
 
   addLocal(item) {
+    if (theUserService.isLoggedIn) {
+      item.owner = theUserService.user.uid;
+    }
     let items = this.items[item.category];
     let i = this.findIndex(item);
     if (i >= 0) {
@@ -80,7 +110,7 @@ class CatalogService extends Service {
     } else {
       items.push(item);
     }
-    this.publish(this.items);
+    this.publish('update');
   }
 
   add(item, errorCallback=null) {
@@ -106,7 +136,7 @@ class CatalogService extends Service {
     if (i >= 0) {
       let items = this.items[item.category];
       items.splice(i, 1);
-      this.publish(this.items);
+      this.publish('update');
     }
   }
 

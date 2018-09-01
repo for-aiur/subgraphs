@@ -37,11 +37,35 @@ router.post('/list', (req, res) => {
     let contents = docs.map(doc => JSON.parse(doc.content));
     return contents;
   })
-  .catch(e => {
-    console.error(e.name + ':' + e.message);
-  })
   .then(contents => {
-    res.json(contents);
+    return res.json(contents);
+  })
+  .catch(e => {
+    console.error(e.name + ': ' + e.message);
+    return res.status(400).end();
+  });
+});
+
+/**
+ * POST /api/document/get
+ *
+ * List documents.
+ */
+router.post('/get/:identifier/:owner', (req, res) => {
+  let identifier = req.params.identifier;
+  let owner = undefined;
+  if (req.params.owner) {
+    owner = userData.key(req.params.owner);
+  }
+  docData.read({identifier, owner}).then(docs => {
+    if (docs.length == 0) {
+      throw 'Requested doc not found.';
+    };
+    return res.send(docs[0].content);
+  })
+  .catch(e => {
+    console.error(e.name + ': ' + e.message);
+    return res.status(400).end();
   });
 });
 

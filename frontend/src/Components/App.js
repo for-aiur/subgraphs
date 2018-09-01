@@ -44,10 +44,10 @@ class App extends Component {
         <div>
           <Navigation user={this.state.user} />
           <Route exact path="/" component={About}></Route>
-          <Route exact path="/Guide" component={Guide}></Route>
-          <Route exact path="/Editor" component={Editor}></Route>
-          <Route exact path="/Login" component={Login}></Route>
-          <Route exact path="/Profile" render={props => (
+          <Route path="/Guide" component={Guide}></Route>
+          <Route path="/Editor/:i?/:o?" component={Editor}></Route>
+          <Route path="/Login" component={Login}></Route>
+          <Route path="/Profile" render={props => (
             <Profile user={this.state.user}/>
           )}>
           </Route>

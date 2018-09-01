@@ -20,11 +20,29 @@ class Editor extends Component {
   constructor(props) {
     super(props);
 
-    let scope = new Node('New Project', 'project0');
-    this.state = {
-      scope: scope,
-      openNodes: [scope]
-    };
+    if (props.match.params.i) {
+      this.state = {
+        scope: null,
+        openNodes: []
+      };
+      theCatalogService.queryItem(
+        props.match.params.i,
+        props.match.params.o).then((p) => {
+          if (!p) {
+            this.messageDialog.open('Error', 'Graph not found.');
+            return;
+          }
+          p = Object.assign(new Node(), p).clone();
+          this.setState({scope: p, openNodes: []});
+        }
+      );
+    } else {
+      let scope = new Node('New Project', 'project0');
+      this.state = {
+        scope: scope,
+        openNodes: [scope]
+      };
+    }
   }
 
   componentDidMount() {
@@ -199,6 +217,19 @@ class Editor extends Component {
     this.sandboxDialog.open(this.state.scope);
   };
 
+  onShare = () => {
+    if (this.state.scope === null || !this.state.scope.owner) {
+      this.messageDialog.open('Error', 'Invalid action.');
+      return '';
+    }
+
+    let link = window.location.href + `/${this.state.scope.identifier}`;
+    if (!this.state.scope.public) {
+      link += '/' + this.state.scope.owner;
+    }
+    return link;
+  }
+
   onSetScope = async (p) => {
     await this.updateScope();
     this.setState({
@@ -225,7 +256,8 @@ class Editor extends Component {
       open: this.onOpen,
       save: this.onSave,
       delete: this.onDelete,
-      run: this.onRun
+      run: this.onRun,
+      share: this.onShare
     };
 
     return (

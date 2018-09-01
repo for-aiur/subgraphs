@@ -22,7 +22,7 @@ class CatalogView extends Component {
     delete this.catalogDrag;
   }
 
-  onUpdateCatalog = (data) => {
+  onUpdateCatalog = () => {
     this.drawCatalog();
   };
 

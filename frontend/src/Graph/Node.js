@@ -14,6 +14,7 @@ class Node {
     this.identifier = identifier;
     this.name = name || identifier;
     this.public = false;
+    this.owner = '';
     this.category = category;
     this.id = Utils.generateUID();
     this.position = {x: 0, y: 0};
@@ -36,6 +37,7 @@ class Node {
     d.name = this.name;
     d.identifier = this.identifier;
     d.public = this.public;
+    d.owner = this.owner;
     d.category = this.category;
     d.id = this.id;
     d.position = Utils.clone(this.position);
