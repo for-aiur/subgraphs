@@ -19,11 +19,11 @@ class Guide extends Component {
         </div>
 
         <div>
-          <h2 className="text-center">Creating subgraphs</h2>
+          <h2 className="text-center">Creating graphs</h2>
           <p className="lead">
             Click on the new button to create an empty subgraph. You can then specify
-            a title and an identifier for your subgraph. Make sure to specify a unique 
-            identifier for your subgraphs. You can only use alphanumerical characters
+            a title and an identifier for your subgraph. Make sure to specify a unique
+            identifier for your graphs. You can only use alphanumerical characters
             and underline for the identifier.
           </p>
           <p className="text-center">
@@ -34,7 +34,7 @@ class Guide extends Component {
         <div>
           <h2 className="text-center">Inserting nodes</h2>
           <p className="lead">
-            Simply drag and drop any node from the catalog to the canvas and specify 
+            Simply drag and drop any node from the catalog to the canvas and specify
             its attributes. You can then connect the nodes by dragging the ports.
           </p>
           <p className="text-center">
@@ -43,9 +43,9 @@ class Guide extends Component {
         </div>
 
         <div>
-          <h2 className="text-center">Making reusable subgraphs</h2>
+          <h2 className="text-center">Making reusable graphs</h2>
           <p className="lead">
-            You can expose any subgraph's internal attributes and ports so that it can be 
+            You can expose any graph's internal attributes and ports so that it can be
             reused in different places. Select a node, and go to property view on the
             right. Press "external" to expose the port or attribute. You can further
             specify external aliases for ports or attributes.
@@ -56,24 +56,13 @@ class Guide extends Component {
         </div>
 
         <div>
-          <h2 className="text-center">Terminal nodes</h2>
+          <h2 className="text-center">Running your graphs</h2>
           <p className="lead">
-            Ops won't get executed by default. In order to run ops, they have to be
-            connected to a terminal node. "Run" node is a terminal node that gets
-            executed at each iteration. It's usually connected to the training op in the graph.
-            "Summary" nodes get executed every few iterations, and their output
-            will be visualized on TensorBoard.
+            Simply click on the "Run" button to execute the current graph.
+            A popup window will appear in which you can see the results of the execution.
           </p>
           <p className="text-center">
-            <img src="https://i.imgur.com/m7GRNNP.gif" alt="" />
-          </p>
-        </div>
-
-        <div>
-          <h2 className="text-center">Running subgraphs</h2>
-          <p className="lead">
-            In order to run your models you will need to download the client application.
-            Follow the instructions from <a href="https://github.com/vahidk/subgraphs">here</a>.
+            <img src="https://i.imgur.com/IF18TE5.gif" alt="" />
           </p>
         </div>
 
