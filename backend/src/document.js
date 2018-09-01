@@ -51,7 +51,7 @@ router.post('/list', (req, res) => {
  *
  * List documents.
  */
-router.post('/get/:identifier/:owner', (req, res) => {
+router.post('/get/:identifier/:owner?', (req, res) => {
   let identifier = req.params.identifier;
   let owner = undefined;
   if (req.params.owner) {
