@@ -56,17 +56,18 @@ class Sandbox extends Component {
 
   reset() {
     let script = `
+    const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
     var app = {};
-    function frameReceiveMessage(event) {
+    async function frameReceiveMessage(event) {
       if (event.data.id === undefined) return;
       let id = event.data.id;
       let code = event.data.code
       let result;
       try {
         if (event.data.method == 'eval') {
-          eval(code);
+          await (new AsyncFunction(code))();
         } else {
-          result = (new Function(...event.data.args, code))();
+          result = await (new AsyncFunction(...event.data.args, code))();
         }
       } catch (e) {
         let html = \`

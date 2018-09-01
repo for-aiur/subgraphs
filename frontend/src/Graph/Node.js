@@ -346,11 +346,11 @@ class Node {
 
     // Run the subgraph
     if (node.category === Node.categories.KERNEL) {
-      let fn = `app.def_${node.identifier}.call(${inputArgs.join(',')});`;
+      let fn = `app.def_${node.identifier}.call(${inputArgs.join(',')})`;
       let code;
       if (node.global)
         code = `
-        app.g_${node.id} = ${fn};
+        app.g_${node.id} = await ${fn};
         app.out_${node.id} = () => app.g_${node.id};`;
       else
         code = `app.out_${node.id} = () => ${fn};`;
