@@ -275,34 +275,36 @@ class Node {
     });
   }
 
-  createNamespace(ns, node) {
-    return `${ns}.ns_${node.id}`;
+  createNamespace(nsh, attr) {
+    return ['app'].concat(nsh.map(i => 'ns_' + i[attr])).join('.');
   }
 
-  async run(sandbox, ns='app') {
+  async run(sandbox, nsh=[]) {
     let visited = new Set();
 
     // Create all child nodes and set the outputs
     let outputArgs = [];
     for (let node of this.nodeData) {
-      await this.createNode(node, visited, sandbox, ns);
+      await this.createNode(node, visited, sandbox, nsh);
 
       for (let outPort of node.outputs) {
         if (outPort.alias) {
-          let cns = this.createNamespace(ns, node);
+          let cns = this.createNamespace(nsh.concat([node]), 'id');
           outputArgs.push(`${outPort.alias}:${cns}.out().${outPort.name}`);
         }
       }
     }
+    let ns = this.createNamespace(nsh, 'id');
     await sandbox.eval(`${ns}.out=()=>({${outputArgs.join(',')}})`);
   }
 
-  async createNode(node, visited, sandbox, pns) {
+  async createNode(node, visited, sandbox, nsh) {
     if (visited.has(node.id)) return;
     visited.add(node.id);
 
     // Create the namespace
-    let ns = this.createNamespace(pns, node);
+    let pns = this.createNamespace(nsh, 'id');
+    let ns = this.createNamespace(nsh.concat([node]), 'id');
     await sandbox.eval(`${ns} = {}`);
 
     // Set the input args
@@ -318,8 +320,8 @@ class Node {
         let srcPort = Port.fromId(edge.source);
         let srcNode = this.getNodeById(srcPort.nodeId);
         let srcPortName = srcNode[srcPort.side][srcPort.idx].name;
-        await this.createNode(srcNode, visited, sandbox, pns);
-        let sns = this.createNamespace(pns, srcNode);
+        await this.createNode(srcNode, visited, sandbox, nsh);
+        let sns = this.createNamespace(nsh.concat([srcNode]), 'id');
         argVals.push(`()=>${sns}.out().${srcPortName}`);
       }
       if (inPort.alias) {
@@ -355,7 +357,7 @@ class Node {
     } else {
       let code = `${scopeArgs.join(';')}`;
       await sandbox.eval(code);
-      await node.run(sandbox, ns);
+      await node.run(sandbox, nsh.concat([node]));
     }
   }
 }
