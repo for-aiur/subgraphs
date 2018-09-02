@@ -305,7 +305,8 @@ class Node {
     // Create the namespace
     let pns = this.createNamespace(nsh, 'id');
     let ns = this.createNamespace(nsh.concat([node]), 'id');
-    await sandbox.eval(`${ns} = {}`);
+    let gns = this.createNamespace(nsh.concat([node]), 'name');
+    await sandbox.eval(`${ns} = {}; ${gns} = {}`);
 
     // Set the input args
     let inputArgs = [];
@@ -347,12 +348,13 @@ class Node {
     if (node.category === Node.categories.KERNEL) {
       let code = `${ns}.def = function() { ${node.code} }();`;
       let fn = `${ns}.def.call(${inputArgs.join(',')})`;
-      if (node.global)
+      if (node.global) {
         code += `
-        ${ns}.g = await ${fn};
-        ${ns}.out = () => ${ns}.g;`;
-      else
+        ${gns}.g = await ${fn};
+        ${ns}.out = () => ${gns}.g;`;
+      } else {
         code += `${ns}.out = () => ${fn};`;
+      }
       await sandbox.eval(code);
     } else {
       let code = `${scopeArgs.join(';')}`;
