@@ -477,7 +477,7 @@ class GraphEditor extends Component {
     .attr('height', function(d) {
       let numPorts = Math.max(d.inputs.length, d.outputs.length);
       let numAttrs = d.attributes.length;
-      return (1 + numPorts + numAttrs) * 20
+      return (2 + numPorts + numAttrs) * 20
     });
 
     let nodeHeader = enter.append('g')
