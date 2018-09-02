@@ -346,6 +346,9 @@ class Node {
 
     // Run the subgraph
     if (node.category === Node.categories.KERNEL) {
+      // Supply context arguments
+      inputArgs.push(`context={gns: '${gns}'}`);
+
       let code = `${ns}.def = function() { ${node.code} }();`;
       let fn = `${ns}.def.call(${inputArgs.join(',')})`;
       if (node.global) {
