@@ -275,6 +275,10 @@ class Node {
     });
   }
 
+  createNamespace(ns, node) {
+    return `${ns}.ns_${node.name}`;
+  }
+
   async run(sandbox, ns='app') {
     let visited = new Set();
 
@@ -285,7 +289,7 @@ class Node {
 
       for (let outPort of node.outputs) {
         if (outPort.alias) {
-          let cns = `${ns}.ns_${node.id}`;
+          let cns = this.createNamespace(ns, node);
           outputArgs.push(`${outPort.alias}:${cns}.out().${outPort.name}`);
         }
       }
@@ -298,7 +302,7 @@ class Node {
     visited.add(node.id);
 
     // Create the namespace
-    let ns = `${pns}.ns_${node.id}`;
+    let ns = this.createNamespace(pns, node);
     await sandbox.eval(`${ns} = {}`);
 
     // Set the input args
@@ -315,7 +319,7 @@ class Node {
         let srcNode = this.getNodeById(srcPort.nodeId);
         let srcPortName = srcNode[srcPort.side][srcPort.idx].name;
         await this.createNode(srcNode, visited, sandbox, pns);
-        let sns = `${pns}.ns_${srcNode.id}`;
+        let sns = this.createNamespace(pns, srcNode);
         argVals.push(`()=>${sns}.out().${srcPortName}`);
       }
       if (inPort.alias) {
