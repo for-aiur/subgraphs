@@ -276,7 +276,7 @@ class Node {
   }
 
   createNamespace(ns, node) {
-    return `${ns}.ns_${node.name}`;
+    return `${ns}.ns_${node.id}`;
   }
 
   async run(sandbox, ns='app') {
