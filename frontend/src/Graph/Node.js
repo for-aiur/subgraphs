@@ -268,97 +268,90 @@ class Node {
     this.updateAttributes();
   }
 
-  defineKernel(sandbox) {
-    let code = `
-    app.def_${this.identifier} = function() {
-      ${this.code}
-    }();`;
-    return sandbox.eval(code);
-  }
-
   updateFromCode(sandbox) {
-    return this.defineKernel(sandbox).then(() => {
-      let code = `return app.def_${this.identifier}.config`;
-      return sandbox.call(code);
-    }).then(config => {
+    let code = `return function() { ${this.code} }().config`;
+    return sandbox.call(code).then(config => {
       this.updateFromConfig(config);
     });
   }
 
-  async run(sandbox) {
+  async run(sandbox, ns='app') {
     let visited = new Set();
 
     // Create all child nodes and set the outputs
     let outputArgs = [];
     for (let node of this.nodeData) {
-      await this.createNode(node, visited, sandbox);
+      await this.createNode(node, visited, sandbox, ns);
 
       for (let outPort of node.outputs) {
         if (outPort.alias) {
-          outputArgs.push(`${outPort.alias}:app.out_${node.id}().${outPort.name}`);
+          let cns = `${ns}.ns_${node.id}`;
+          outputArgs.push(`${outPort.alias}:${cns}.out().${outPort.name}`);
         }
       }
     }
-    await sandbox.eval(`app.out_${this.id}=()=>({${outputArgs.join(',')}})`);
+    await sandbox.eval(`${ns}.out=()=>({${outputArgs.join(',')}})`);
   }
 
-  async createNode(node, visited, sandbox) {
+  async createNode(node, visited, sandbox, pns) {
     if (visited.has(node.id)) return;
     visited.add(node.id);
 
-    if (node.category === Node.categories.KERNEL) {
-      await node.defineKernel(sandbox);
-    }
+    // Create the namespace
+    let ns = `${pns}.ns_${node.id}`;
+    await sandbox.eval(`${ns} = {}`);
 
     // Set the input args
     let inputArgs = [];
     let scopeArgs = [
-      `app.in_${node.id}={}`,
-      `app.at_${node.id}={}`
+      `${ns}.in={}`,
+      `${ns}.at={}`
     ];
+
     for (let inPort of node.inputs) {
       let argVals = [];
       for (let edge of this.getPortEdges(inPort.id)) {
         let srcPort = Port.fromId(edge.source);
         let srcNode = this.getNodeById(srcPort.nodeId);
         let srcPortName = srcNode[srcPort.side][srcPort.idx].name;
-        await this.createNode(srcNode, visited, sandbox);
-        argVals.push(`()=>app.out_${srcNode.id}().${srcPortName}`);
+        await this.createNode(srcNode, visited, sandbox, pns);
+        let sns = `${pns}.ns_${srcNode.id}`;
+        argVals.push(`()=>${sns}.out().${srcPortName}`);
       }
       if (inPort.alias) {
-        argVals.push(`...app.in_${this.id}.${inPort.alias}`);
+        argVals.push(`...${pns}.in.${inPort.alias}`);
       }
       inputArgs.push(`${inPort.name}=[${argVals.join(',')}]`);
-      scopeArgs.push(`app.in_${node.id}.${inPort.name}=[${argVals.join(',')}]`);
+      scopeArgs.push(`${ns}.in.${inPort.name}=[${argVals.join(',')}]`);
     }
 
     // Set the attributes
     for (let attr of node.attributes) {
       let value;
       if (attr.alias) {
-        value = `app.at_${this.id}.${attr.alias}`;
+        value = `${pns}.at.${attr.alias}`;
       } else {
         value = `${attr.value}`;
       }
       inputArgs.push(`${attr.name}=${value}`);
-      scopeArgs.push(`app.at_${node.id}.${attr.name}=${value}`);
+      scopeArgs.push(`${ns}.at.${attr.name}=${value}`);
     }
 
     // Run the subgraph
     if (node.category === Node.categories.KERNEL) {
-      let fn = `app.def_${node.identifier}.call(${inputArgs.join(',')})`;
-      let code;
+      let code = `${ns}.def = function() { ${node.code} }();`;
+      let fn = `${ns}.def.call(${inputArgs.join(',')})`;
       if (node.global)
-        code = `
-        app.g_${node.id} = await ${fn};
-        app.out_${node.id} = () => app.g_${node.id};`;
+        code += `
+        ${ns}.g = await ${fn};
+        ${ns}.out = () => ${ns}.g;`;
       else
-        code = `app.out_${node.id} = () => ${fn};`;
+        code += `${ns}.out = () => ${fn};`;
       await sandbox.eval(code);
     } else {
       let code = `${scopeArgs.join(';')}`;
       await sandbox.eval(code);
-      await node.run(sandbox);
+      await node.run(sandbox, ns);
     }
   }
 }

@@ -77,8 +77,19 @@ class Sandbox extends Component {
         p.innerHTML = html;
         document.body.appendChild(p);
         console.log('%c ' + e.name + ':' + e.message, 'color: red');
-        console.log('code', code);
-        console.log('context', app);
+        console.log('code ' + code);
+        console.log(JSON.stringify(app, (key, val) => {
+          if (val instanceof Function ||
+              val instanceof AsyncFunction) {
+            if (val.name) {
+              return 'function: ' + val.name;
+            } else {
+              return val.toString();
+            }
+          } else {
+            return val;
+          }
+        }, 2));
       }
       window.parent.postMessage({id, result}, '*');
     }
