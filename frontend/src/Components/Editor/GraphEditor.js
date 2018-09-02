@@ -469,6 +469,17 @@ class GraphEditor extends Component {
     .call(this.nodeDrag)
     .on('contextmenu', this.nodeContextMenu);
 
+    enter
+    .append('clipPath')
+    .attr('id', 'node-clip')
+    .append('rect')
+    .attr('width', 150)
+    .attr('height', function(d) {
+      let numPorts = Math.max(d.inputs.length, d.outputs.length);
+      let numAttrs = d.attributes.length;
+      return (1 + numPorts + numAttrs) * 20
+    });
+
     let nodeHeader = enter.append('g')
     .attr('class', 'nodeHeader');
 
@@ -481,6 +492,7 @@ class GraphEditor extends Component {
     .append('text')
     .attr('x', 5)
     .attr('y', 16)
+    .attr('clip-path', 'url(#node-clip)')
     .text(d => d.name);
 
     let nodeBody = enter.append('g')
@@ -555,6 +567,7 @@ class GraphEditor extends Component {
     .attr('x', 4)
     .attr('y', d => 16 + d.offset)
     .attr('class', d => d.attr.alias ? 'alias' : '')
+    .attr('clip-path', 'url(#node-clip)')
     .text(d => `${d.attr.name}: ${d.attr.value}`);
   }
 
