@@ -102,6 +102,7 @@ class Sandbox extends Component {
     body { font-family: 'Courier New'; font-size: 12px; }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tensorflow/0.12.5/tf.min.js" integrity="sha256-Eq2OUrnzn5xiSxQGei/aKxQnPQR4zrQKoMk4TKlLWBU=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js" integrity="sha256-CfcERD4Ov4+lKbWbYqXD6aFM9M51gN4GUEtDhkWABMo=" crossorigin="anonymous"></script>
     <script>${script}</script>
     </head>
     <body></body>
