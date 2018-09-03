@@ -25,8 +25,11 @@ class Navigation extends Component {
             <NavItem eventKey={1} onClick={this.goto.bind(this, "/editor")}>
               Editor
             </NavItem>
-            <NavItem eventKey={1} onClick={this.goto.bind(this, "/guide")}>
+            <NavItem eventKey={2} onClick={this.goto.bind(this, "/guide")}>
               Guide
+            </NavItem>
+            <NavItem eventKey={3} onClick={this.goto.bind(this, "/about")}>
+              About
             </NavItem>
           </Nav>
           <Nav pullRight>

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import './About.css';
+import './Home.css';
 
-class About extends Component {
+class Home extends Component {
   render() {
     return (
       <div>
@@ -20,23 +20,9 @@ class About extends Component {
           </div>
         </header>
 
-        <section>
-          <div className="container">
-            <div className="row">
-              <div className="col-lg-12 text-center">
-                <p className="lead">
-                  Subgraphs is a visual IDE for developing computational graphs, particularly
-                  designed for deep neural networks. Subgraphs aims to enable users with
-                  no programming experience easily develop machine learning models.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
       </div>
     );
   }
 }
 
-export default About;
+export default Home;

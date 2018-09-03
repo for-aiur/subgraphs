@@ -23,7 +23,7 @@ class Menu extends Component {
 
   render() {
     return (
-      <div className="btn-toolbar">
+      <div className="btn-toolbar blue-toolbar">
         <div className="btn-group">
           <a className="btn btn-primary" onClick={e => this.props.callbacks.new()}>
             <i className="fa fa-file-o"></i>

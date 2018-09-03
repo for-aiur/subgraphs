@@ -4,7 +4,6 @@ const session = require('express-session');
 const MemcachedStore = require('connect-memjs')(session);
 const config = require('./config');
 
-// Configure the session and session storage.
 const sessionConfig = {
   resave: false,
   saveUninitialized: false,
@@ -15,8 +14,6 @@ const sessionConfig = {
   }
 };
 
-// In production use the Memcache instance to store session data,
-// otherwise fallback to the default MemoryStore in development.
 if (config.get('NODE_ENV') === 'production' && config.get('MEMCACHE_URL')) {
   if (config.get('MEMCACHE_USERNAME') && (config.get('MEMCACHE_PASSWORD'))) {
     sessionConfig.store = new MemcachedStore({

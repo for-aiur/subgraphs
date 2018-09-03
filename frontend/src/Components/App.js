@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { HashRouter, Route } from 'react-router-dom';
-import About from './About/About';
-import Guide from './About/Guide';
+import Home from './Pages/Home';
+import About from './Pages/About';
+import Guide from './Pages/Guide';
 import Editor from './Editor/Editor';
 import Login from './User/Login';
 import Profile from './User/Profile';
@@ -43,7 +44,8 @@ class App extends Component {
       <HashRouter>
         <div>
           <Navigation user={this.state.user} />
-          <Route exact path="/" component={About}></Route>
+          <Route exact path="/" component={Home}></Route>
+          <Route path="/About" component={About}></Route>
           <Route path="/Guide" component={Guide}></Route>
           <Route path="/Editor/:i?/:o?" component={Editor}></Route>
           <Route path="/Login" component={Login}></Route>

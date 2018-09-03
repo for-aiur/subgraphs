@@ -1,6 +1,7 @@
 # Backend
 /backend/www
 /backend/node_modules
+/backend/src/config.json
 
 # Frontend
 /frontend/**/*.css

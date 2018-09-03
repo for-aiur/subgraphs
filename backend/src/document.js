@@ -8,18 +8,9 @@ const user = require('./user');
 
 const router = express.Router();
 
-// Automatically parse request body as JSON
 router.use(bodyParser.json());
-
-// Use the oauth middleware to automatically get the user's profile
-// information and expose login/logout URLs to templates.
 router.use(user.template);
 
-/**
- * POST /api/document/list
- *
- * List documents.
- */
 router.post('/list', (req, res) => {
   let data = req.body;
   let category = data.category;
@@ -46,11 +37,6 @@ router.post('/list', (req, res) => {
   });
 });
 
-/**
- * POST /api/document/get
- *
- * List documents.
- */
 router.post('/get/:identifier/:owner?', (req, res) => {
   let identifier = req.params.identifier;
   let owner = undefined;
@@ -69,11 +55,6 @@ router.post('/get/:identifier/:owner?', (req, res) => {
   });
 });
 
-/**
- * POST /api/document/save
- *
- * Create a new document.
- */
 router.post('/save', (req, res) => {
   if (!req.user) {
     return res.status(403).end();
@@ -100,12 +81,6 @@ router.post('/save', (req, res) => {
   return res.status(200).end();
 });
 
-
-/**
- * POST /api/document/save
- *
- * Create a new document.
- */
 router.post('/delete', (req, res) => {
   if (!req.user) {
     return res.status(403).end();
@@ -125,12 +100,7 @@ router.post('/delete', (req, res) => {
   });
 });
 
-/**
- * Errors on "/api/document/*" routes.
- */
 router.use((err, req, res, next) => {
-  // Format error and forward to generic error handler for logging and
-  // responding to the request
   err.response = {
     message: err.message,
     internalCode: err.code
