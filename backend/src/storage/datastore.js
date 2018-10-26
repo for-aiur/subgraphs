@@ -7,7 +7,7 @@ const ds = Datastore({
   projectId: config.get('GCLOUD_PROJECT')
 });
 
-function fromDatastore(entities) {
+function fromDatastore (entities) {
   return entities.map((obj) => {
     obj.key = obj[Datastore.KEY];
     return obj;

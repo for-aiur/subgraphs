@@ -4,20 +4,21 @@ const {ds, fromDatastore} = require('./datastore');
 
 const userKind = 'User';
 
-function getKey(id) {
+function getKey (id) {
   return ds.key([userKind, parseInt(id, 10)]);
 }
 
-function read({email}) {
+function read ({email}) {
   const q = ds.createQuery(userKind);
 
-  if (email !== undefined)
+  if (email !== undefined) {
     q.filter('email', '=', email);
+  }
 
   return ds.runQuery(q).then(results => fromDatastore(results[0]));
 }
 
-function write({name, email, isAdmin=false}) {
+function write ({name, email, isAdmin = false}) {
   let registrationDate = new Date();
 
   const entity = {
@@ -32,22 +33,22 @@ function write({name, email, isAdmin=false}) {
   });
 }
 
-function update({name, email}) {
+function update ({name, email}) {
   return read({email}).then(users => {
-    if (users.length == 0) return;
+    if (users.length === 0) return;
 
     let {key, registrationDate, isAdmin} = users[0];
 
     const entity = {
       key: key,
-      data: {name, email, registrationDate, isAdmin},
+      data: {name, email, registrationDate, isAdmin}
     };
 
     return ds.update(entity);
   });
 }
 
-function getOrCreate({name, email}) {
+function getOrCreate ({name, email}) {
   return read({email}).then(users => {
     if (users.length > 0) {
       return new Promise((resolve, reject) => {
@@ -59,7 +60,7 @@ function getOrCreate({name, email}) {
   });
 }
 
-function remove(key) {
+function remove (key) {
   ds.delete(key);
 }
 
@@ -70,5 +71,5 @@ module.exports = {
   write,
   update,
   getOrCreate,
-  remove,
+  remove
 };

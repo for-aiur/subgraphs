@@ -16,6 +16,8 @@
     "backend": "npm run watch --prefix backend",
     "deployBackend": "npm run deploy --prefix backend",
     "deploy": "npm-run-all build sync deployBackend",
+    "deployTestBackend": "npm run deployTest --prefix backend",
+    "deployTest": "npm-run-all build sync deployTestBackend",
     "install-frontend": "cd frontend && npm install",
     "install-backend": "cd backend && npm install",
     "postinstall": "npm-run-all install-frontend install-backend"

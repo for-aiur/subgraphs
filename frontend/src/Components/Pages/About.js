@@ -12,7 +12,7 @@ class About extends Component {
               <div className="col-lg-12 text-center">
                 <p className="lead">
                   Subgraphs is a visual IDE for developing computational graphs, particularly
-                  designed for deep neural networks. Subgraphs is built with tensorflow.js,
+                  designed for deep neural networks. Subgraphs is built with
                   node, and react, and serves on Google Cloud.
                 </p>
 

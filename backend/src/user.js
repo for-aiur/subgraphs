@@ -8,7 +8,7 @@ const userData = require('./storage/user');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-function extractProfile(profile) {
+function extractProfile (profile) {
   let email = profile.emails[0].value;
   let name = profile.displayName;
   return userData.getOrCreate({name, email}).then(user => {

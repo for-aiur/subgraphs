@@ -24,14 +24,14 @@ router.post('/list', (req, res) => {
 
   Promise.all(promises).then(results => {
     let docs = [];
-    results.forEach(result => docs = docs.concat(result));
+    results.forEach(result => {
+      docs = docs.concat(result);
+    });
     let contents = docs.map(doc => JSON.parse(doc.content));
     return contents;
-  })
-  .then(contents => {
+  }).then(contents => {
     return res.json(contents);
-  })
-  .catch(e => {
+  }).catch(e => {
     console.error(e.name + ': ' + e.message);
     return res.status(400).end();
   });
@@ -39,17 +39,16 @@ router.post('/list', (req, res) => {
 
 router.post('/get/:identifier/:owner?', (req, res) => {
   let identifier = req.params.identifier;
-  let owner = undefined;
+  let owner;
   if (req.params.owner) {
     owner = userData.key(req.params.owner);
   }
   docData.read({identifier, owner}).then(docs => {
-    if (docs.length == 0) {
-      throw 'Requested doc not found.';
-    };
+    if (docs.length === 0) {
+      throw new Error('Requested doc not found.');
+    }
     return res.send(docs[0].content);
-  })
-  .catch(e => {
+  }).catch(e => {
     console.error(e.name + ': ' + e.message);
     return res.status(400).end();
   });
